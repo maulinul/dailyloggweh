@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com/">
   <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
   <link href="./TaskFlow _ Daily Tracker_files/css2" rel="stylesheet">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=&#39;http://www.w3.org/2000/svg&#39; viewBox=&#39;0 0 100 100&#39;%3E%3Crect width=&#39;100&#39; height=&#39;100&#39; rx=&#39;22&#39; fill=&#39;%23b026ff&#39;%3E%3C/rect%3E%3Ctext x=&#39;50&#39; y=&#39;50&#39; font-size=&#39;60&#39; fill=&#39;white&#39; text-anchor=&#39;middle&#39; dominant-baseline=&#39;central&#39; font-weight=&#39;bold&#39;%3E✓%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=&#39;http://www.w3.org/2000/svg&#39; viewBox=&#39;0 0 100 100&#39;%3E%3Crect width=&#39;100&#39; height=&#39;100&#39; rx=&#39;22&#39; fill=&#39;%230a0a12&#39;/%3E%3Cpath d=&#39;M28 52 L42 66 L72 34&#39; stroke=&#39;%23b026ff&#39; stroke-width=&#39;10&#39; fill=&#39;none&#39; stroke-linecap=&#39;round&#39; stroke-linejoin=&#39;round&#39;/%3E%3Ccircle cx=&#39;50&#39; cy=&#39;50&#39; r=&#39;36&#39; stroke=&#39;%23ff4d6d&#39; stroke-width=&#39;5&#39; fill=&#39;none&#39; opacity=&#39;0.4&#39;/%3E%3Ccircle cx=&#39;50&#39; cy=&#39;50&#39; r=&#39;8&#39; fill=&#39;%2300f5a0&#39;/%3E%3C/svg%3E">
   <style>
     :root {
       --bg: #0a0a12;
@@ -225,27 +225,6 @@
     .btn:active { transform: scale(0.96); }
     .btn-icon { background: rgba(255,255,255,0.1); padding: 0.6rem; border-radius: 8px; border: none; color: var(--text); cursor: none; transition: all 0.2s; }
     .btn-icon:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
-
-    /* GitHub Buttons */
-    .github-buttons-group {
-      display: flex; gap: 0.4rem; flex-wrap: wrap;
-    }
-    .github-btn {
-      background: rgba(79,172,254,0.15); border: 1px solid rgba(79,172,254,0.3);
-      color: var(--neon-blue); padding: 0.6rem 0.9rem; border-radius: 8px;
-      font-size: 0.8rem; font-weight: 600; cursor: none;
-      transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem;
-      white-space: nowrap;
-    }
-    .github-btn:hover {
-      background: rgba(79,172,254,0.3); border-color: rgba(79,172,254,0.6);
-      transform: translateY(-2px); box-shadow: 0 4px 12px rgba(79,172,254,0.2);
-    }
-    .github-btn:active { transform: scale(0.96); }
-    .github-btn.loading { opacity: 0.6; pointer-events: none; }
-    .github-btn-icon { font-size: 1rem; display: inline-block; }
-    .github-btn-icon.spin { animation: spin 0.8s linear infinite; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     /* Custom Priority Select */
     .custom-select { position: relative; width: 140px; user-select: none; }
@@ -596,7 +575,7 @@
     .filter-chip.active { background: var(--neon-purple); border-color: var(--neon-purple); color: white; box-shadow: 0 4px 12px rgba(176,38,255,0.3); }
 
     /* Settings Toggle */
-    .settings-toggle { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--glass); border: 1px solid var(--border); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: none; transition: all 0.3s; font-size: 1.2rem; z-index: 11; }
+    .settings-toggle { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--glass); border: 1px solid var(--border); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: none; z-index: 10; transition: all 0.3s; }
     .settings-toggle:hover { transform: rotate(90deg) scale(1.1); background: var(--neon-purple); border-color: var(--neon-purple); }
     .settings-panel {
       position: fixed; bottom: 5rem; right: 1.5rem; background: var(--glass); border: 1px solid var(--border);
@@ -688,6 +667,7 @@
     }
     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
   </style>
+<!--<base target="_blank">--><base href="." target="_blank">
 </head>
 <body class="">
   <!-- Custom Cursor -->
@@ -729,7 +709,7 @@
     <!-- KOLOM 1: Clock & Bento Stats -->
     <div class="column col-left">
       <div class="glass">
-        <div class="clock kinetic" id="clock">18:35<span class="seconds">:43</span></div>
+        <div class="clock kinetic" id="clock" style="font-variation-settings: &quot;wght&quot; 529;">18:35<span class="seconds">:43</span></div>
         <div style="margin-top:0.5rem; color:var(--text-dim); font-size:0.9rem;" id="dateDisplay">Rabu, 6 Mei 2026</div>
       </div>
       <div class="bento">
@@ -771,11 +751,12 @@
     <div class="column col-center">
       <div class="glass">
         <div class="progress-container">
-          <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 33%;"></div></div>
+          <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 33%; background: linear-gradient(90deg, var(--neon-purple), var(--neon-coral));"></div></div>
           <div class="progress-text"><span id="progressLabel">33% Selesai Hari Ini</span><span id="progressRatio">3/9</span></div>
         </div>
         <div class="input-group">
-          <input type="text" class="task-input" id="taskInput" placeholder="Ketik tugas... (cth: Beli susu jam 7 malam high)" autocomplete="off">
+          <input type="text" class="task-input" id="taskInput" placeholder="Ketik tugas... (cth: Beli susu jam 7 malam high)" autocomplete="off" list="taskSuggestions">
+          <datalist id="taskSuggestions"><option value="surat untuk bumigas tgl 7"></option><option value="rekap harian penjaga purwosari med"></option><option value="opnaman seluruh mandor"></option><option value="kerja tambah tohir"></option><option value="KPI besok"></option><option value="hitung kebut besi gunungsari dan pagar dsv"></option><option value="opnaman pak eko"></option><option value="SPM DONE"></option><option value="meeting mandor"></option><option value="ambil uang"></option></datalist>
           <input type="text" class="task-input" id="descInput" placeholder="Deskripsi / Kategori (opsional)">
           
           <!-- Subtask Input -->
@@ -790,7 +771,7 @@
             <!-- Custom Priority Select -->
             <div class="custom-select" id="priorityCustomSelect">
               <div class="select-trigger" id="priorityTrigger">
-                <span class="select-icon" id="priorityTriggerIcon">⚡</span>
+                <span class="select-icon" id="priorityTriggerIcon" style="animation: 0.5s ease 0s 1 normal none running pulseFire;">⚡</span>
                 <span class="select-text" id="priorityTriggerText">Medium</span>
                 <span class="select-arrow">▼</span>
               </div>
@@ -803,19 +784,6 @@
 
             <button class="btn" id="addBtn">Tambah</button>
           </div>
-
-          <!-- GitHub Load & Sync Buttons -->
-          <div class="github-buttons-group">
-            <button class="github-btn" id="githubLoadBtn" title="Load tasks from GitHub">
-              <span class="github-btn-icon">📥</span>
-              <span>Load</span>
-            </button>
-            <button class="github-btn" id="githubSyncBtn" title="Sync tasks to GitHub">
-              <span class="github-btn-icon">📤</span>
-              <span>Sync</span>
-            </button>
-          </div>
-
           <div style="font-size:0.75rem; color:var(--text-dim); margin-top:0.2rem;">💡 Smart Parse aktif: ketik waktu/priority otomatis terdeteksi &amp; dihapus dari judul</div>
         </div>
       </div>
@@ -834,7 +802,162 @@
             <button class="cal-nav-btn" id="nextYear">»</button>
           </div>
         </div>
-        <div class="calendar-grid" id="calendarGrid"></div>
+        <div class="calendar-grid" id="calendarGrid"><div class="cal-day-header">Min</div><div class="cal-day-header">Sen</div><div class="cal-day-header">Sel</div><div class="cal-day-header">Rab</div><div class="cal-day-header">Kam</div><div class="cal-day-header">Jum</div><div class="cal-day-header">Sab</div><div class="cal-day other-month" style="--mx: 521.3781652137817%; --my: 2.65625%;"><span class="day-number">26</span></div><div class="cal-day other-month" style="--mx: 416.02158348033623%; --my: 2.65625%;"><span class="day-number">27</span></div><div class="cal-day other-month" style="--mx: 310.7409713574097%; --my: 2.65625%;"><span class="day-number">28</span></div><div class="cal-day other-month" style="--mx: 205.4062467572896%; --my: 2.65625%;"><span class="day-number">29</span></div><div class="cal-day other-month" style="--mx: 100.10377750103778%; --my: 2.65625%;"><span class="day-number">30</span></div>
+          <div class="cal-day  " data-date="Fri May 01 2026" data-day="1" style="--mx: -5.209089965756979%; --my: 2.65625%;">
+            <span class="day-number">1</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sat May 02 2026" data-day="2" style="--mx: -110.53341635533415%; --my: 2.65625%;">
+            <span class="day-number">2</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sun May 03 2026" data-day="3" style="--mx: 521.3781652137817%; --my: -107.34375%;">
+            <span class="day-number">3</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Mon May 04 2026" data-day="4" style="--mx: 416.02158348033623%; --my: -107.34375%;">
+            <span class="day-number">4</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Tue May 05 2026" data-day="5" style="--mx: 310.7409713574097%; --my: -107.34375%;">
+            <span class="day-number">5</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day today " data-date="Wed May 06 2026" data-day="6" style="--mx: 205.4062467572896%; --my: -107.34375%;">
+            <span class="day-number">6</span>
+            <div class="day-tasks-preview"><div class="task-dot medium" style="animation-delay:0s"></div><div class="task-dot done" style="animation-delay:0.05s"></div><div class="task-dot high" style="animation-delay:0.1s"></div><div class="task-dot high" style="animation-delay:0.15000000000000002s"></div><div class="task-dot medium" style="animation-delay:0.2s"></div><div class="task-dot" style="background:var(--text-dim)"></div></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Thu May 07 2026" data-day="7" style="--mx: 100.10377750103778%; --my: -107.34375%;">
+            <span class="day-number">7</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Fri May 08 2026" data-day="8" style="--mx: -5.209089965756979%; --my: -107.34375%;">
+            <span class="day-number">8</span>
+            <div class="day-tasks-preview"><div class="task-dot high" style="animation-delay:0s"></div></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sat May 09 2026" data-day="9" style="--mx: -107.38572232520134%; --my: -99.35666233336875%;">
+            <span class="day-number">9</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sun May 10 2026" data-day="10" style="--mx: 521.3781652137817%; --my: -217.34375%;">
+            <span class="day-number">10</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Mon May 11 2026" data-day="11" style="--mx: 416.02158348033623%; --my: -217.34375%;">
+            <span class="day-number">11</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Tue May 12 2026" data-day="12" style="--mx: 310.7409713574097%; --my: -217.34375%;">
+            <span class="day-number">12</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Wed May 13 2026" data-day="13" style="--mx: 205.4062467572896%; --my: -217.34375%;">
+            <span class="day-number">13</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Thu May 14 2026" data-day="14" style="--mx: 100.10377750103778%; --my: -217.34375%;">
+            <span class="day-number">14</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Fri May 15 2026" data-day="15" style="--mx: -5.209089965756979%; --my: -217.34375%;">
+            <span class="day-number">15</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sat May 16 2026" data-day="16" style="--mx: -110.53341635533415%; --my: -217.34375%;">
+            <span class="day-number">16</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sun May 17 2026" data-day="17" style="--mx: 521.3781652137817%; --my: -327.34375%;">
+            <span class="day-number">17</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Mon May 18 2026" data-day="18" style="--mx: 416.02158348033623%; --my: -327.34375%;">
+            <span class="day-number">18</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Tue May 19 2026" data-day="19" style="--mx: 310.7409713574097%; --my: -327.34375%;">
+            <span class="day-number">19</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Wed May 20 2026" data-day="20" style="--mx: 205.4062467572896%; --my: -327.34375%;">
+            <span class="day-number">20</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Thu May 21 2026" data-day="21" style="--mx: 100.10377750103778%; --my: -327.34375%;">
+            <span class="day-number">21</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Fri May 22 2026" data-day="22" style="--mx: -5.209089965756979%; --my: -327.34375%;">
+            <span class="day-number">22</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sat May 23 2026" data-day="23" style="--mx: -110.53341635533415%; --my: -327.34375%;">
+            <span class="day-number">23</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sun May 24 2026" data-day="24" style="--mx: 521.3781652137817%; --my: -437.34374999999994%;">
+            <span class="day-number">24</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Mon May 25 2026" data-day="25" style="--mx: 416.02158348033623%; --my: -437.34374999999994%;">
+            <span class="day-number">25</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Tue May 26 2026" data-day="26" style="--mx: 310.7409713574097%; --my: -437.34374999999994%;">
+            <span class="day-number">26</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Wed May 27 2026" data-day="27" style="--mx: 205.4062467572896%; --my: -437.34374999999994%;">
+            <span class="day-number">27</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Thu May 28 2026" data-day="28" style="--mx: 100.10377750103778%; --my: -437.34374999999994%;">
+            <span class="day-number">28</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Fri May 29 2026" data-day="29" style="--mx: -5.209089965756979%; --my: -437.34374999999994%;">
+            <span class="day-number">29</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sat May 30 2026" data-day="30" style="--mx: -110.53341635533415%; --my: -437.34374999999994%;">
+            <span class="day-number">30</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sun May 31 2026" data-day="31" style="--mx: 521.3781652137817%; --my: -547.34375%;">
+            <span class="day-number">31</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        <div class="cal-day other-month" style="--mx: 416.02158348033623%; --my: -547.34375%;"><span class="day-number">1</span></div><div class="cal-day other-month" style="--mx: 310.7409713574097%; --my: -547.34375%;"><span class="day-number">2</span></div><div class="cal-day other-month" style="--mx: 205.4062467572896%; --my: -547.34375%;"><span class="day-number">3</span></div><div class="cal-day other-month" style="--mx: 100.10377750103778%; --my: -547.34375%;"><span class="day-number">4</span></div><div class="cal-day other-month" style="--mx: -5.209089965756979%; --my: -547.34375%;"><span class="day-number">5</span></div><div class="cal-day other-month" style="--mx: -110.53341635533415%; --my: -547.34375%;"><span class="day-number">6</span></div></div>
 
         <!-- Day Detail Panel -->
         <div class="day-detail-panel" id="dayDetailPanel">
@@ -842,144 +965,1336 @@
             <div class="day-detail-title" id="dayDetailTitle">📅 Rabu, 6 Mei 2026</div>
             <button class="day-detail-close" id="dayDetailClose">×</button>
           </div>
-          <div id="dayDetailContent"></div>
+          <div id="dayDetailContent">
+          <div class="day-task-item medium " style="animation-delay:0s">
+            <input type="checkbox" class="task-check" onchange="toggleTaskFromCalendar(&#39;1778061006829&#39;)">
+            <div>
+              <div style="font-weight:600; ">surat untuk bumigas tgl 7</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                🕒 08:00 · 
+                <span class="priority-tag p-medium">medium</span>
+              </div>
+            </div>
+          </div>
+        
+          <div class="day-task-item medium done" style="animation-delay:0.1s">
+            <input type="checkbox" class="task-check" checked="" onchange="toggleTaskFromCalendar(&#39;1778060183518&#39;)">
+            <div>
+              <div style="font-weight:600; text-decoration:line-through;opacity:0.6">rekap harian penjaga purwosari med</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                
+                <span class="priority-tag p-medium">medium</span>
+              </div>
+            </div>
+          </div>
+        
+          <div class="day-task-item high " style="animation-delay:0.2s">
+            <input type="checkbox" class="task-check" onchange="toggleTaskFromCalendar(&#39;1778059321373&#39;)">
+            <div>
+              <div style="font-weight:600; ">opnaman seluruh mandor</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                🕒 17:00 · 
+                <span class="priority-tag p-high">high</span>
+              </div>
+            </div>
+          </div>
+        
+          <div class="day-task-item high " style="animation-delay:0.30000000000000004s">
+            <input type="checkbox" class="task-check" onchange="toggleTaskFromCalendar(&#39;1778059298158&#39;)">
+            <div>
+              <div style="font-weight:600; ">kerja tambah tohir</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                🕒 17:00 · 
+                <span class="priority-tag p-high">high</span>
+              </div>
+            </div>
+          </div>
+        
+          <div class="day-task-item medium " style="animation-delay:0.4s">
+            <input type="checkbox" class="task-check" onchange="toggleTaskFromCalendar(&#39;1778057830401&#39;)">
+            <div>
+              <div style="font-weight:600; ">hitung kebut besi gunungsari dan pagar dsv</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                
+                <span class="priority-tag p-medium">medium</span>
+              </div>
+            </div>
+          </div>
+        
+          <div class="day-task-item high " style="animation-delay:0.5s">
+            <input type="checkbox" class="task-check" onchange="toggleTaskFromCalendar(&#39;1778057368083&#39;)">
+            <div>
+              <div style="font-weight:600; ">opnaman pak eko</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                🕒 18:00 · 
+                <span class="priority-tag p-high">high</span>
+              </div>
+            </div>
+          </div>
+        
+          <div class="day-task-item low done" style="animation-delay:0.6000000000000001s">
+            <input type="checkbox" class="task-check" checked="" onchange="toggleTaskFromCalendar(&#39;1778055639207&#39;)">
+            <div>
+              <div style="font-weight:600; text-decoration:line-through;opacity:0.6">SPM DONE</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                
+                <span class="priority-tag p-low">low</span>
+              </div>
+            </div>
+          </div>
+        
+          <div class="day-task-item medium done" style="animation-delay:0.7000000000000001s">
+            <input type="checkbox" class="task-check" checked="" onchange="toggleTaskFromCalendar(&#39;1778053283314&#39;)">
+            <div>
+              <div style="font-weight:600; text-decoration:line-through;opacity:0.6">meeting mandor</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                🕒 10:00 · 
+                <span class="priority-tag p-medium">medium</span>
+              </div>
+            </div>
+          </div>
+        
+          <div class="day-task-item low " style="animation-delay:0.8s">
+            <input type="checkbox" class="task-check" onchange="toggleTaskFromCalendar(&#39;1778053249273&#39;)">
+            <div>
+              <div style="font-weight:600; ">ambil uang</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                🕒 19:00 · 
+                <span class="priority-tag p-low">low</span>
+              </div>
+            </div>
+          </div>
+        </div>
         </div>
       </div>
     </div>
 
-    <!-- KOLOM 3: Task List -->
+    <!-- KOLOM 3: Search, Filter & Task List -->
     <div class="column col-right">
-      <div class="glass">
-        <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.8rem;">📋 Task List</div>
+      <div class="glass" style="padding-bottom:0.8rem;">
         <div class="search-bar">
           <span class="search-icon">🔍</span>
-          <input type="text" class="search-input" id="searchInput" placeholder="Cari tugas...">
+          <input type="text" class="search-input" id="searchInput" placeholder="Cari tugas lama...">
         </div>
-        <div class="filters" id="filters">
-          <button class="filter-chip active" data-filter="all">Semua</button>
-          <button class="filter-chip" data-filter="today">Hari Ini</button>
-          <button class="filter-chip" data-filter="pending">Pending</button>
-          <button class="filter-chip" data-filter="high">High</button>
+        <div class="filters">
+          <div class="filter-chip" data-filter="all">Semua</div>
+          <div class="filter-chip" data-filter="pending">Pending</div>
+          <div class="filter-chip" data-filter="done">Selesai</div>
+          <div class="filter-chip active" data-filter="high">High</div>
         </div>
-        <div class="task-list" id="taskList"></div>
       </div>
+      <div class="glass task-list" id="taskList"><div class="task-item " draggable="true" data-id="1778059321373" style="animation-delay: 0s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">opnaman seluruh mandor</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 6 Mei, 16.21 → 17:00</span>
+              <span class="priority-tag p-high">🔥 high</span>
+              
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item " draggable="true" data-id="1778059298158" style="animation-delay: 0.05s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">kerja tambah tohir</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 6 Mei, 16.19 → 17:00</span>
+              <span class="priority-tag p-high">🔥 high</span>
+              <span style="font-size:0.75rem; color:var(--text-dim)">📝 kerja</span>
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item " draggable="true" data-id="1778059146950" style="animation-delay: 0.1s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">KPI besok</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 8 Mei, 15.57</span>
+              <span class="priority-tag p-high">🔥 high</span>
+              
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item " draggable="true" data-id="1778057368083" style="animation-delay: 0.15s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">opnaman pak eko</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 6 Mei, 15.20 → 18:00</span>
+              <span class="priority-tag p-high">🔥 high</span>
+              
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div></div>
     </div>
   </div>
 
-  <!-- Settings Toggle & Panel -->
-  <button class="settings-toggle" id="settingsToggle">⚙️</button>
+  <!-- Settings Toggle -->
+  <div class="settings-toggle" id="settingsToggle">⚙️</div>
   <div class="settings-panel" id="settingsPanel">
+    <div class="toggle-row"><span>🔊 Suara</span><div class="switch on" id="soundToggle"></div></div>
+    <div class="toggle-row"><span>📳 Haptic</span><div class="switch on" id="hapticToggle"></div></div>
     <div class="toggle-row">
-      <span>🌙 Dark Mode</span>
-      <div class="switch on" id="darkModeToggle"></div>
+      <span class="theme-indicator">
+        <span class="theme-icon" id="themeIcon">🌙</span>
+        <span id="themeLabel">Night Mode</span>
+      </span>
+      <div class="switch" id="themeToggle"></div>
     </div>
-    <div class="toggle-row">
-      <span>✉️ Notifications</span>
-      <div class="switch on" id="notifToggle"></div>
-    </div>
-    <div class="toggle-row">
-      <span>📊 Analytics</span>
-      <div class="switch" id="analyticsToggle"></div>
-    </div>
-
+    
+    <!-- GitHub Sync Section -->
     <div class="github-section">
-      <div class="github-section-title">🐙 GitHub</div>
-      <input type="text" class="github-input" id="githubToken" placeholder="GitHub Token (PAT)">
-      <input type="text" class="github-input" id="githubRepo" placeholder="Repo (owner/name)">
-      <button class="btn" style="width: 100%; margin-top: 0.4rem;">Connect</button>
+      <div class="github-section-title">🔗 GitHub Gist Sync</div>
+      <input type="password" class="github-input" id="githubToken" placeholder="GitHub Personal Access Token">
+      <input type="text" class="github-input" id="githubGistId" placeholder="Gist ID (kosongkan untuk buat baru)">
+      <div class="toggle-row" style="margin-bottom:0.5rem;">
+        <span style="font-size:0.8rem;">Auto Sync</span>
+        <div class="switch on" id="githubAutoSync"></div>
+      </div>
+      <div class="input-row">
+        <button class="btn" id="syncToGithub" style="flex:1; font-size:0.8rem; padding:0.6rem;">☁️ Save to GitHub</button>
+        <button class="btn-icon" id="loadFromGithub" style="padding:0.6rem;" title="Load from GitHub">📥</button>
+      </div>
       <div class="github-status" id="githubStatus"></div>
     </div>
+
+    <div style="margin-top:0.8rem; font-size:0.75rem; color:var(--text-dim);">Data tersimpan di LocalStorage</div>
+    <button class="btn" style="width:100%; margin-top:0.5rem; background:rgba(255,77,109,0.2); color:var(--neon-coral);" id="clearData">Hapus Semua Data</button>
   </div>
 
   <script>
-    // ESC Key Handler
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        // Close settings panel
-        const settingsPanel = document.getElementById('settingsPanel');
-        if (settingsPanel?.classList.contains('show')) {
-          settingsPanel.classList.remove('show');
-          return;
+    // State & Config
+    let tasks = JSON.parse(localStorage.getItem('tf_tasks')) || [];
+    let settings = JSON.parse(localStorage.getItem('tf_settings')) || { 
+      sound: true, haptic: true, dayMode: false,
+      githubToken: '', githubGistId: '', githubAutoSync: false 
+    };
+    let currentFilter = 'all';
+    let searchQuery = '';
+    let audioCtx = null;
+    let currentCalendarDate = new Date();
+    let selectedDate = null;
+    let editingId = null;
+    let focusTaskId = null;
+    let focusInterval = null;
+    let focusTimeLeft = 1500;
+    let currentPriority = 'medium';
+    let tempSubtasks = [];
+
+    // DOM Elements
+    const els = {
+      clock: document.getElementById('clock'),
+      date: document.getElementById('dateDisplay'),
+      progressFill: document.getElementById('progressFill'),
+      progressLabel: document.getElementById('progressLabel'),
+      progressRatio: document.getElementById('progressRatio'),
+      bentoProgress: document.getElementById('bentoProgress'),
+      bentoProgressAll: document.getElementById('bentoProgressAll'),
+      bentoTotal: document.getElementById('bentoTotal'),
+      bentoDone: document.getElementById('bentoDone'),
+      bentoPending: document.getElementById('bentoPending'),
+      bentoHigh: document.getElementById('bentoHigh'),
+      streakCount: document.getElementById('streakCount'),
+      streakFire: document.getElementById('streakFire'),
+      taskInput: document.getElementById('taskInput'),
+      descInput: document.getElementById('descInput'),
+      subtaskInput: document.getElementById('subtaskInput'),
+      subtaskChips: document.getElementById('subtaskChips'),
+      priorityCustomSelect: document.getElementById('priorityCustomSelect'),
+      priorityTrigger: document.getElementById('priorityTrigger'),
+      priorityTriggerIcon: document.getElementById('priorityTriggerIcon'),
+      priorityTriggerText: document.getElementById('priorityTriggerText'),
+      priorityOptions: document.getElementById('priorityOptions'),
+      dateTimeInput: document.getElementById('dateTimeInput'),
+      addBtn: document.getElementById('addBtn'),
+      suggestions: document.getElementById('taskSuggestions'),
+      searchInput: document.getElementById('searchInput'),
+      taskList: document.getElementById('taskList'),
+      filters: document.querySelectorAll('.filter-chip'),
+      settingsToggle: document.getElementById('settingsToggle'),
+      settingsPanel: document.getElementById('settingsPanel'),
+      soundToggle: document.getElementById('soundToggle'),
+      hapticToggle: document.getElementById('hapticToggle'),
+      themeToggle: document.getElementById('themeToggle'),
+      themeIcon: document.getElementById('themeIcon'),
+      themeLabel: document.getElementById('themeLabel'),
+      clearData: document.getElementById('clearData'),
+      calendarGrid: document.getElementById('calendarGrid'),
+      calendarTitle: document.getElementById('calendarTitle'),
+      prevMonth: document.getElementById('prevMonth'),
+      nextMonth: document.getElementById('nextMonth'),
+      prevYear: document.getElementById('prevYear'),
+      nextYear: document.getElementById('nextYear'),
+      backToToday: document.getElementById('backToToday'),
+      dayDetailPanel: document.getElementById('dayDetailPanel'),
+      dayDetailTitle: document.getElementById('dayDetailTitle'),
+      dayDetailContent: document.getElementById('dayDetailContent'),
+      dayDetailClose: document.getElementById('dayDetailClose'),
+      focusOverlay: document.getElementById('focusOverlay'),
+      focusTitle: document.getElementById('focusTitle'),
+      focusTimer: document.getElementById('focusTimer'),
+      focusPause: document.getElementById('focusPause'),
+      focusClear: document.getElementById('focusClear'),
+      editModal: document.getElementById('editModal'),
+      editTitle: document.getElementById('editTitle'),
+      editDesc: document.getElementById('editDesc'),
+      editDateTime: document.getElementById('editDateTime'),
+      editPriority: document.getElementById('editPriority'),
+      editSave: document.getElementById('editSave'),
+      editCancel: document.getElementById('editCancel'),
+      cursorDot: document.getElementById('cursorDot'),
+      cursorOutline: document.getElementById('cursorOutline'),
+      githubToken: document.getElementById('githubToken'),
+      githubGistId: document.getElementById('githubGistId'),
+      githubAutoSync: document.getElementById('githubAutoSync'),
+      syncToGithub: document.getElementById('syncToGithub'),
+      loadFromGithub: document.getElementById('loadFromGithub'),
+      githubStatus: document.getElementById('githubStatus')
+    };
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+      initClock();
+      initCursor();
+      initCalendar();
+      initCustomSelect();
+      initSubtaskInput();
+      setDefaultDateTime();
+      renderTasks();
+      updateStats();
+      updateSuggestions();
+      loadSettings();
+      checkStreak();
+    });
+
+    // Set default datetime to now
+    function setDefaultDateTime() {
+      const now = new Date();
+      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      els.dateTimeInput.value = now.toISOString().slice(0, 16);
+    }
+
+    // Custom Cursor - Dijamin tetap ada
+    function initCursor() {
+      // Force cursor visibility
+      els.cursorDot.style.display = 'block';
+      els.cursorOutline.style.display = 'block';
+      
+      document.addEventListener('mousemove', (e) => {
+        els.cursorDot.style.left = e.clientX + 'px';
+        els.cursorDot.style.top = e.clientY + 'px';
+        els.cursorOutline.style.left = e.clientX + 'px';
+        els.cursorOutline.style.top = e.clientY + 'px';
+
+        // Plasma trail effect
+        if (Math.random() > 0.7) {
+          createTrail(e.clientX, e.clientY);
         }
 
-        // Close edit modal
-        const editModal = document.getElementById('editModal');
-        if (editModal?.classList.contains('show')) {
-          editModal.classList.remove('show');
-          return;
-        }
+        // Update CSS variables for calendar hover glow
+        const calDays = document.querySelectorAll('.cal-day');
+        calDays.forEach(day => {
+          const rect = day.getBoundingClientRect();
+          const x = ((e.clientX - rect.left) / rect.width) * 100;
+          const y = ((e.clientY - rect.top) / rect.height) * 100;
+          day.style.setProperty('--mx', x + '%');
+          day.style.setProperty('--my', y + '%');
+        });
+      });
 
-        // Close day detail panel
-        const dayDetailPanel = document.getElementById('dayDetailPanel');
-        if (dayDetailPanel?.classList.contains('show')) {
-          dayDetailPanel.classList.remove('show');
-          return;
-        }
+      // Hover effects
+      const addHoverListeners = () => {
+        const interactiveElements = document.querySelectorAll('button, .cal-day, .filter-chip, .task-item, .action-btn, .switch, .grip, .select-trigger, .select-option, .chip-remove');
+        interactiveElements.forEach(el => {
+          el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+          el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+        });
+      };
+      addHoverListeners();
+      // Re-apply periodically for dynamic elements
+      setInterval(addHoverListeners, 2000);
+    }
 
-        // Clear task input if it has focus and is not empty
-        const taskInput = document.getElementById('taskInput');
-        if (taskInput === document.activeElement && taskInput.value.trim()) {
-          taskInput.value = '';
-          taskInput.focus();
-          return;
-        }
+    function createTrail(x, y) {
+      const trail = document.createElement('div');
+      trail.className = 'cursor-trail';
+      const colors = ['var(--neon-purple)', 'var(--neon-coral)', 'var(--neon-blue)'];
+      trail.style.background = colors[Math.floor(Math.random() * colors.length)];
+      trail.style.left = (x + (Math.random() - 0.5) * 20) + 'px';
+      trail.style.top = (y + (Math.random() - 0.5) * 20) + 'px';
+      document.body.appendChild(trail);
+      setTimeout(() => trail.remove(), 800);
+    }
 
-        // Close focus overlay
-        const focusOverlay = document.getElementById('focusOverlay');
-        if (focusOverlay?.classList.contains('active')) {
-          focusOverlay.classList.remove('active');
-          return;
+    // Clock & Kinetic Typography
+    function initClock() {
+      const update = () => {
+        const now = new Date();
+        const h = String(now.getHours()).padStart(2,'0');
+        const m = String(now.getMinutes()).padStart(2,'0');
+        const s = String(now.getSeconds()).padStart(2,'0');
+        els.clock.innerHTML = `${h}:${m}<span class="seconds">:${s}</span>`;
+        els.date.textContent = now.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'short', year:'numeric' });
+        const weight = 400 + (now.getSeconds() % 60) * 3;
+        els.clock.style.fontVariationSettings = `'wght' ${weight}`;
+      };
+      update();
+      setInterval(update, 1000);
+    }
+
+    // Custom Priority Select
+    function initCustomSelect() {
+      els.priorityTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = els.priorityOptions.classList.contains('open');
+        if (isOpen) {
+          closePrioritySelect();
+        } else {
+          openPrioritySelect();
         }
+      });
+
+      document.querySelectorAll('.select-option').forEach(opt => {
+        opt.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const val = opt.dataset.value;
+          currentPriority = val;
+          updatePrioritySelectUI(val);
+          closePrioritySelect();
+          
+          // Animate icon
+          els.priorityTriggerIcon.style.animation = 'none';
+          els.priorityTriggerIcon.offsetHeight;
+          els.priorityTriggerIcon.style.animation = 'pulseFire 0.5s';
+        });
+      });
+
+      document.addEventListener('click', () => closePrioritySelect());
+    }
+
+    function openPrioritySelect() {
+      els.priorityOptions.classList.add('open');
+      els.priorityTrigger.classList.add('open');
+    }
+
+    function closePrioritySelect() {
+      els.priorityOptions.classList.remove('open');
+      els.priorityTrigger.classList.remove('open');
+    }
+
+    function updatePrioritySelectUI(val) {
+      const icons = { high: '🔥', medium: '⚡', low: '🌿' };
+      const labels = { high: 'High', medium: 'Medium', low: 'Low' };
+      els.priorityTriggerIcon.textContent = icons[val];
+      els.priorityTriggerText.textContent = labels[val];
+      
+      document.querySelectorAll('.select-option').forEach(opt => {
+        opt.classList.toggle('active', opt.dataset.value === val);
+      });
+    }
+
+    function updatePrioritySelect(val) {
+      currentPriority = val;
+      updatePrioritySelectUI(val);
+    }
+
+    // Subtask Input
+    function initSubtaskInput() {
+      els.subtaskInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const text = els.subtaskInput.value.trim();
+          if (text) {
+            tempSubtasks.push({ text, done: false });
+            renderSubtaskChips();
+            els.subtaskInput.value = '';
+            playSound('add');
+          }
+        }
+      });
+    }
+
+    function renderSubtaskChips() {
+      els.subtaskChips.innerHTML = tempSubtasks.map((s, i) => `
+        <span class="subtask-chip">
+          ${escapeHtml(s.text)}
+          <button class="chip-remove" data-idx="${i}">×</button>
+        </span>
+      `).join('');
+      
+      els.subtaskChips.querySelectorAll('.chip-remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const idx = parseInt(btn.dataset.idx);
+          tempSubtasks.splice(idx, 1);
+          renderSubtaskChips();
+          playSound('delete');
+        });
+      });
+    }
+
+    // Calendar Logic
+    function initCalendar() {
+      renderCalendar();
+      els.prevMonth.addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1); renderCalendar('right'); });
+      els.nextMonth.addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1); renderCalendar('left'); });
+      els.prevYear.addEventListener('click', () => { currentCalendarDate.setFullYear(currentCalendarDate.getFullYear() - 1); renderCalendar('right'); });
+      els.nextYear.addEventListener('click', () => { currentCalendarDate.setFullYear(currentCalendarDate.getFullYear() + 1); renderCalendar('left'); });
+      els.backToToday.addEventListener('click', () => { currentCalendarDate = new Date(); selectedDate = new Date().toDateString(); renderCalendar(); showDayDetail(selectedDate, new Date().getDate()); });
+      els.dayDetailClose.addEventListener('click', () => {
+        els.dayDetailPanel.classList.remove('show');
+        selectedDate = null;
+        renderCalendar();
+      });
+    }
+
+    function renderCalendar(direction) {
+      const year = currentCalendarDate.getFullYear();
+      const month = currentCalendarDate.getMonth();
+      els.calendarTitle.textContent = new Date(year, month).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+      const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+      let html = '';
+
+      dayNames.forEach(d => {
+        html += `<div class="cal-day-header">${d}</div>`;
+      });
+
+      // Previous month days
+      for (let i = firstDay - 1; i >= 0; i--) {
+        const day = daysInPrevMonth - i;
+        html += `<div class="cal-day other-month"><span class="day-number">${day}</span></div>`;
+      }
+
+      // Current month days
+      const today = new Date();
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = new Date(year, month, day).toDateString();
+        const isToday = today.toDateString() === dateStr;
+        const isSelected = selectedDate === dateStr;
+
+        // Find tasks for this day
+        const dayTasks = tasks.filter(t => {
+          if (t.dateTime) {
+            const tDate = new Date(t.dateTime);
+            return tDate.toDateString() === dateStr;
+          }
+          return new Date(t.createdAt).toDateString() === dateStr;
+        });
+
+        let dotsHtml = '';
+        dayTasks.slice(0, 5).forEach((t, i) => {
+          const dotClass = t.done ? 'done' : t.priority;
+          dotsHtml += `<div class="task-dot ${dotClass}" style="animation-delay:${i * 0.05}s"></div>`;
+        });
+        if (dayTasks.length > 5) dotsHtml += `<div class="task-dot" style="background:var(--text-dim)"></div>`;
+
+        html += `
+          <div class="cal-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}" data-date="${dateStr}" data-day="${day}">
+            <span class="day-number">${day}</span>
+            <div class="day-tasks-preview">${dotsHtml}</div>
+          </div>
+        `;
+      }
+
+      // Next month days
+      const remainingCells = (7 - ((firstDay + daysInMonth) % 7)) % 7;
+      for (let day = 1; day <= remainingCells; day++) {
+        html += `<div class="cal-day other-month"><span class="day-number">${day}</span></div>`;
+      }
+
+      els.calendarGrid.innerHTML = html;
+
+      // Animation direction
+      if (direction) {
+        els.calendarGrid.className = 'calendar-grid slide-' + direction;
+        setTimeout(() => els.calendarGrid.className = 'calendar-grid', 400);
+      }
+
+      // Bind click events
+      document.querySelectorAll('.cal-day:not(.other-month)').forEach(dayEl => {
+        dayEl.addEventListener('click', () => {
+          const dateStr = dayEl.dataset.date;
+          selectedDate = dateStr;
+          showDayDetail(dateStr, parseInt(dayEl.dataset.day));
+          renderCalendar();
+        });
+      });
+    }
+
+    function showDayDetail(dateStr, dayNum) {
+      const date = new Date(dateStr);
+      const formatted = date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      els.dayDetailTitle.textContent = `📅 ${formatted}`;
+
+      const dayTasks = tasks.filter(t => {
+        if (t.dateTime) {
+          const tDate = new Date(t.dateTime);
+          return tDate.toDateString() === dateStr;
+        }
+        return new Date(t.createdAt).toDateString() === dateStr;
+      });
+
+      if (dayTasks.length === 0) {
+        els.dayDetailContent.innerHTML = '<div class="empty-state">✨ Tidak ada tugas di hari ini</div>';
+      } else {
+        els.dayDetailContent.innerHTML = dayTasks.map((t, i) => `
+          <div class="day-task-item ${t.priority} ${t.done ? 'done' : ''}" style="animation-delay:${i * 0.1}s">
+            <input type="checkbox" class="task-check" ${t.done ? 'checked' : ''} onchange="toggleTaskFromCalendar('${t.id}')">
+            <div>
+              <div style="font-weight:600; ${t.done ? 'text-decoration:line-through;opacity:0.6' : ''}">${escapeHtml(t.title)}</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                ${t.timeHint ? '🕒 ' + t.timeHint + ' · ' : ''}
+                <span class="priority-tag p-${t.priority}">${t.priority}</span>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      els.dayDetailPanel.classList.add('show');
+    }
+
+    function toggleTaskFromCalendar(id) {
+      const t = tasks.find(x => x.id === id);
+      if (t) {
+        t.done = !t.done;
+        if (t.done) { playSound('complete'); vibrate(); checkStreak(); }
+        save(); renderTasks(); updateStats(); renderCalendar();
+        if (selectedDate) showDayDetail(selectedDate, new Date(selectedDate).getDate());
+      }
+    }
+
+    // Smart Parser - Priority & Time dihapus dari judul
+    function smartParse(text) {
+      let priority = currentPriority;
+      let desc = els.descInput.value;
+      let timeHint = '';
+      let cleanedText = text;
+
+      // Parse priority and remove from text
+      const priorityPatterns = [
+        { regex: /\b(tinggi|high|penting|urgent)\b/gi, val: 'high' },
+        { regex: /\b(sedang|medium|biasa)\b/gi, val: 'medium' },
+        { regex: /\b(rendah|low|nanti)\b/gi, val: 'low' }
+      ];
+
+      for (const p of priorityPatterns) {
+        if (p.regex.test(cleanedText)) {
+          priority = p.val;
+          cleanedText = cleanedText.replace(p.regex, '').trim();
+          updatePrioritySelect(p.val);
+          break;
+        }
+      }
+
+      // Parse time and remove from text
+      const timeMatch = cleanedText.match(/(jam|pukul)\s*(\d{1,2})(?::(\d{2}))?\s*(pagi|siang|sore|malam)?/i);
+      if (timeMatch) {
+        let h = parseInt(timeMatch[2]);
+        const period = timeMatch[4]?.toLowerCase();
+        if (period === 'sore' || period === 'malam') h += 12;
+        if (h >= 24) h -= 24;
+        const m = timeMatch[3] || '00';
+        timeHint = `${String(h).padStart(2,'0')}:${m}`;
+        cleanedText = cleanedText.replace(timeMatch[0], '').trim();
+      }
+
+      // Clean up extra spaces
+      cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
+
+      if (!desc && /(beli|bayar|rapat|meeting|olahraga|belajar|kerja)/i.test(cleanedText)) {
+        const match = cleanedText.match(/(beli|bayar|rapat|meeting|olahraga|belajar|kerja)/i);
+        if (match) desc = match[0];
+      }
+
+      return { title: cleanedText || text, priority, desc, timeHint };
+    }
+
+    // Add Task
+    els.addBtn.addEventListener('click', addTask);
+    els.taskInput.addEventListener('keydown', e => { if(e.key==='Enter') addTask(); });
+
+    function addTask() {
+      const raw = els.taskInput.value.trim();
+      if (!raw) return;
+
+      const parsed = smartParse(raw);
+      const dateTimeVal = els.dateTimeInput.value;
+
+      const newTask = {
+        id: Date.now().toString(),
+        title: parsed.title || raw,
+        desc: parsed.desc || els.descInput.value.trim(),
+        priority: parsed.priority,
+        done: false,
+        createdAt: new Date().toISOString(),
+        dateTime: dateTimeVal ? new Date(dateTimeVal).toISOString() : null,
+        timeHint: parsed.timeHint,
+        subtasks: [...tempSubtasks],
+        pomodoro: { active: false, timeLeft: 1500 }
+      };
+
+      tasks.unshift(newTask);
+      save();
+      renderTasks();
+      updateStats();
+      updateSuggestions();
+      renderCalendar();
+      playSound('add');
+      vibrate();
+      
+      // Reset inputs
+      els.taskInput.value = '';
+      els.descInput.value = '';
+      tempSubtasks = [];
+      renderSubtaskChips();
+      updatePrioritySelect('medium');
+      setDefaultDateTime();
+      
+      // Auto sync to GitHub if enabled
+      if (settings.githubAutoSync && settings.githubToken) {
+        syncToGitHub();
+      }
+    }
+
+    // Render Tasks
+    function renderTasks() {
+      els.taskList.innerHTML = '';
+      let filtered = tasks.filter(t => {
+        if (currentFilter === 'pending') return !t.done;
+        if (currentFilter === 'done') return t.done;
+        if (currentFilter === 'high') return t.priority === 'high';
+        return true;
+      });
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        filtered = filtered.filter(t => t.title.toLowerCase().includes(q) || (t.desc && t.desc.toLowerCase().includes(q)));
+      }
+
+      filtered.forEach((t, index) => {
+        const el = document.createElement('div');
+        el.className = `task-item ${t.done ? 'task-done' : ''}`;
+        el.draggable = true;
+        el.dataset.id = t.id;
+        el.style.animationDelay = (index * 0.05) + 's';
+
+        const created = new Date(t.createdAt);
+        const timeStr = created.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+        const dateStr = created.toLocaleDateString('id-ID', { day:'numeric', month:'short' });
+        const taskDateTime = t.dateTime ? new Date(t.dateTime) : null;
+        const scheduledStr = taskDateTime ? taskDateTime.toLocaleDateString('id-ID', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) : '';
+
+        el.innerHTML = `
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check" ${t.done ? 'checked' : ''}>
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">${escapeHtml(t.title)}</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 ${scheduledStr || dateStr + ' ' + timeStr}${t.timeHint ? ' → ' + t.timeHint : ''}</span>
+              <span class="priority-tag p-${t.priority}">${getPriorityIcon(t.priority)} ${t.priority}</span>
+              ${t.desc ? `<span style="font-size:0.75rem; color:var(--text-dim)">📝 ${escapeHtml(t.desc)}</span>` : ''}
+            </div>
+            ${t.subtasks.length ? `<ul class="subtasks">${t.subtasks.map((s,i)=>`<li class="subtask ${s.done ? 'done' : ''}"><input type="checkbox" class="subtask-check" ${s.done?'checked':''} data-idx="${i}"><span>${escapeHtml(s.text)}</span></li>`).join('')}</ul>` : ''}
+            <div class="pomodoro-wrap" style="display:${t.pomodoro.active||t.pomodoro.timeLeft<1500?'flex':'none'}">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="${100 - (t.pomodoro.timeLeft/1500)*100}"/></svg>
+              <span class="pomo-time">${formatTime(t.pomodoro.timeLeft)}</span>
+              <button class="pomo-btn">${t.pomodoro.active ? '⏸' : '▶'}</button>
+              ${t.pomodoro.active ? '<button class="pomo-clear-btn" title="Clear Focus">✕</button>' : ''}
+            </div>
+          </div>
+        `;
+
+        const check = el.querySelector('.task-check');
+        check.addEventListener('change', () => toggleTask(t.id, check));
+
+        el.querySelector('.delete-btn').addEventListener('click', function() {
+          this.classList.add('poof');
+          setTimeout(() => { deleteTask(t.id); }, 300);
+        });
+
+        el.querySelector('.edit-btn').addEventListener('click', () => openEditModal(t.id));
+        el.querySelector('.subtask-btn').addEventListener('click', () => addSubtask(t.id));
+        el.querySelectorAll('.subtask-check').forEach(cb => {
+          cb.addEventListener('change', (e) => toggleSubtask(t.id, e.target.dataset.idx, e.target.checked));
+        });
+
+        el.querySelector('.focus-btn').addEventListener('click', () => enterFocusMode(t.id));
+        const pomoBtn = el.querySelector('.pomo-btn');
+        if(pomoBtn) pomoBtn.addEventListener('click', () => togglePomodoro(t.id, el));
+
+        const clearBtn = el.querySelector('.pomo-clear-btn');
+        if(clearBtn) clearBtn.addEventListener('click', () => clearPomodoro(t.id, el));
+
+        // Drag & Drop
+        el.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', t.id); el.classList.add('dragging'); });
+        el.addEventListener('dragend', () => el.classList.remove('dragging'));
+        el.addEventListener('dragover', e => e.preventDefault());
+        el.addEventListener('drop', e => {
+          e.preventDefault();
+          const draggedId = e.dataTransfer.getData('text/plain');
+          if (draggedId === t.id) return;
+          const fromIdx = tasks.findIndex(x => x.id === draggedId);
+          const toIdx = tasks.findIndex(x => x.id === t.id);
+          const [moved] = tasks.splice(fromIdx, 1);
+          tasks.splice(toIdx, 0, moved);
+          save(); renderTasks();
+        });
+
+        els.taskList.appendChild(el);
+      });
+
+      if (filtered.length === 0) {
+        els.taskList.innerHTML = '<div class="empty-state">📭 Tidak ada tugas</div>';
+      }
+    }
+
+    function getPriorityIcon(p) {
+      const icons = { high: '🔥', medium: '⚡', low: '🌿' };
+      return icons[p] || '⚡';
+    }
+
+    // Task Actions
+    function toggleTask(id, checkbox) {
+      const t = tasks.find(x => x.id === id);
+      if (!t) return;
+      t.done = checkbox.checked;
+      if (t.done) {
+        playSound('complete');
+        vibrate();
+        checkStreak();
+      }
+      save();
+      setTimeout(() => { renderTasks(); updateStats(); renderCalendar(); }, 50);
+      
+      if (settings.githubAutoSync && settings.githubToken) {
+        syncToGitHub();
+      }
+    }
+
+    function deleteTask(id) {
+      tasks = tasks.filter(x => x.id !== id);
+      save(); renderTasks(); updateStats(); updateSuggestions(); renderCalendar();
+      playSound('delete'); vibrate();
+      
+      if (settings.githubAutoSync && settings.githubToken) {
+        syncToGitHub();
+      }
+    }
+
+    function addSubtask(id) {
+      const text = prompt('Subtask baru:');
+      if (!text?.trim()) return;
+      const t = tasks.find(x => x.id === id);
+      t.subtasks.push({ text: text.trim(), done: false });
+      save(); renderTasks();
+      playSound('add');
+    }
+
+    function toggleSubtask(id, idx, done) {
+      const t = tasks.find(x => x.id === id);
+      t.subtasks[idx].done = done;
+      save(); renderTasks();
+      if (done) { playSound('complete'); vibrate(); }
+    }
+
+    // Edit Modal
+    function openEditModal(id) {
+      const t = tasks.find(x => x.id === id);
+      if (!t) return;
+      editingId = id;
+      els.editTitle.value = t.title;
+      els.editDesc.value = t.desc || '';
+      els.editPriority.value = t.priority;
+      if (t.dateTime) {
+        const d = new Date(t.dateTime);
+        d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+        els.editDateTime.value = d.toISOString().slice(0, 16);
+      } else {
+        els.editDateTime.value = '';
+      }
+      els.editModal.classList.add('show');
+    }
+
+    els.editCancel.addEventListener('click', () => {
+      els.editModal.classList.remove('show');
+      editingId = null;
+    });
+
+    els.editSave.addEventListener('click', () => {
+      if (!editingId) return;
+      const t = tasks.find(x => x.id === editingId);
+      t.title = els.editTitle.value.trim() || t.title;
+      t.desc = els.editDesc.value.trim();
+      t.priority = els.editPriority.value;
+      if (els.editDateTime.value) {
+        t.dateTime = new Date(els.editDateTime.value).toISOString();
+      }
+      save(); renderTasks(); updateStats(); renderCalendar();
+      els.editModal.classList.remove('show');
+      editingId = null;
+      playSound('add');
+      
+      if (settings.githubAutoSync && settings.githubToken) {
+        syncToGitHub();
       }
     });
 
-    // GitHub Load Button
-    document.getElementById('githubLoadBtn')?.addEventListener('click', async () => {
-      const btn = document.getElementById('githubLoadBtn');
-      btn.classList.add('loading');
-      const icon = btn.querySelector('.github-btn-icon');
-      icon.classList.add('spin');
+    els.editModal.addEventListener('click', (e) => {
+      if (e.target === els.editModal) {
+        els.editModal.classList.remove('show');
+        editingId = null;
+      }
+    });
 
+    // Focus Mode
+    function enterFocusMode(id) {
+      const t = tasks.find(x => x.id === id);
+      if (!t) return;
+      focusTaskId = id;
+      focusTimeLeft = t.pomodoro.timeLeft;
+      els.focusTitle.textContent = `🎯 ${t.title}`;
+      els.focusOverlay.classList.add('active');
+      startFocusTimer();
+    }
+
+    function startFocusTimer() {
+      if (focusInterval) clearInterval(focusInterval);
+      els.focusPause.textContent = '⏸ Pause';
+      focusInterval = setInterval(() => {
+        if (focusTimeLeft > 0) {
+          focusTimeLeft--;
+          els.focusTimer.textContent = formatTime(focusTimeLeft);
+          // Update task pomodoro too
+          const t = tasks.find(x => x.id === focusTaskId);
+          if (t) { t.pomodoro.timeLeft = focusTimeLeft; save(); }
+        } else {
+          clearInterval(focusInterval);
+          playSound('complete');
+          alert('⏰ Fokus selesai!');
+          exitFocusMode();
+        }
+      }, 1000);
+    }
+
+    els.focusPause.addEventListener('click', () => {
+      if (focusInterval) {
+        clearInterval(focusInterval);
+        focusInterval = null;
+        els.focusPause.textContent = '▶ Resume';
+      } else {
+        startFocusTimer();
+      }
+    });
+
+    els.focusClear.addEventListener('click', () => {
+      if (confirm('Yakin ingin menghentikan focus mode?')) {
+        exitFocusMode();
+      }
+    });
+
+    function exitFocusMode() {
+      if (focusInterval) clearInterval(focusInterval);
+      focusInterval = null;
+      focusTaskId = null;
+      focusTimeLeft = 1500;
+      els.focusOverlay.classList.remove('active');
+      renderTasks();
+    }
+
+    // Pomodoro
+    const pomoIntervals = {};
+    function togglePomodoro(id, el) {
+      const t = tasks.find(x => x.id === id);
+      if (!t) return;
+      t.pomodoro.active = !t.pomodoro.active;
+      const wrap = el.querySelector('.pomodoro-wrap');
+      wrap.style.display = 'flex';
+      const btn = el.querySelector('.pomo-btn');
+      btn.textContent = t.pomodoro.active ? '⏸' : '▶';
+
+      if (t.pomodoro.active && !pomoIntervals[id]) {
+        pomoIntervals[id] = setInterval(() => {
+          if (t.pomodoro.timeLeft > 0) {
+            t.pomodoro.timeLeft--;
+            const circle = el.querySelector('.pomo-progress');
+            const timeSpan = el.querySelector('.pomo-time');
+            if(circle) circle.style.strokeDashoffset = 100 - (t.pomodoro.timeLeft/1500)*100;
+            if(timeSpan) timeSpan.textContent = formatTime(t.pomodoro.timeLeft);
+          } else {
+            clearInterval(pomoIntervals[id]);
+            delete pomoIntervals[id];
+            t.pomodoro.active = false;
+            btn.textContent = '▶';
+            playSound('complete');
+            alert(`⏰ Fokus selesai untuk: ${t.title}`);
+          }
+        }, 1000);
+      } else if (!t.pomodoro.active && pomoIntervals[id]) {
+        clearInterval(pomoIntervals[id]);
+        delete pomoIntervals[id];
+      }
+      save();
+      renderTasks();
+    }
+
+    function clearPomodoro(id, el) {
+      const t = tasks.find(x => x.id === id);
+      if (!t) return;
+      if (pomoIntervals[id]) {
+        clearInterval(pomoIntervals[id]);
+        delete pomoIntervals[id];
+      }
+      t.pomodoro.active = false;
+      t.pomodoro.timeLeft = 1500;
+      save(); renderTasks();
+      playSound('delete');
+    }
+
+    // Stats & Progress - Dual Progress (Today & All)
+    function updateStats() {
+      const total = tasks.length;
+      const done = tasks.filter(t => t.done).length;
+      const pending = total - done;
+      const high = tasks.filter(t => t.priority === 'high' && !t.done).length;
+      const pctAll = total ? Math.round((done/total)*100) : 0;
+
+      // Today's stats
+      const todayStr = new Date().toDateString();
+      const todayTasks = tasks.filter(t => {
+        if (t.dateTime) return new Date(t.dateTime).toDateString() === todayStr;
+        return new Date(t.createdAt).toDateString() === todayStr;
+      });
+      const todayTotal = todayTasks.length;
+      const todayDone = todayTasks.filter(t => t.done).length;
+      const todayPct = todayTotal ? Math.round((todayDone/todayTotal)*100) : 0;
+
+      els.progressFill.style.width = `${todayPct}%`;
+      els.progressLabel.textContent = `${todayPct}% Selesai Hari Ini`;
+      els.progressRatio.textContent = `${todayDone}/${todayTotal}`;
+      els.bentoProgress.textContent = `${todayPct}%`;
+      els.bentoProgressAll.textContent = `${pctAll}%`;
+      els.bentoTotal.textContent = total;
+      els.bentoDone.textContent = done;
+      els.bentoPending.textContent = pending;
+      els.bentoHigh.textContent = high;
+
+      if (todayPct === 100 && todayTotal > 0) {
+        els.progressFill.style.background = 'linear-gradient(90deg, var(--neon-green), #00d4ff)';
+      } else {
+        els.progressFill.style.background = 'linear-gradient(90deg, var(--neon-purple), var(--neon-coral))';
+      }
+    }
+
+    // Streak Logic
+    function checkStreak() {
+      const today = new Date().toDateString();
+      const last = localStorage.getItem('tf_lastComplete');
+      let streak = parseInt(localStorage.getItem('tf_streak') || '0');
+
+      const allDone = tasks.length > 0 && tasks.every(t => t.done);
+      if (allDone) {
+        if (last !== today) {
+          const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+          if (last === yesterday.toDateString()) streak++;
+          else if (last !== today) streak = 1;
+          localStorage.setItem('tf_streak', streak);
+          localStorage.setItem('tf_lastComplete', today);
+        }
+      }
+      els.streakCount.textContent = streak;
+      els.streakFire.classList.toggle('active', streak >= 3);
+    }
+
+    // Search & Filter
+    els.searchInput.addEventListener('input', e => { searchQuery = e.target.value; renderTasks(); });
+    els.filters.forEach(f => {
+      f.addEventListener('click', () => {
+        els.filters.forEach(x => x.classList.remove('active'));
+        f.classList.add('active');
+        currentFilter = f.dataset.filter;
+        renderTasks();
+      });
+    });
+
+    // Autocomplete Suggestions
+    function updateSuggestions() {
+      els.suggestions.innerHTML = '';
+      const titles = [...new Set(tasks.map(t => t.title))];
+      titles.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t;
+        els.suggestions.appendChild(opt);
+      });
+    }
+
+    // Sound & Haptic
+    function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    function playSound(type) {
+      if (!settings.sound) return;
+      initAudio();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      if (type === 'add') { osc.frequency.value = 600; gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.1); osc.start(); osc.stop(audioCtx.currentTime+0.1); }
+      else if (type === 'complete') { osc.type='sine'; osc.frequency.setValueAtTime(500, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(1000, audioCtx.currentTime+0.2); gain.gain.setValueAtTime(0.15, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.4); osc.start(); osc.stop(audioCtx.currentTime+0.4); }
+      else if (type === 'delete') { osc.frequency.value = 300; gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.15); osc.start(); osc.stop(audioCtx.currentTime+0.15); }
+    }
+    function vibrate() { if (settings.haptic && navigator.vibrate) navigator.vibrate(40); }
+
+    // GitHub Gist Sync
+    function showGithubStatus(msg, type) {
+      els.githubStatus.textContent = msg;
+      els.githubStatus.className = 'github-status ' + (type || '');
+      if (type === 'success' || type === 'error') {
+        setTimeout(() => { els.githubStatus.textContent = ''; els.githubStatus.className = 'github-status'; }, 5000);
+      }
+    }
+
+    async function syncToGitHub() {
+      const token = els.githubToken.value.trim();
+      if (!token) { showGithubStatus('❌ Token diperlukan', 'error'); return; }
+      
+      showGithubStatus('☁️ Menyinkronkan...', 'info');
       try {
-        // Simulate API call - replace with actual GitHub API
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        console.log('Tasks loaded from GitHub');
-        // Add toast notification here
-      } catch (error) {
-        console.error('Failed to load from GitHub:', error);
-      } finally {
-        btn.classList.remove('loading');
-        icon.classList.remove('spin');
+        const data = { 
+          tasks, 
+          settings: {...settings, githubToken: undefined, githubGistId: undefined}, 
+          lastSync: new Date().toISOString() 
+        };
+        const content = JSON.stringify(data, null, 2);
+        
+        const gistId = els.githubGistId.value.trim();
+        
+        if (gistId) {
+          const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+            method: 'PATCH',
+            headers: { 
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+              'Accept': 'application/vnd.github.v3+json'
+            },
+            body: JSON.stringify({
+              files: {
+                'taskflow-data.json': { content }
+              }
+            })
+          });
+          if (!res.ok) throw new Error('Gagal update Gist');
+          showGithubStatus('✅ Tersimpan ke GitHub', 'success');
+        } else {
+          const res = await fetch('https://api.github.com/gists', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+              'Accept': 'application/vnd.github.v3+json'
+            },
+            body: JSON.stringify({
+              description: 'TaskFlow Pro Data Backup',
+              public: false,
+              files: { 'taskflow-data.json': { content } }
+            })
+          });
+          if (!res.ok) throw new Error('Gagal membuat Gist');
+          const json = await res.json();
+          els.githubGistId.value = json.id;
+          settings.githubGistId = json.id;
+          saveSettings();
+          showGithubStatus(`✅ Gist dibuat: ${json.id}`, 'success');
+        }
+      } catch (err) {
+        showGithubStatus('❌ Error: ' + err.message, 'error');
       }
-    });
+    }
 
-    // GitHub Sync Button
-    document.getElementById('githubSyncBtn')?.addEventListener('click', async () => {
-      const btn = document.getElementById('githubSyncBtn');
-      btn.classList.add('loading');
-      const icon = btn.querySelector('.github-btn-icon');
-      icon.classList.add('spin');
-
+    async function loadFromGitHub() {
+      const token = els.githubToken.value.trim();
+      const gistId = els.githubGistId.value.trim();
+      
+      if (!token) { showGithubStatus('❌ Token diperlukan', 'error'); return; }
+      if (!gistId) { showGithubStatus('❌ Gist ID diperlukan', 'error'); return; }
+      
+      showGithubStatus('📥 Memuat...', 'info');
       try {
-        // Simulate API call - replace with actual GitHub API
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        console.log('Tasks synced to GitHub');
-        // Add toast notification here
-      } catch (error) {
-        console.error('Failed to sync to GitHub:', error);
-      } finally {
-        btn.classList.remove('loading');
-        icon.classList.remove('spin');
+        const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+        if (!res.ok) throw new Error('Gist tidak ditemukan');
+        const json = await res.json();
+        const file = json.files['taskflow-data.json'];
+        if (!file) throw new Error('File taskflow-data.json tidak ditemukan');
+        
+        const data = JSON.parse(file.content);
+        if (data.tasks) {
+          tasks = data.tasks;
+          save();
+          renderTasks();
+          updateStats();
+          renderCalendar();
+          showGithubStatus(`✅ Data dimuat (${tasks.length} tugas)`, 'success');
+        }
+      } catch (err) {
+        showGithubStatus('❌ Error: ' + err.message, 'error');
       }
+    }
+
+    els.syncToGithub.addEventListener('click', syncToGitHub);
+    els.loadFromGithub.addEventListener('click', loadFromGitHub);
+
+    // Settings
+    function loadSettings() {
+      els.soundToggle.classList.toggle('on', settings.sound);
+      els.hapticToggle.classList.toggle('on', settings.haptic);
+      els.themeToggle.classList.toggle('on', settings.dayMode);
+      els.githubAutoSync.classList.toggle('on', settings.githubAutoSync);
+      els.githubToken.value = settings.githubToken || '';
+      els.githubGistId.value = settings.githubGistId || '';
+      
+      if (settings.dayMode) {
+        document.body.classList.add('day-mode');
+        els.themeIcon.textContent = '☀️';
+        els.themeLabel.textContent = 'Day Mode';
+      }
+    }
+
+    els.settingsToggle.addEventListener('click', () => els.settingsPanel.classList.toggle('show'));
+
+    els.soundToggle.addEventListener('click', () => { 
+      settings.sound = !settings.sound; 
+      els.soundToggle.classList.toggle('on'); 
+      saveSettings(); 
     });
 
-    // Settings Toggle
-    document.getElementById('settingsToggle')?.addEventListener('click', () => {
-      const panel = document.getElementById('settingsPanel');
-      panel?.classList.toggle('show');
+    els.hapticToggle.addEventListener('click', () => { 
+      settings.haptic = !settings.haptic; 
+      els.hapticToggle.classList.toggle('on'); 
+      saveSettings(); 
     });
 
-    console.log('TaskFlow v1.0 initialized with ESC key handler and GitHub buttons');
+    els.themeToggle.addEventListener('click', () => { 
+      settings.dayMode = !settings.dayMode; 
+      els.themeToggle.classList.toggle('on');
+      document.body.classList.toggle('day-mode');
+      els.themeIcon.classList.add('spin');
+      setTimeout(() => els.themeIcon.classList.remove('spin'), 500);
+      if (settings.dayMode) {
+        els.themeIcon.textContent = '☀️';
+        els.themeLabel.textContent = 'Day Mode';
+      } else {
+        els.themeIcon.textContent = '🌙';
+        els.themeLabel.textContent = 'Night Mode';
+      }
+      saveSettings(); 
+    });
+
+    els.githubAutoSync.addEventListener('click', () => {
+      settings.githubAutoSync = !settings.githubAutoSync;
+      els.githubAutoSync.classList.toggle('on');
+      saveSettings();
+    });
+
+    els.githubToken.addEventListener('change', () => {
+      settings.githubToken = els.githubToken.value.trim();
+      saveSettings();
+    });
+
+    els.githubGistId.addEventListener('change', () => {
+      settings.githubGistId = els.githubGistId.value.trim();
+      saveSettings();
+    });
+
+    els.clearData.addEventListener('click', () => { 
+      if(confirm('Hapus semua data?')) { 
+        tasks=[]; save(); renderTasks(); updateStats(); renderCalendar();
+        localStorage.removeItem('tf_streak'); localStorage.removeItem('tf_lastComplete'); 
+      } 
+    });
+
+    function save() { localStorage.setItem('tf_tasks', JSON.stringify(tasks)); }
+    function saveSettings() { localStorage.setItem('tf_settings', JSON.stringify(settings)); }
+    function escapeHtml(str) { 
+      if (!str) return ''; 
+      const d=document.createElement('div'); d.textContent=str; return d.innerHTML; 
+    }
+    function formatTime(s) { const m=Math.floor(s/60); const sec=s%60; return `${m}:${String(sec).padStart(2,'0')}`; }
   </script>
-</body>
-</html>
+
+<div class="cursor-trail" style="background: var(--neon-blue); left: 1125.87px; top: 550.788px;"></div></body></html>
