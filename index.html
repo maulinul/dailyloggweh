@@ -2295,6 +2295,49 @@
       const d=document.createElement('div'); d.textContent=str; return d.innerHTML; 
     }
     function formatTime(s) { const m=Math.floor(s/60); const sec=s%60; return `${m}:${String(sec).padStart(2,'0')}`; }
+    // ESC Key Handler
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+
+  // 1. Jika sedang fokus di input task → clear text
+  if (document.activeElement === els.taskInput) {
+    els.taskInput.value = '';
+    els.taskInput.blur();
+    e.preventDefault();
+    return;
+  }
+
+  // 2. Jika Focus Overlay aktif → keluar dari focus mode
+  if (els.focusOverlay.classList.contains('active')) {
+    exitFocusMode();
+    e.preventDefault();
+    return;
+  }
+
+  // 3. Jika Edit Modal terbuka → tutup
+  if (els.editModal.classList.contains('show')) {
+    els.editModal.classList.remove('show');
+    editingId = null;
+    e.preventDefault();
+    return;
+  }
+
+  // 4. Jika Day Detail Panel terbuka → tutup
+  if (els.dayDetailPanel.classList.contains('show')) {
+    els.dayDetailPanel.classList.remove('show');
+    selectedDate = null;
+    renderCalendar();
+    e.preventDefault();
+    return;
+  }
+
+  // 5. Jika Settings Panel terbuka → tutup
+  if (els.settingsPanel.classList.contains('show')) {
+    els.settingsPanel.classList.remove('show');
+    e.preventDefault();
+    return;
+  }
+});
   </script>
 
 <div class="cursor-trail" style="background: var(--neon-blue); left: 1125.87px; top: 550.788px;"></div></body></html>
