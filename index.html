@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
+<!-- saved from url=(0040)https://maulinul.github.io/dailyloggweh/ -->
+<html lang="id"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TaskFlow | Daily Tracker</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230a0a12'/%3E%3Cpath d='M28 52 L42 66 L72 34' stroke='%23b026ff' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='50' cy='50' r='36' stroke='%23ff4d6d' stroke-width='5' fill='none' opacity='0.4'/%3E%3Ccircle cx='50' cy='50' r='8' fill='%2300f5a0'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com/">
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+  <link href="./TaskFlow _ Daily Tracker_files/css2" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=&#39;http://www.w3.org/2000/svg&#39; viewBox=&#39;0 0 100 100&#39;%3E%3Crect width=&#39;100&#39; height=&#39;100&#39; rx=&#39;22&#39; fill=&#39;%230a0a12&#39;/%3E%3Cpath d=&#39;M28 52 L42 66 L72 34&#39; stroke=&#39;%23b026ff&#39; stroke-width=&#39;10&#39; fill=&#39;none&#39; stroke-linecap=&#39;round&#39; stroke-linejoin=&#39;round&#39;/%3E%3Ccircle cx=&#39;50&#39; cy=&#39;50&#39; r=&#39;36&#39; stroke=&#39;%23ff4d6d&#39; stroke-width=&#39;5&#39; fill=&#39;none&#39; opacity=&#39;0.4&#39;/%3E%3Ccircle cx=&#39;50&#39; cy=&#39;50&#39; r=&#39;8&#39; fill=&#39;%2300f5a0&#39;/%3E%3C/svg%3E">
   <style>
     :root {
       --bg: #0a0a12;
@@ -279,6 +279,36 @@
       transition: all 0.2s;
     }
     .chip-remove:hover { background: rgba(255,77,109,0.2); transform: scale(1.2); }
+
+    /* GitHub Quick Sync Buttons - di samping input task */
+    .github-sync-group {
+     display: flex;
+     gap: 0.4rem;
+     align-items: center;
+    }
+    .github-sync-btn {
+     background: rgba(255,255,255,0.05);
+     border: 1px solid var(--border);
+     border-radius: 10px;
+     color: var(--text);
+     width: 40px;
+     height: 40px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     cursor: none;
+     transition: all 0.3s;
+     font-size: 1rem;
+     flex-shrink: 0;
+    }
+    .github-sync-btn:hover {
+     background: var(--neon-purple);
+     border-color: var(--neon-purple);
+     transform: scale(1.08);
+     box-shadow: 0 0 12px rgba(176,38,255,0.3);
+     }
+    .github-sync-btn:active { transform: scale(0.95); }
+
 
     /* Calendar Styles */
     .calendar-container {
@@ -667,17 +697,17 @@
     }
     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
   </style>
-<base target="_blank">
+<!--<base target="_blank">--><base href="." target="_blank">
 </head>
-<body>
+<body class="">
   <!-- Custom Cursor -->
-  <div class="cursor-dot" id="cursorDot"></div>
-  <div class="cursor-outline" id="cursorOutline"></div>
+  <div class="cursor-dot" id="cursorDot" style="display: block; left: 1134px; top: 560px;"></div>
+  <div class="cursor-outline" id="cursorOutline" style="display: block; left: 1134px; top: 560px;"></div>
 
   <!-- Focus Mode Overlay -->
   <div class="focus-overlay" id="focusOverlay">
-    <div class="focus-title" id="focusTitle">Fokus Mode</div>
-    <div class="focus-timer" id="focusTimer">25:00</div>
+    <div class="focus-title" id="focusTitle">🎯 SPM DONE</div>
+    <div class="focus-timer" id="focusTimer">24:58</div>
     <div class="focus-controls">
       <button class="focus-btn-large" id="focusPause">⏸ Pause</button>
       <button class="focus-btn-large focus-clear" id="focusClear">✕ Clear Focus</button>
@@ -709,33 +739,33 @@
     <!-- KOLOM 1: Clock & Bento Stats -->
     <div class="column col-left">
       <div class="glass">
-        <div class="clock kinetic" id="clock">00:00<span class="seconds">:00</span></div>
-        <div style="margin-top:0.5rem; color:var(--text-dim); font-size:0.9rem;" id="dateDisplay">Senin, 1 Jan 2026</div>
+        <div class="clock kinetic" id="clock" style="font-variation-settings: &quot;wght&quot; 529;">18:35<span class="seconds">:43</span></div>
+        <div style="margin-top:0.5rem; color:var(--text-dim); font-size:0.9rem;" id="dateDisplay">Rabu, 6 Mei 2026</div>
       </div>
       <div class="bento">
         <div class="bento-card bento-progress">
           <div class="bento-title">Progress Hari Ini</div>
-          <div class="bento-value" id="bentoProgress">0%</div>
+          <div class="bento-value" id="bentoProgress">33%</div>
         </div>
         <div class="bento-card bento-progress">
           <div class="bento-title">Progress Semua</div>
-          <div class="bento-value" id="bentoProgressAll">0%</div>
+          <div class="bento-value" id="bentoProgressAll">30%</div>
         </div>
         <div class="bento-card">
           <div class="bento-title">Total</div>
-          <div class="bento-value" id="bentoTotal">0</div>
+          <div class="bento-value" id="bentoTotal">10</div>
         </div>
         <div class="bento-card">
           <div class="bento-title">Selesai</div>
-          <div class="bento-value" id="bentoDone" style="color:var(--neon-green)">0</div>
+          <div class="bento-value" id="bentoDone" style="color:var(--neon-green)">3</div>
         </div>
         <div class="bento-card">
           <div class="bento-title">Pending</div>
-          <div class="bento-value" id="bentoPending" style="color:var(--neon-yellow)">0</div>
+          <div class="bento-value" id="bentoPending" style="color:var(--neon-yellow)">7</div>
         </div>
         <div class="bento-card bento-high">
           <div class="bento-title">High Priority</div>
-          <div class="bento-value" id="bentoHigh">0</div>
+          <div class="bento-value" id="bentoHigh">4</div>
         </div>
         <div class="bento-card">
           <div class="bento-title">Streak 🔥</div>
@@ -751,12 +781,20 @@
     <div class="column col-center">
       <div class="glass">
         <div class="progress-container">
-          <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-          <div class="progress-text"><span id="progressLabel">0% Selesai Hari Ini</span><span id="progressRatio">0/0</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 33%; background: linear-gradient(90deg, var(--neon-purple), var(--neon-coral));"></div></div>
+          <div class="progress-text"><span id="progressLabel">33% Selesai Hari Ini</span><span id="progressRatio">3/9</span></div>
         </div>
         <div class="input-group">
-          <input type="text" class="task-input" id="taskInput" placeholder="Ketik tugas... (cth: Beli susu jam 7 malam high)" autocomplete="off" list="taskSuggestions">
-          <datalist id="taskSuggestions"></datalist>
+           <div style="display:flex; gap:0.5rem; align-items:center;">
+             <input type="text" class="task-input" id="taskInput" placeholder="Ketik tugas... (cth: Beli susu jam 7 malam high)" autocomplete="off" list="taskSuggestions"style="flex:1;"> 
+             <div class="github-sync-group">
+               <button class="github-sync-btn" id="quickSyncBtn" title="Save ke GitHub">☁️
+          </button>
+                <button class="github-sync-btn" id="quickLoadBtn" title="Load dari GitHub">📥
+          </button>
+            </div>
+          </div>
+          <datalist id="taskSuggestions"><option value="surat untuk bumigas tgl 7"></option><option value="rekap harian penjaga purwosari med"></option><option value="opnaman seluruh mandor"></option><option value="kerja tambah tohir"></option><option value="KPI besok"></option><option value="hitung kebut besi gunungsari dan pagar dsv"></option><option value="opnaman pak eko"></option><option value="SPM DONE"></option><option value="meeting mandor"></option><option value="ambil uang"></option></datalist>
           <input type="text" class="task-input" id="descInput" placeholder="Deskripsi / Kategori (opsional)">
           
           <!-- Subtask Input -->
@@ -771,7 +809,7 @@
             <!-- Custom Priority Select -->
             <div class="custom-select" id="priorityCustomSelect">
               <div class="select-trigger" id="priorityTrigger">
-                <span class="select-icon" id="priorityTriggerIcon">⚡</span>
+                <span class="select-icon" id="priorityTriggerIcon" style="animation: 0.5s ease 0s 1 normal none running pulseFire;">⚡</span>
                 <span class="select-text" id="priorityTriggerText">Medium</span>
                 <span class="select-arrow">▼</span>
               </div>
@@ -784,7 +822,7 @@
 
             <button class="btn" id="addBtn">Tambah</button>
           </div>
-          <div style="font-size:0.75rem; color:var(--text-dim); margin-top:0.2rem;">💡 Smart Parse aktif: ketik waktu/priority otomatis terdeteksi & dihapus dari judul</div>
+          <div style="font-size:0.75rem; color:var(--text-dim); margin-top:0.2rem;">💡 Smart Parse aktif: ketik waktu/priority otomatis terdeteksi &amp; dihapus dari judul</div>
         </div>
       </div>
 
@@ -802,17 +840,269 @@
             <button class="cal-nav-btn" id="nextYear">»</button>
           </div>
         </div>
-        <div class="calendar-grid" id="calendarGrid">
-          <!-- Generated by JS -->
-        </div>
+        <div class="calendar-grid" id="calendarGrid"><div class="cal-day-header">Min</div><div class="cal-day-header">Sen</div><div class="cal-day-header">Sel</div><div class="cal-day-header">Rab</div><div class="cal-day-header">Kam</div><div class="cal-day-header">Jum</div><div class="cal-day-header">Sab</div><div class="cal-day other-month" style="--mx: 521.3781652137817%; --my: 2.65625%;"><span class="day-number">26</span></div><div class="cal-day other-month" style="--mx: 416.02158348033623%; --my: 2.65625%;"><span class="day-number">27</span></div><div class="cal-day other-month" style="--mx: 310.7409713574097%; --my: 2.65625%;"><span class="day-number">28</span></div><div class="cal-day other-month" style="--mx: 205.4062467572896%; --my: 2.65625%;"><span class="day-number">29</span></div><div class="cal-day other-month" style="--mx: 100.10377750103778%; --my: 2.65625%;"><span class="day-number">30</span></div>
+          <div class="cal-day  " data-date="Fri May 01 2026" data-day="1" style="--mx: -5.209089965756979%; --my: 2.65625%;">
+            <span class="day-number">1</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sat May 02 2026" data-day="2" style="--mx: -110.53341635533415%; --my: 2.65625%;">
+            <span class="day-number">2</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sun May 03 2026" data-day="3" style="--mx: 521.3781652137817%; --my: -107.34375%;">
+            <span class="day-number">3</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Mon May 04 2026" data-day="4" style="--mx: 416.02158348033623%; --my: -107.34375%;">
+            <span class="day-number">4</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Tue May 05 2026" data-day="5" style="--mx: 310.7409713574097%; --my: -107.34375%;">
+            <span class="day-number">5</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day today " data-date="Wed May 06 2026" data-day="6" style="--mx: 205.4062467572896%; --my: -107.34375%;">
+            <span class="day-number">6</span>
+            <div class="day-tasks-preview"><div class="task-dot medium" style="animation-delay:0s"></div><div class="task-dot done" style="animation-delay:0.05s"></div><div class="task-dot high" style="animation-delay:0.1s"></div><div class="task-dot high" style="animation-delay:0.15000000000000002s"></div><div class="task-dot medium" style="animation-delay:0.2s"></div><div class="task-dot" style="background:var(--text-dim)"></div></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Thu May 07 2026" data-day="7" style="--mx: 100.10377750103778%; --my: -107.34375%;">
+            <span class="day-number">7</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Fri May 08 2026" data-day="8" style="--mx: -5.209089965756979%; --my: -107.34375%;">
+            <span class="day-number">8</span>
+            <div class="day-tasks-preview"><div class="task-dot high" style="animation-delay:0s"></div></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sat May 09 2026" data-day="9" style="--mx: -107.38572232520134%; --my: -99.35666233336875%;">
+            <span class="day-number">9</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sun May 10 2026" data-day="10" style="--mx: 521.3781652137817%; --my: -217.34375%;">
+            <span class="day-number">10</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Mon May 11 2026" data-day="11" style="--mx: 416.02158348033623%; --my: -217.34375%;">
+            <span class="day-number">11</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Tue May 12 2026" data-day="12" style="--mx: 310.7409713574097%; --my: -217.34375%;">
+            <span class="day-number">12</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Wed May 13 2026" data-day="13" style="--mx: 205.4062467572896%; --my: -217.34375%;">
+            <span class="day-number">13</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Thu May 14 2026" data-day="14" style="--mx: 100.10377750103778%; --my: -217.34375%;">
+            <span class="day-number">14</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Fri May 15 2026" data-day="15" style="--mx: -5.209089965756979%; --my: -217.34375%;">
+            <span class="day-number">15</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sat May 16 2026" data-day="16" style="--mx: -110.53341635533415%; --my: -217.34375%;">
+            <span class="day-number">16</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sun May 17 2026" data-day="17" style="--mx: 521.3781652137817%; --my: -327.34375%;">
+            <span class="day-number">17</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Mon May 18 2026" data-day="18" style="--mx: 416.02158348033623%; --my: -327.34375%;">
+            <span class="day-number">18</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Tue May 19 2026" data-day="19" style="--mx: 310.7409713574097%; --my: -327.34375%;">
+            <span class="day-number">19</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Wed May 20 2026" data-day="20" style="--mx: 205.4062467572896%; --my: -327.34375%;">
+            <span class="day-number">20</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Thu May 21 2026" data-day="21" style="--mx: 100.10377750103778%; --my: -327.34375%;">
+            <span class="day-number">21</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Fri May 22 2026" data-day="22" style="--mx: -5.209089965756979%; --my: -327.34375%;">
+            <span class="day-number">22</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sat May 23 2026" data-day="23" style="--mx: -110.53341635533415%; --my: -327.34375%;">
+            <span class="day-number">23</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sun May 24 2026" data-day="24" style="--mx: 521.3781652137817%; --my: -437.34374999999994%;">
+            <span class="day-number">24</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Mon May 25 2026" data-day="25" style="--mx: 416.02158348033623%; --my: -437.34374999999994%;">
+            <span class="day-number">25</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Tue May 26 2026" data-day="26" style="--mx: 310.7409713574097%; --my: -437.34374999999994%;">
+            <span class="day-number">26</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Wed May 27 2026" data-day="27" style="--mx: 205.4062467572896%; --my: -437.34374999999994%;">
+            <span class="day-number">27</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Thu May 28 2026" data-day="28" style="--mx: 100.10377750103778%; --my: -437.34374999999994%;">
+            <span class="day-number">28</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Fri May 29 2026" data-day="29" style="--mx: -5.209089965756979%; --my: -437.34374999999994%;">
+            <span class="day-number">29</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sat May 30 2026" data-day="30" style="--mx: -110.53341635533415%; --my: -437.34374999999994%;">
+            <span class="day-number">30</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sun May 31 2026" data-day="31" style="--mx: 521.3781652137817%; --my: -547.34375%;">
+            <span class="day-number">31</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        <div class="cal-day other-month" style="--mx: 416.02158348033623%; --my: -547.34375%;"><span class="day-number">1</span></div><div class="cal-day other-month" style="--mx: 310.7409713574097%; --my: -547.34375%;"><span class="day-number">2</span></div><div class="cal-day other-month" style="--mx: 205.4062467572896%; --my: -547.34375%;"><span class="day-number">3</span></div><div class="cal-day other-month" style="--mx: 100.10377750103778%; --my: -547.34375%;"><span class="day-number">4</span></div><div class="cal-day other-month" style="--mx: -5.209089965756979%; --my: -547.34375%;"><span class="day-number">5</span></div><div class="cal-day other-month" style="--mx: -110.53341635533415%; --my: -547.34375%;"><span class="day-number">6</span></div></div>
 
         <!-- Day Detail Panel -->
         <div class="day-detail-panel" id="dayDetailPanel">
           <div class="day-detail-header">
-            <div class="day-detail-title" id="dayDetailTitle">Tugas Hari Ini</div>
+            <div class="day-detail-title" id="dayDetailTitle">📅 Rabu, 6 Mei 2026</div>
             <button class="day-detail-close" id="dayDetailClose">×</button>
           </div>
-          <div id="dayDetailContent"></div>
+          <div id="dayDetailContent">
+          <div class="day-task-item medium " style="animation-delay:0s">
+            <input type="checkbox" class="task-check" onchange="toggleTaskFromCalendar(&#39;1778061006829&#39;)">
+            <div>
+              <div style="font-weight:600; ">surat untuk bumigas tgl 7</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                🕒 08:00 · 
+                <span class="priority-tag p-medium">medium</span>
+              </div>
+            </div>
+          </div>
+        
+          <div class="day-task-item medium done" style="animation-delay:0.1s">
+            <input type="checkbox" class="task-check" checked="" onchange="toggleTaskFromCalendar(&#39;1778060183518&#39;)">
+            <div>
+              <div style="font-weight:600; text-decoration:line-through;opacity:0.6">rekap harian penjaga purwosari med</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                
+                <span class="priority-tag p-medium">medium</span>
+              </div>
+            </div>
+          </div>
+        
+          <div class="day-task-item high " style="animation-delay:0.2s">
+            <input type="checkbox" class="task-check" onchange="toggleTaskFromCalendar(&#39;1778059321373&#39;)">
+            <div>
+              <div style="font-weight:600; ">opnaman seluruh mandor</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                🕒 17:00 · 
+                <span class="priority-tag p-high">high</span>
+              </div>
+            </div>
+          </div>
+        
+          <div class="day-task-item high " style="animation-delay:0.30000000000000004s">
+            <input type="checkbox" class="task-check" onchange="toggleTaskFromCalendar(&#39;1778059298158&#39;)">
+            <div>
+              <div style="font-weight:600; ">kerja tambah tohir</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                🕒 17:00 · 
+                <span class="priority-tag p-high">high</span>
+              </div>
+            </div>
+          </div>
+        
+          <div class="day-task-item medium " style="animation-delay:0.4s">
+            <input type="checkbox" class="task-check" onchange="toggleTaskFromCalendar(&#39;1778057830401&#39;)">
+            <div>
+              <div style="font-weight:600; ">hitung kebut besi gunungsari dan pagar dsv</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                
+                <span class="priority-tag p-medium">medium</span>
+              </div>
+            </div>
+          </div>
+        
+          <div class="day-task-item high " style="animation-delay:0.5s">
+            <input type="checkbox" class="task-check" onchange="toggleTaskFromCalendar(&#39;1778057368083&#39;)">
+            <div>
+              <div style="font-weight:600; ">opnaman pak eko</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                🕒 18:00 · 
+                <span class="priority-tag p-high">high</span>
+              </div>
+            </div>
+          </div>
+        
+          <div class="day-task-item low done" style="animation-delay:0.6000000000000001s">
+            <input type="checkbox" class="task-check" checked="" onchange="toggleTaskFromCalendar(&#39;1778055639207&#39;)">
+            <div>
+              <div style="font-weight:600; text-decoration:line-through;opacity:0.6">SPM DONE</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                
+                <span class="priority-tag p-low">low</span>
+              </div>
+            </div>
+          </div>
+        
+          <div class="day-task-item medium done" style="animation-delay:0.7000000000000001s">
+            <input type="checkbox" class="task-check" checked="" onchange="toggleTaskFromCalendar(&#39;1778053283314&#39;)">
+            <div>
+              <div style="font-weight:600; text-decoration:line-through;opacity:0.6">meeting mandor</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                🕒 10:00 · 
+                <span class="priority-tag p-medium">medium</span>
+              </div>
+            </div>
+          </div>
+        
+          <div class="day-task-item low " style="animation-delay:0.8s">
+            <input type="checkbox" class="task-check" onchange="toggleTaskFromCalendar(&#39;1778053249273&#39;)">
+            <div>
+              <div style="font-weight:600; ">ambil uang</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                🕒 19:00 · 
+                <span class="priority-tag p-low">low</span>
+              </div>
+            </div>
+          </div>
+        </div>
         </div>
       </div>
     </div>
@@ -825,15 +1115,117 @@
           <input type="text" class="search-input" id="searchInput" placeholder="Cari tugas lama...">
         </div>
         <div class="filters">
-          <div class="filter-chip active" data-filter="all">Semua</div>
+          <div class="filter-chip" data-filter="all">Semua</div>
           <div class="filter-chip" data-filter="pending">Pending</div>
           <div class="filter-chip" data-filter="done">Selesai</div>
-          <div class="filter-chip" data-filter="high">High</div>
+          <div class="filter-chip active" data-filter="high">High</div>
         </div>
       </div>
-      <div class="glass task-list" id="taskList">
-        <!-- Tasks rendered here -->
-      </div>
+      <div class="glass task-list" id="taskList"><div class="task-item " draggable="true" data-id="1778059321373" style="animation-delay: 0s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">opnaman seluruh mandor</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 6 Mei, 16.21 → 17:00</span>
+              <span class="priority-tag p-high">🔥 high</span>
+              
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item " draggable="true" data-id="1778059298158" style="animation-delay: 0.05s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">kerja tambah tohir</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 6 Mei, 16.19 → 17:00</span>
+              <span class="priority-tag p-high">🔥 high</span>
+              <span style="font-size:0.75rem; color:var(--text-dim)">📝 kerja</span>
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item " draggable="true" data-id="1778059146950" style="animation-delay: 0.1s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">KPI besok</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 8 Mei, 15.57</span>
+              <span class="priority-tag p-high">🔥 high</span>
+              
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item " draggable="true" data-id="1778057368083" style="animation-delay: 0.15s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">opnaman pak eko</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 6 Mei, 15.20 → 18:00</span>
+              <span class="priority-tag p-high">🔥 high</span>
+              
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div></div>
     </div>
   </div>
 
@@ -847,7 +1239,7 @@
         <span class="theme-icon" id="themeIcon">🌙</span>
         <span id="themeLabel">Night Mode</span>
       </span>
-      <div class="switch on" id="themeToggle"></div>
+      <div class="switch" id="themeToggle"></div>
     </div>
     
     <!-- GitHub Sync Section -->
@@ -857,7 +1249,7 @@
       <input type="text" class="github-input" id="githubGistId" placeholder="Gist ID (kosongkan untuk buat baru)">
       <div class="toggle-row" style="margin-bottom:0.5rem;">
         <span style="font-size:0.8rem;">Auto Sync</span>
-        <div class="switch" id="githubAutoSync"></div>
+        <div class="switch on" id="githubAutoSync"></div>
       </div>
       <div class="input-row">
         <button class="btn" id="syncToGithub" style="flex:1; font-size:0.8rem; padding:0.6rem;">☁️ Save to GitHub</button>
@@ -1942,5 +2334,5 @@
     }
     function formatTime(s) { const m=Math.floor(s/60); const sec=s%60; return `${m}:${String(sec).padStart(2,'0')}`; }
   </script>
-</body>
-</html>
+
+<div class="cursor-trail" style="background: var(--neon-blue); left: 1125.87px; top: 550.788px;"></div></body></html>
