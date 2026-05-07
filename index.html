@@ -279,17 +279,47 @@
       transition: all 0.2s;
     }
     .chip-remove:hover { background: rgba(255,77,109,0.2); transform: scale(1.2); }
-
+    
+/* GitHub Quick Sync Buttons - di samping input task */
+.github-sync-group {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+.github-sync-btn {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: none;
+  transition: all 0.3s;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.github-sync-btn:hover {
+  background: var(--neon-purple);
+  border-color: var(--neon-purple);
+  transform: scale(1.08);
+  box-shadow: 0 0 12px rgba(176,38,255,0.3);
+}
+.github-sync-btn:active { transform: scale(0.95); }
+    
     /* Calendar Styles */
     .calendar-container {
-      width: 100%;
-      height: 645px;
-      max-width: 1165px;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      overflow: hidden;
-    }
+  width: 80%;
+  height: 516px;        /* 645px × 0.8 */
+  max-width: 932px;     /* 1165px × 0.8 */
+  margin: 0 auto;       /* tetap di tengah */
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+   }
     .calendar-header {
       display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 1rem; padding-bottom: 0.8rem;
@@ -755,7 +785,7 @@
           <div class="progress-text"><span id="progressLabel">33% Selesai Hari Ini</span><span id="progressRatio">3/9</span></div>
         </div>
         <div class="input-group">
-          <input type="text" class="task-input" id="taskInput" placeholder="Ketik tugas... (cth: Beli susu jam 7 malam high)" autocomplete="off" list="taskSuggestions">
+          <div style="display:flex; gap:0.5rem; align-items:center;">   <input type="text" class="task-input" id="taskInput" placeholder="Ketik tugas... (cth: Beli susu jam 7 malam high)" autocomplete="off" list="taskSuggestions" style="flex:1;">   <div class="github-sync-group">     <button class="github-sync-btn" id="quickSyncBtn" title="Save ke GitHub">☁️</button>     <button class="github-sync-btn" id="quickLoadBtn" title="Load dari GitHub">📥</button>   </div> </div>
           <datalist id="taskSuggestions"><option value="surat untuk bumigas tgl 7"></option><option value="rekap harian penjaga purwosari med"></option><option value="opnaman seluruh mandor"></option><option value="kerja tambah tohir"></option><option value="KPI besok"></option><option value="hitung kebut besi gunungsari dan pagar dsv"></option><option value="opnaman pak eko"></option><option value="SPM DONE"></option><option value="meeting mandor"></option><option value="ambil uang"></option></datalist>
           <input type="text" class="task-input" id="descInput" placeholder="Deskripsi / Kategori (opsional)">
           
@@ -1313,7 +1343,9 @@
       loadFromGithub: document.getElementById('loadFromGithub'),
       githubStatus: document.getElementById('githubStatus')
     };
-
+     quickSyncBtn: document.getElementById('quickSyncBtn'),
+     quickLoadBtn: document.getElementById('quickLoadBtn'),
+       
     // Init
     document.addEventListener('DOMContentLoaded', () => {
       initClock();
@@ -1417,19 +1449,22 @@
       });
 
       document.querySelectorAll('.select-option').forEach(opt => {
-        opt.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const val = opt.dataset.value;
-          currentPriority = val;
-          updatePrioritySelectUI(val);
-          closePrioritySelect();
-          
-          // Animate icon
-          els.priorityTriggerIcon.style.animation = 'none';
-          els.priorityTriggerIcon.offsetHeight;
-          els.priorityTriggerIcon.style.animation = 'pulseFire 0.5s';
-        });
-      });
+  opt.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const val = opt.dataset.value;
+    currentPriority = val;
+    updatePrioritySelectUI(val);
+    closePrioritySelect();
+    // Tandai bahwa user sudah pilih manual
+    document.querySelectorAll('.select-option').forEach(o => o.classList.remove('manual-selected'));
+    opt.classList.add('manual-selected');
+    
+    // Animate icon
+    els.priorityTriggerIcon.style.animation = 'none';
+    els.priorityTriggerIcon.offsetHeight;
+    els.priorityTriggerIcon.style.animation = 'pulseFire 0.5s';
+  });
+});
 
       document.addEventListener('click', () => closePrioritySelect());
     }
@@ -1632,27 +1667,32 @@
     }
 
     // Smart Parser - Priority & Time dihapus dari judul
-    function smartParse(text) {
-      let priority = currentPriority;
-      let desc = els.descInput.value;
-      let timeHint = '';
-      let cleanedText = text;
+function smartParse(text) {
+  let priority = currentPriority;
+  let desc = els.descInput.value;
+  let timeHint = '';
+  let cleanedText = text;
 
-      // Parse priority and remove from text
-      const priorityPatterns = [
-        { regex: /\b(tinggi|high|penting|urgent)\b/gi, val: 'high' },
-        { regex: /\b(sedang|medium|biasa)\b/gi, val: 'medium' },
-        { regex: /\b(rendah|low|nanti)\b/gi, val: 'low' }
-      ];
+  // Parse priority and remove from text
+  const priorityPatterns = [
+    { regex: /\b(tinggi|high|penting|urgent)\b/gi, val: 'high' },
+    { regex: /\b(sedang|medium|biasa|med)\b/gi, val: 'medium' },
+    { regex: /\b(rendah|low|nanti)\b/gi, val: 'low' }
+  ];
 
-      for (const p of priorityPatterns) {
-        if (p.regex.test(cleanedText)) {
-          priority = p.val;
-          cleanedText = cleanedText.replace(p.regex, '').trim();
-          updatePrioritySelect(p.val);
-          break;
-        }
-      }
+  // Hanya override priority otomatis kalau user belum sengaja pilih manual
+  // (deteksi manual: apakah dropdown pernah dibuka di session ini?)
+  const manualSelected = els.priorityOptions.querySelector('.manual-selected');
+  for (const p of priorityPatterns) {
+    if (p.regex.test(cleanedText)) {
+      priority = p.val;
+      cleanedText = cleanedText.replace(p.regex, '').trim();
+      // Update UI tanpa flag manual
+      updatePrioritySelect(p.val);
+      break;
+    }
+  }
+  // ... sisanya tetap sama
 
       // Parse time and remove from text
       const timeMatch = cleanedText.match(/(jam|pukul)\s*(\d{1,2})(?::(\d{2}))?\s*(pagi|siang|sore|malam)?/i);
@@ -2217,6 +2257,15 @@
     }
 
     els.syncToGithub.addEventListener('click', syncToGitHub);
+    els.quickSyncBtn.addEventListener('click', () => {
+  // Buka settings panel supaya status terlihat, lalu sync
+  els.settingsPanel.classList.add('show');
+  syncToGitHub();
+});
+els.quickLoadBtn.addEventListener('click', () => {
+  els.settingsPanel.classList.add('show');
+  loadFromGitHub();
+});
     els.loadFromGithub.addEventListener('click', loadFromGitHub);
 
     // Settings
