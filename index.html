@@ -105,6 +105,7 @@
       display: grid;
       grid-template-columns: 280px 1fr 400px;
       gap: 1.5rem;
+      min-height: 100vh;
       height: 100vh;
       padding: 1.5rem;
       max-width: 1920px;
@@ -112,10 +113,14 @@
     }
 
     .column {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    overflow: visible;
+    }
+
+    .col-center {
+    overflow-y: auto;
     }
 
     /* Liquid Glass Base */
@@ -288,7 +293,9 @@
       display: flex;
       flex-direction: column;
       position: relative;
-      overflow: hidden;
+      overflow: visible;   /* ganti dari hidden */
+      min-height: 0;       /* tetap ada, ini perlu untuk flex */
+      flex: 1;
     }
     .calendar-header {
       display: flex; justify-content: space-between; align-items: center;
@@ -334,7 +341,7 @@
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
       overflow: hidden;
-      min-height: 80px;
+      min-height: 50px;
     }
     .cal-day::before {
       content: ''; position: absolute; inset: 0;
