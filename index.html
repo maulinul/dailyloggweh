@@ -47,8 +47,9 @@
                   radial-gradient(circle at 90% 80%, rgba(255,77,109,0.15) 0%, transparent 40%),
                   var(--bg);
       color: var(--text);
-      height: 100vh;
-      overflow: hidden;
+      min-height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
       font-variation-settings: 'wght' 400;
       transition: background 0.6s ease;
       cursor: none;
@@ -225,6 +226,28 @@
     .btn:active { transform: scale(0.96); }
     .btn-icon { background: rgba(255,255,255,0.1); padding: 0.6rem; border-radius: 8px; border: none; color: var(--text); cursor: none; transition: all 0.2s; }
     .btn-icon:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
+    .category-tag {
+    font-size: 0.7rem; padding: 2px 8px; border-radius: 6px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;
+    }
+    .cat-konstruksi { background: rgba(79,172,254,0.2); color: var(--neon-blue); }
+    .cat-konten { background: rgba(176,38,255,0.2); color: var(--neon-purple); }
+    .cat-admin { background: rgba(255,209,102,0.2); color: var(--neon-yellow); }
+    .cat-personal { background: rgba(0,245,160,0.2); color: var(--neon-green); }
+    .cat-lainnya { background: rgba(255,255,255,0.1); color: var(--text-dim); }
+
+    .category-select-row {
+     display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.3rem;
+    }
+    .cat-chip {
+    font-size: 0.7rem; padding: 0.3rem 0.6rem; border-radius: 8px;
+    border: 1px solid var(--border); background: rgba(255,255,255,0.03);
+    color: var(--text-dim); cursor: none; transition: all 0.2s;
+    }
+    .cat-chip:hover { border-color: var(--neon-purple); color: var(--text); }
+    .cat-chip.active {
+    background: rgba(176,38,255,0.15); border-color: var(--neon-purple); color: var(--neon-purple);
+    }
 
     /* Custom Priority Select */
     .custom-select { position: relative; width: 140px; user-select: none; }
@@ -698,6 +721,17 @@
           <option value="low">🌿 Low</option>
         </select>
       </div>
+      <div class="input-row" style="margin-top:0.5rem;">
+        <select class="task-input" id="editCategory" style="flex:1">
+          <option value="">🏷️ Kategori...</option>
+          <option value="konstruksi">🏗️ Konstruksi</option>
+          <option value="konten">🎨 Konten</option>
+          <option value="admin">📋 Admin</option>
+          <option value="personal">👤 Personal</option>
+          <option value="lainnya">📦 Lainnya</option>
+        </select>
+       </div>
+       
       <div class="modal-actions">
         <button class="btn-icon" id="editCancel" style="padding: 0.6rem 1.2rem;">Batal</button>
         <button class="btn" id="editSave">Simpan</button>
@@ -764,6 +798,15 @@
             <input type="text" class="task-input" id="subtaskInput" placeholder="➕ Subtask (tekan Enter untuk tambah, bisa banyak)">
           </div>
           <div class="subtask-chips" id="subtaskChips"></div>
+
+          <div class="category-select-row" id="categorySelectRow">
+            <span class="cat-chip active" data-cat="auto">🤖 Auto</span>
+            <span class="cat-chip" data-cat="konstruksi">🏗️ Konstruksi</span>
+            <span class="cat-chip" data-cat="konten">🎨 Konten</span>
+            <span class="cat-chip" data-cat="admin">📋 Admin</span>
+            <span class="cat-chip" data-cat="personal">👤 Personal</span>
+            <span class="cat-chip" data-cat="lainnya">📦 Lainnya</span>
+          </div>
 
           <div class="input-row">
             <input type="datetime-local" class="task-input" id="dateTimeInput" style="flex:1">
