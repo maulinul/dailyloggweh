@@ -47,8 +47,9 @@
                   radial-gradient(circle at 90% 80%, rgba(255,77,109,0.15) 0%, transparent 40%),
                   var(--bg);
       color: var(--text);
-      height: 100vh;
-      overflow: hidden;
+      min-height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
       font-variation-settings: 'wght' 400;
       transition: background 0.6s ease;
       cursor: none;
@@ -105,7 +106,6 @@
       display: grid;
       grid-template-columns: 280px 1fr 400px;
       gap: 1.5rem;
-      min-height: 100vh;
       height: 100vh;
       padding: 1.5rem;
       max-width: 1920px;
@@ -113,14 +113,10 @@
     }
 
     .column {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    overflow: visible;
-    }
-
-    .col-center {
-    overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      overflow: hidden;
     }
 
     /* Liquid Glass Base */
@@ -288,14 +284,12 @@
     /* Calendar Styles */
     .calendar-container {
       width: 100%;
-      height: 480px;
+      height: 645px;
       max-width: 1165px;
       display: flex;
       flex-direction: column;
       position: relative;
-      overflow: visible;   /* ganti dari hidden */
-      min-height: 0;       /* tetap ada, ini perlu untuk flex */
-      flex: 1;
+      overflow: hidden;
     }
     .calendar-header {
       display: flex; justify-content: space-between; align-items: center;
@@ -332,7 +326,7 @@
       background: rgba(255,255,255,0.02);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 0.3rem;
+      padding: 0.6rem;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -341,7 +335,7 @@
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
       overflow: hidden;
-      min-height: 55px;
+      min-height: 80px;
     }
     .cal-day::before {
       content: ''; position: absolute; inset: 0;
@@ -362,9 +356,9 @@
     }
     .cal-day.today .day-number {
       background: linear-gradient(135deg, var(--neon-purple), var(--neon-coral));
-      color: white; width: 22px; height: 22px; border-radius: 50%;
+      color: white; width: 28px; height: 28px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 0.75rem;
+      font-weight: 700; font-size: 0.85rem;
     }
     .cal-day.selected {
       border-color: var(--neon-coral);
@@ -376,8 +370,8 @@
       50% { box-shadow: 0 0 0 8px rgba(255,77,109,0); }
     }
     .cal-day.other-month { opacity: 0.3; }
-    .day-number { font-size: 0.8rem; font-weight: 600; margin-bottom: 0.3rem; transition: transform 0.3s; }
-    .cal-day:hover .day-number { transform: scale(1.2); }
+    .day-number { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.3rem; transition: transform 0.3s; }
+    .cal-day:hover .day-number { transform: scale(1.1); }
     .day-tasks-preview {
       display: flex; flex-wrap: wrap; gap: 2px;
       width: 100%;
