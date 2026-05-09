@@ -1864,7 +1864,51 @@
 
     els.syncToGithub.addEventListener('click', syncToGitHub);
     els.loadFromGithub.addEventListener('click', loadFromGitHub);
-
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    // Clear input task
+    if (document.activeElement === els.taskInput) {
+      els.taskInput.value = '';
+      els.taskInput.blur();
+      return;
+    }
+    // Close settings
+    if (els.settingsPanel.classList.contains('show')) {
+      els.settingsPanel.classList.remove('show');
+      return;
+    }
+    // Close edit modal
+    if (els.editModal.classList.contains('show')) {
+      els.editModal.classList.remove('show');
+      editingId = null;
+      return;
+    }
+    // Close focus overlay
+    if (els.focusOverlay.classList.contains('active')) {
+      exitFocusMode();
+      return;
+    }
+    // Close calendar popup
+    if (document.getElementById('calendarPopupOverlay').classList.contains('show')) {
+      document.getElementById('calendarPopupOverlay').classList.remove('show');
+      return;
+    }
+    // Close summary modal
+    if (document.getElementById('summaryModalOverlay').classList.contains('show')) {
+      document.getElementById('summaryModalOverlay').classList.remove('show');
+      return;
+    }
+    // Close day detail panel
+    if (els.dayDetailPanel.classList.contains('show')) {
+      els.dayDetailPanel.classList.remove('show');
+      selectedDate = null;
+      renderCalendar();
+      return;
+    }
+    }
+    });
+    }
+    
     // Settings
     function loadSettings() {
       els.soundToggle.classList.toggle('on', settings.sound);
