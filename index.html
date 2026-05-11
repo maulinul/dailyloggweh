@@ -47,8 +47,8 @@
                   radial-gradient(circle at 90% 80%, rgba(255,77,109,0.15) 0%, transparent 40%),
                   var(--bg);
       color: var(--text);
-      height: 100vh;
-      overflow: hidden;
+      min-height: 100vh;
+      overflow-y: auto;
       font-variation-settings: 'wght' 400;
       transition: background 0.6s ease;
       cursor: none;
@@ -105,7 +105,7 @@
       display: grid;
       grid-template-columns: 280px 1fr 400px;
       gap: 1.5rem;
-      height: 100vh;
+      min-height: 100vh;
       padding: 1.5rem;
       max-width: 1920px;
       margin: 0 auto;
@@ -115,7 +115,7 @@
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
-      overflow: hidden;
+      
     }
 
     /* Liquid Glass Base */
@@ -696,9 +696,11 @@
       <div class="modal-header">✏️ Edit Tugas</div>
       <input type="text" class="task-input modal-input" id="editTitle" placeholder="Judul tugas">
       <input type="text" class="task-input modal-input" id="editDesc" placeholder="Deskripsi">
+      <input type="text" class="task-input modal-input" id="editCategory" placeholder="Kategori">
       <div class="input-row">
         <input type="datetime-local" class="task-input" id="editDateTime" style="flex:1">
         <select class="task-input" id="editPriority" style="width:120px">
+          <option value="superhigh">💥 Super High</option>
           <option value="high">🔥 High</option>
           <option value="medium">⚡ Medium</option>
           <option value="low">🌿 Low</option>
@@ -785,7 +787,8 @@
         <div class="input-group">
           <input type="text" class="task-input" id="taskInput" placeholder="Ketik tugas... (cth: Beli susu jam 7 malam high)" autocomplete="off" list="taskSuggestions">
           <datalist id="taskSuggestions"></datalist>
-          <input type="text" class="task-input" id="descInput" placeholder="Deskripsi / Kategori (opsional)">
+          <input type="text" class="task-input" id="descInput" placeholder="Deskripsi (opsional)">
+          <input type="text" class="task-input" id="categoryInput" placeholder="Kategori (opsional)">
           
           <!-- Subtask Input -->
           <div class="subtask-input-wrap">
@@ -812,6 +815,8 @@
 
             <button class="btn-icon" id="aiMagicBtn" title="AI Smart Categorization & Time Est" style="font-size:1.2rem; background:rgba(176,38,255,0.2); color:white;">✨</button>
             <button class="btn" id="addBtn">Tambah</button>
+            <button class="btn-icon" id="syncToGithub" style="padding:0.5rem; font-size:1rem; border-radius:8px;" title="Save to GitHub">☁️</button>
+            <button class="btn-icon" id="loadFromGithub" style="padding:0.5rem; font-size:1rem; border-radius:8px;" title="Load from GitHub">📥</button>
           </div>
           <div style="font-size:0.75rem; color:var(--text-dim); margin-top:0.2rem;">💡 Smart Parse aktif: ketik waktu/priority otomatis terdeteksi & dihapus dari judul</div>
         </div>
@@ -860,11 +865,26 @@
           <span class="search-icon">🔍</span>
           <input type="text" class="search-input" id="searchInput" placeholder="Cari tugas lama...">
         </div>
-        <div class="filters">
-          <div class="filter-chip active" data-filter="all">Semua</div>
-          <div class="filter-chip" data-filter="pending">Pending</div>
-          <div class="filter-chip" data-filter="done">Selesai</div>
-          <div class="filter-chip" data-filter="high">High</div>
+        <div class="filters" style="display:flex; flex-direction:column; gap:0.5rem;">
+          <div class="status-filters" id="statusFilters" style="display:flex; gap:0.4rem;">
+            <div class="filter-chip active" data-filter="all">Semua</div>
+            <div class="filter-chip" data-filter="pending">Pending</div>
+            <div class="filter-chip" data-filter="done">Selesai</div>
+          </div>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <select id="priorityFilter" class="task-input" style="padding:0.4rem; font-size:0.8rem; flex:1;">
+              <option value="all">Semua Priority</option>
+              <option value="superhigh">Super High</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+            <select id="sortFilter" class="task-input" multiple style="padding:0.4rem; font-size:0.8rem; flex:1; height:60px;">
+              <option value="date" selected>Urut: Tanggal</option>
+              <option value="priority">Urut: Prioritas</option>
+              <option value="status">Urut: Status</option>
+            </select>
+          </div>
         </div>
       </div>
       <div class="glass task-list" id="taskList">
@@ -895,17 +915,13 @@
         <span style="font-size:0.8rem;">Auto Sync</span>
         <div class="switch" id="githubAutoSync"></div>
       </div>
-      <div class="input-row">
-        <button class="btn" id="syncToGithub" style="flex:1; font-size:0.8rem; padding:0.6rem;">☁️ Save to GitHub</button>
-        <button class="btn-icon" id="loadFromGithub" style="padding:0.6rem;" title="Load from GitHub">📥</button>
-      </div>
       <div class="github-status" id="githubStatus"></div>
     </div>
 
     <!-- AI Settings Section -->
     <div class="github-section">
       <div class="github-section-title">✨ AI API Key</div>
-      <input type="password" class="github-input" id="aiApiKey" placeholder="API Key untuk AI (Konektika/Groq/dll)">
+      <div style="display:flex; gap:0.5rem;"><input type="password" class="github-input" id="aiApiKey" placeholder="API Key untuk AI (Konektika/Groq/dll)" style="flex:1"><button id="testAiKeyBtn" class="action-btn" style="padding:0.4rem; border:1px solid var(--border); border-radius:4px;">Cek API</button></div><div id="aiTestStatus" style="font-size:0.75rem; margin-top:0.4rem; color:var(--text-dim);"></div>
       <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:0.5rem;">Masukkan API key untuk menggunakan fitur AI.</div>
     </div>
 
@@ -969,6 +985,13 @@
       searchInput: document.getElementById('searchInput'),
       taskList: document.getElementById('taskList'),
       filters: document.querySelectorAll('.filter-chip'),
+      priorityFilter: document.getElementById('priorityFilter'),
+      sortFilter: document.getElementById('sortFilter'),
+      testAiKeyBtn: document.getElementById('testAiKeyBtn'),
+      aiTestStatus: document.getElementById('aiTestStatus'),
+      descInput: document.getElementById('descInput'),
+      categoryInput: document.getElementById('categoryInput'),
+      editCategory: document.getElementById('editCategory'),
       settingsToggle: document.getElementById('settingsToggle'),
       settingsPanel: document.getElementById('settingsPanel'),
       soundToggle: document.getElementById('soundToggle'),
@@ -1151,7 +1174,7 @@
     }
 
     function updatePrioritySelectUI(val) {
-      const icons = { high: '🔥', medium: '⚡', low: '🌿' };
+      const icons = { superhigh: '💥', high: '🔥', medium: '⚡', low: '🌿' };
       const labels = { high: 'High', medium: 'Medium', low: 'Low' };
       els.priorityTriggerIcon.textContent = icons[val];
       els.priorityTriggerText.textContent = labels[val];
@@ -1346,6 +1369,7 @@
 
       // Parse priority and remove from text
       const priorityPatterns = [
+        { regex: /\b(super\s*high|kritis|darurat|sangat\s*penting)\b/gi, val: 'superhigh' },
         { regex: /\b(tinggi|high|penting|urgent)\b/gi, val: 'high' },
         { regex: /\b(sedang|medium|biasa)\b/gi, val: 'medium' },
         { regex: /\b(rendah|low|nanti)\b/gi, val: 'low' }
@@ -1398,6 +1422,7 @@
         id: Date.now().toString(),
         title: parsed.title || raw,
         desc: parsed.desc || els.descInput.value.trim(),
+        category: els.categoryInput ? els.categoryInput.value.trim() : '',
         priority: parsed.priority,
         done: false,
         createdAt: new Date().toISOString(),
@@ -1419,6 +1444,7 @@
       // Reset inputs
       els.taskInput.value = '';
       els.descInput.value = '';
+      if(els.categoryInput) els.categoryInput.value = '';
       tempSubtasks = [];
       renderSubtaskChips();
       updatePrioritySelect('medium');
@@ -1434,14 +1460,40 @@
     function renderTasks() {
       els.taskList.innerHTML = '';
       let filtered = tasks.filter(t => {
-        if (currentFilter === 'pending') return !t.done;
-        if (currentFilter === 'done') return t.done;
-        if (currentFilter === 'high') return t.priority === 'high';
+        if (currentFilter === 'pending' && t.done) return false;
+        if (currentFilter === 'done' && !t.done) return false;
+        
+        const prioFilter = els.priorityFilter ? els.priorityFilter.value : 'all';
+        if (prioFilter !== 'all' && t.priority !== prioFilter) return false;
+        
         return true;
       });
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
-        filtered = filtered.filter(t => t.title.toLowerCase().includes(q) || (t.desc && t.desc.toLowerCase().includes(q)));
+        filtered = filtered.filter(t => t.title.toLowerCase().includes(q) || (t.desc && t.desc.toLowerCase().includes(q)) || (t.category && t.category.toLowerCase().includes(q)));
+      }
+
+      if (els.sortFilter) {
+        const sortOptions = Array.from(els.sortFilter.selectedOptions).map(opt => opt.value);
+        if (sortOptions.length > 0) {
+          filtered.sort((a, b) => {
+            for (let sortType of sortOptions) {
+              if (sortType === 'date') {
+                const dateA = new Date(a.dateTime || a.createdAt).getTime();
+                const dateB = new Date(b.dateTime || b.createdAt).getTime();
+                if (dateA !== dateB) return dateB - dateA; // Newest first
+              } else if (sortType === 'priority') {
+                const pMap = { superhigh: 4, high: 3, medium: 2, low: 1 };
+                const pA = pMap[a.priority] || 0;
+                const pB = pMap[b.priority] || 0;
+                if (pA !== pB) return pB - pA; // Highest priority first
+              } else if (sortType === 'status') {
+                if (a.done !== b.done) return a.done ? 1 : -1; // Pending first
+              }
+            }
+            return 0;
+          });
+        }
       }
 
       filtered.forEach((t, index) => {
@@ -1474,6 +1526,7 @@
               <span class="task-time">🕒 ${scheduledStr || dateStr + ' ' + timeStr}${t.timeHint ? ' → ' + t.timeHint : ''}</span>
               <span class="priority-tag p-${t.priority}">${getPriorityIcon(t.priority)} ${t.priority}</span>
               ${t.desc ? `<span style="font-size:0.75rem; color:var(--text-dim)">📝 ${escapeHtml(t.desc)}</span>` : ''}
+              ${t.category ? `<span style="font-size:0.75rem; color:var(--neon-blue); border: 1px solid var(--neon-blue); padding: 0.1rem 0.4rem; border-radius: 4px;">🏷️ ${escapeHtml(t.category)}</span>` : ''}
             </div>
             ${t.subtasks.length ? `<ul class="subtasks">${t.subtasks.map((s,i)=>`<li class="subtask ${s.done ? 'done' : ''}"><input type="checkbox" class="subtask-check" ${s.done?'checked':''} data-idx="${i}"><span>${escapeHtml(s.text)}</span></li>`).join('')}</ul>` : ''}
             <div class="pomodoro-wrap" style="display:${t.pomodoro.active||t.pomodoro.timeLeft<1500?'flex':'none'}">
@@ -1530,7 +1583,7 @@
     }
 
     function getPriorityIcon(p) {
-      const icons = { high: '🔥', medium: '⚡', low: '🌿' };
+      const icons = { superhigh: '💥', high: '🔥', medium: '⚡', low: '🌿' };
       return icons[p] || '⚡';
     }
 
@@ -1585,6 +1638,7 @@
       editingId = id;
       els.editTitle.value = t.title;
       els.editDesc.value = t.desc || '';
+      if(els.editCategory) els.editCategory.value = t.category || '';
       els.editPriority.value = t.priority;
       if (t.dateTime) {
         const d = new Date(t.dateTime);
@@ -1606,6 +1660,7 @@
       const t = tasks.find(x => x.id === editingId);
       t.title = els.editTitle.value.trim() || t.title;
       t.desc = els.editDesc.value.trim();
+      if(els.editCategory) t.category = els.editCategory.value.trim();
       t.priority = els.editPriority.value;
       if (els.editDateTime.value) {
         t.dateTime = new Date(els.editDateTime.value).toISOString();
@@ -1798,14 +1853,22 @@
 
     // Search & Filter
     els.searchInput.addEventListener('input', e => { searchQuery = e.target.value; renderTasks(); });
-    els.filters.forEach(f => {
-      f.addEventListener('click', () => {
-        els.filters.forEach(x => x.classList.remove('active'));
-        f.classList.add('active');
-        currentFilter = f.dataset.filter;
-        renderTasks();
+    if(els.filters) {
+      els.filters.forEach(f => {
+        f.addEventListener('click', () => {
+          els.filters.forEach(x => x.classList.remove('active'));
+          f.classList.add('active');
+          currentFilter = f.dataset.filter;
+          renderTasks();
+        });
       });
-    });
+    }
+    if(els.priorityFilter) {
+      els.priorityFilter.addEventListener('change', renderTasks);
+    }
+    if(els.sortFilter) {
+      els.sortFilter.addEventListener('change', renderTasks);
+    }
 
     // Autocomplete Suggestions
     function updateSuggestions() {
@@ -2044,30 +2107,72 @@
     // --- AI Features ---
     async function callAI(systemPrompt, userPrompt) {
       const model = els.aiModelSelect ? els.aiModelSelect.value : KONEKTIKA_CONFIG.model;
+      
+      let baseURL = KONEKTIKA_CONFIG.baseURL;
+      let finalModel = model;
+      
+      // Auto-detect Provider based on model selection to avoid proxy issues if they use direct keys
+      if (model.includes('groq')) {
+        baseURL = 'https://api.groq.com/openai/v1';
+        finalModel = 'llama3-8b-8192'; // fallback groq model
+      } else if (model.includes('gemini')) {
+        baseURL = 'https://generativelanguage.googleapis.com/v1beta/openai';
+        finalModel = 'gemini-1.5-flash';
+      } else if (model.includes('mistral')) {
+        baseURL = 'https://api.mistral.ai/v1';
+        finalModel = 'open-mistral-7b';
+      }
+
       try {
-        const response = await fetch(KONEKTIKA_CONFIG.baseURL + '/chat/completions', {
+        const response = await fetch(baseURL + '/chat/completions', {
           method: 'POST',
           headers: {
             'Authorization': 'Bearer ' + KONEKTIKA_CONFIG.apiKey,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            model: model,
+            model: finalModel,
             messages: [
               {role: "system", content: systemPrompt},
               {role: "user", content: userPrompt}
             ]
           })
         });
+        
+        if (!response.ok) {
+           const errText = await response.text();
+           try { 
+             let errJson = JSON.parse(errText); 
+             if (Array.isArray(errJson)) errJson = errJson[0];
+             return "Error API: " + (errJson?.error?.message || response.statusText); 
+           } catch(e) { return "Error API: " + response.status + " " + response.statusText; }
+        }
+        
         const data = await response.json();
         if (data && data.choices && data.choices[0]) {
           return data.choices[0].message.content;
         }
-        return "Respon tidak valid.";
+        return "Respon tidak valid: " + JSON.stringify(data).substring(0, 50);
       } catch (err) {
         console.error("AI Error:", err);
-        return "Error: " + err.message;
+        return "Error Request: " + err.message;
       }
+    }
+
+    if (els.testAiKeyBtn) {
+      els.testAiKeyBtn.addEventListener('click', async () => {
+        if(els.aiTestStatus) els.aiTestStatus.innerHTML = '⏳ Mengetes API Key...';
+        const res = await callAI("Balas dengan kata 'OK' jika kamu menerima pesan ini.", "Test");
+        if(els.aiTestStatus) {
+           if(res.includes("Error") || res.includes("tidak valid")) {
+               els.aiTestStatus.innerHTML = '❌ ' + res;
+               els.aiTestStatus.style.color = '#ff4d6d';
+           } else {
+               els.aiTestStatus.innerHTML = '✅ API Key Valid! (' + res + ')';
+               els.aiTestStatus.style.color = '#00f5a0';
+           }
+        }
+      });
     }
 
     function initAI() {
