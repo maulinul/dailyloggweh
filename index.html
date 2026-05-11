@@ -751,6 +751,28 @@
           </div>
         </div>
       </div>
+      
+      <!-- AI Integration Box -->
+      <div class="glass ai-box" id="aiBox">
+        <div style="font-weight:600; margin-bottom:0.8rem; display:flex; align-items:center; gap:0.4rem;">
+          <span style="font-size:1.2rem;">✨</span> AI Assistant
+        </div>
+        <div style="margin-bottom:0.8rem;">
+          <select id="aiModelSelect" class="task-input" style="width:100%; padding:0.5rem; font-size:0.85rem;">
+            <option value="konektika-pro">Konektika AI Pro</option>
+            <option value="groq-llama3">Groq (Llama 3)</option>
+            <option value="gemini-flash">Gemini Flash</option>
+            <option value="claude-haiku">Claude Haiku</option>
+            <option value="mistral-fast">Mistral Fast</option>
+          </select>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:0.5rem; font-size:0.85rem;">
+          <button class="btn" id="aiBtnSummary" style="padding:0.6rem; font-size:0.8rem;">📝 Daily Summary</button>
+          <button class="btn" id="aiBtnStale" style="padding:0.6rem; font-size:0.8rem; background:rgba(255,77,109,0.2); color:var(--neon-coral);">🔍 Detect Stale</button>
+          <button class="btn" id="aiBtnPriority" style="padding:0.6rem; font-size:0.8rem; background:rgba(176,38,255,0.2); color:var(--neon-purple);">⚖️ Dynamic Priority</button>
+        </div>
+        <div id="aiOutput" style="margin-top:0.8rem; font-size:0.8rem; color:var(--text-dim); max-height:150px; overflow-y:auto; background:rgba(0,0,0,0.3); padding:0.6rem; border-radius:8px; display:none; line-height:1.4;"></div>
+      </div>
     </div>
 
     <!-- KOLOM 2: Calendar & Input -->
@@ -788,6 +810,7 @@
               </div>
             </div>
 
+            <button class="btn-icon" id="aiMagicBtn" title="AI Smart Categorization & Time Est" style="font-size:1.2rem; background:rgba(176,38,255,0.2); color:white;">✨</button>
             <button class="btn" id="addBtn">Tambah</button>
           </div>
           <div style="font-size:0.75rem; color:var(--text-dim); margin-top:0.2rem;">💡 Smart Parse aktif: ketik waktu/priority otomatis terdeteksi & dihapus dari judul</div>
@@ -879,6 +902,13 @@
       <div class="github-status" id="githubStatus"></div>
     </div>
 
+    <!-- AI Settings Section -->
+    <div class="github-section">
+      <div class="github-section-title">✨ AI API Key</div>
+      <input type="password" class="github-input" id="aiApiKey" placeholder="API Key untuk AI (Konektika/Groq/dll)">
+      <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:0.5rem;">Masukkan API key untuk menggunakan fitur AI.</div>
+    </div>
+
     <div style="margin-top:0.8rem; font-size:0.75rem; color:var(--text-dim);">Data tersimpan di LocalStorage</div>
     <button class="btn" style="width:100%; margin-top:0.5rem; background:rgba(255,77,109,0.2); color:var(--neon-coral);" id="clearData">Hapus Semua Data</button>
   </div>
@@ -888,7 +918,8 @@
     let tasks = JSON.parse(localStorage.getItem('tf_tasks')) || [];
     let settings = JSON.parse(localStorage.getItem('tf_settings')) || { 
       sound: true, haptic: true, dayMode: false,
-      githubToken: '', githubGistId: '', githubAutoSync: false 
+      githubToken: '', githubGistId: '', githubAutoSync: false,
+      aiApiKey: ''
     };
     let currentFilter = 'all';
     let searchQuery = '';
@@ -901,6 +932,12 @@
     let focusTimeLeft = 1500;
     let currentPriority = 'medium';
     let tempSubtasks = [];
+
+    const KONEKTIKA_CONFIG = {
+      baseURL: "https://konektikacloud.web.id/v1",
+      get apiKey() { return settings.aiApiKey || "API_KEY_KAMU"; },
+      model: "konektika-pro"
+    };
 
     // DOM Elements
     const els = {
@@ -970,7 +1007,15 @@
       githubAutoSync: document.getElementById('githubAutoSync'),
       syncToGithub: document.getElementById('syncToGithub'),
       loadFromGithub: document.getElementById('loadFromGithub'),
-      githubStatus: document.getElementById('githubStatus')
+      githubStatus: document.getElementById('githubStatus'),
+      aiApiKey: document.getElementById('aiApiKey'),
+      aiBox: document.getElementById('aiBox'),
+      aiModelSelect: document.getElementById('aiModelSelect'),
+      aiBtnSummary: document.getElementById('aiBtnSummary'),
+      aiBtnStale: document.getElementById('aiBtnStale'),
+      aiBtnPriority: document.getElementById('aiBtnPriority'),
+      aiOutput: document.getElementById('aiOutput'),
+      aiMagicBtn: document.getElementById('aiMagicBtn')
     };
 
     // Init
@@ -986,6 +1031,8 @@
       updateSuggestions();
       loadSettings();
       checkStreak();
+      initAI();
+      initKeyboard();
     });
 
     // Set default datetime to now
@@ -1712,11 +1759,21 @@
       els.bentoPending.textContent = pending;
       els.bentoHigh.textContent = high;
 
-      if (todayPct === 100 && todayTotal > 0) {
-        els.progressFill.style.background = 'linear-gradient(90deg, var(--neon-green), #00d4ff)';
+      let color1, color2;
+      if (todayPct <= 25) {
+        color1 = '#ff4d6d'; // Merah (Coral)
+        color2 = '#ff8fa3';
+      } else if (todayPct <= 50) {
+        color1 = '#ffd166'; // Kuning
+        color2 = '#ffe399';
+      } else if (todayPct <= 75) {
+        color1 = '#00f5a0'; // Hijau
+        color2 = '#66f8c6';
       } else {
-        els.progressFill.style.background = 'linear-gradient(90deg, var(--neon-purple), var(--neon-coral))';
+        color1 = '#4facfe'; // Biru
+        color2 = '#00f2fe';
       }
+      els.progressFill.style.background = `linear-gradient(90deg, ${color1}, ${color2})`;
     }
 
     // Streak Logic
@@ -1886,6 +1943,7 @@
       els.githubAutoSync.classList.toggle('on', settings.githubAutoSync);
       els.githubToken.value = settings.githubToken || '';
       els.githubGistId.value = settings.githubGistId || '';
+      if (els.aiApiKey) els.aiApiKey.value = settings.aiApiKey || '';
       
       if (settings.dayMode) {
         document.body.classList.add('day-mode');
@@ -1940,6 +1998,13 @@
       saveSettings();
     });
 
+    if (els.aiApiKey) {
+      els.aiApiKey.addEventListener('change', () => {
+        settings.aiApiKey = els.aiApiKey.value.trim();
+        saveSettings();
+      });
+    }
+
     els.clearData.addEventListener('click', () => { 
       if(confirm('Hapus semua data?')) { 
         tasks=[]; save(); renderTasks(); updateStats(); renderCalendar();
@@ -1949,11 +2014,128 @@
 
     function save() { localStorage.setItem('tf_tasks', JSON.stringify(tasks)); }
     function saveSettings() { localStorage.setItem('tf_settings', JSON.stringify(settings)); }
-    function escapeHtml(str) { 
-      if (!str) return ''; 
-      const d=document.createElement('div'); d.textContent=str; return d.innerHTML; 
+    function escapeHtml(str) {
+      if (!str) return '';
+      const d=document.createElement('div'); d.textContent=str; return d.innerHTML;
     }
     function formatTime(s) { const m=Math.floor(s/60); const sec=s%60; return `${m}:${String(sec).padStart(2,'0')}`; }
-  </script>
-</body>
+
+    // --- ESC Key Bindings ---
+    function initKeyboard() {
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          // Clear input
+          els.taskInput.value = '';
+          els.descInput.value = '';
+          els.subtaskInput.value = '';
+          tempSubtasks = [];
+          renderSubtaskChips();
+          if (document.activeElement) document.activeElement.blur();
+
+          // Close popups
+          els.settingsPanel.classList.remove('show');
+          els.editModal.classList.remove('show');
+          els.dayDetailPanel.classList.remove('show');
+          closePrioritySelect();
+        }
+      });
+    }
+
+    // --- AI Features ---
+    async function callAI(systemPrompt, userPrompt) {
+      const model = els.aiModelSelect ? els.aiModelSelect.value : KONEKTIKA_CONFIG.model;
+      try {
+        const response = await fetch(KONEKTIKA_CONFIG.baseURL + '/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + KONEKTIKA_CONFIG.apiKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: [
+              {role: "system", content: systemPrompt},
+              {role: "user", content: userPrompt}
+            ]
+          })
+        });
+        const data = await response.json();
+        if (data && data.choices && data.choices[0]) {
+          return data.choices[0].message.content;
+        }
+        return "Respon tidak valid.";
+      } catch (err) {
+        console.error("AI Error:", err);
+        return "Error: " + err.message;
+      }
+    }
+
+    function initAI() {
+      els.aiMagicBtn.addEventListener('click', async () => {
+        const text = els.taskInput.value.trim();
+        if (!text) return;
+        const originalIcon = els.aiMagicBtn.innerHTML;
+        els.aiMagicBtn.innerHTML = '⏳';
+
+        const prompt = "Kamu adalah asisten produktivitas. Analisis judul tugas berikut. Berikan output HANYA dalam format JSON valid: {\"kategori\": \"nama kategori singkat\", \"estimasi_menit\": angka_menit, \"prioritas\": \"high\" atau \"medium\" atau \"low\"}";
+        const res = await callAI(prompt, "Tugas: " + text);
+        try {
+          const match = res.match(/\{[\s\S]*\}/);
+          if (match) {
+            const data = JSON.parse(match[0]);
+            if (data.kategori) els.descInput.value = data.kategori + (data.estimasi_menit ? ` (${data.estimasi_menit}m)` : '');
+            if (data.prioritas) updatePrioritySelect(data.prioritas.toLowerCase());
+          }
+        } catch(e) {
+          console.error("Parse JSON error:", e);
+        }
+        els.aiMagicBtn.innerHTML = originalIcon;
+      });
+
+      els.aiBtnSummary.addEventListener('click', async () => {
+        els.aiOutput.style.display = 'block';
+        els.aiOutput.innerHTML = '⏳ Menghasilkan ringkasan harian...';
+        const today = new Date().toDateString();
+        const todayTasks = tasks.filter(t => new Date(t.createdAt).toDateString() === today || (t.dateTime && new Date(t.dateTime).toDateString() === today));
+        const taskText = todayTasks.length ? todayTasks.map(t => `- ${t.title} [${t.done ? 'Selesai' : 'Pending'}]`).join('\\n') : "Belum ada tugas hari ini.";
+        const res = await callAI(
+          "Kamu asisten produktivitas. Berikan ringkasan, motivasi, dan evaluasi untuk tugas hari ini dalam 2 kalimat singkat.",
+          "Tugas hari ini:\\n" + taskText
+        );
+        els.aiOutput.innerHTML = `<strong>📝 Ringkasan Harian:</strong><br>${res.replace(/\\n/g, '<br>')}`;
+      });
+
+      els.aiBtnStale.addEventListener('click', async () => {
+        els.aiOutput.style.display = 'block';
+        els.aiOutput.innerHTML = '⏳ Mendeteksi tugas terbengkalai...';
+        const pendingTasks = tasks.filter(t => !t.done);
+        if (pendingTasks.length === 0) {
+          els.aiOutput.innerHTML = '🎉 Tidak ada tugas terbengkalai!';
+          return;
+        }
+        const taskText = pendingTasks.map(t => `- ${t.title} (Dibuat: ${new Date(t.createdAt).toLocaleDateString()})`).join('\\n');
+        const res = await callAI(
+          "Analisis daftar tugas berikut. Identifikasi 1 tugas yang terkesan paling lama atau dihindari. Berikan alasan singkat mengapa terbengkalai dan berikan saran solusi.",
+          taskText
+        );
+        els.aiOutput.innerHTML = `<strong>🔍 Stale Task:</strong><br>${res.replace(/\\n/g, '<br>')}`;
+      });
+
+      els.aiBtnPriority.addEventListener('click', async () => {
+        els.aiOutput.style.display = 'block';
+        els.aiOutput.innerHTML = '⏳ Menganalisis prioritas...';
+        const pendingTasks = tasks.filter(t => !t.done);
+        if (pendingTasks.length === 0) {
+          els.aiOutput.innerHTML = 'Semua tugas selesai!';
+          return;
+        }
+        const taskText = pendingTasks.map(t => `- ${t.title} (Saat ini: ${t.priority})`).join('\\n');
+        const res = await callAI(
+          "Analisis daftar tugas berikut dan rekomendasikan 1 tugas yang harus dikerjakan SEKARANG JUGA beserta alasan logisnya.",
+          taskText
+        );
+        els.aiOutput.innerHTML = `<strong>⚖️ Prioritas Dinamis:</strong><br>${res.replace(/\\n/g, '<br>')}`;
+      });
+    }
+    </script></body>
 </html>
