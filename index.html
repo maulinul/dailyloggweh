@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
+<!-- saved from url=(0040)https://maulinul.github.io/dailyloggweh/ -->
+<html lang="id"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TaskFlow | Daily Tracker</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230a0a12'/%3E%3Cpath d='M28 52 L42 66 L72 34' stroke='%23b026ff' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='50' cy='50' r='36' stroke='%23ff4d6d' stroke-width='5' fill='none' opacity='0.4'/%3E%3Ccircle cx='50' cy='50' r='8' fill='%2300f5a0'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com/">
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+  <link href="./TaskFlow _ Daily Tracker_files/css2" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=&#39;http://www.w3.org/2000/svg&#39; viewBox=&#39;0 0 100 100&#39;%3E%3Crect width=&#39;100&#39; height=&#39;100&#39; rx=&#39;22&#39; fill=&#39;%230a0a12&#39;/%3E%3Cpath d=&#39;M28 52 L42 66 L72 34&#39; stroke=&#39;%23b026ff&#39; stroke-width=&#39;10&#39; fill=&#39;none&#39; stroke-linecap=&#39;round&#39; stroke-linejoin=&#39;round&#39;/%3E%3Ccircle cx=&#39;50&#39; cy=&#39;50&#39; r=&#39;36&#39; stroke=&#39;%23ff4d6d&#39; stroke-width=&#39;5&#39; fill=&#39;none&#39; opacity=&#39;0.4&#39;/%3E%3Ccircle cx=&#39;50&#39; cy=&#39;50&#39; r=&#39;8&#39; fill=&#39;%2300f5a0&#39;/%3E%3C/svg%3E">
   <style>
     :root {
       --bg: #0a0a12;
@@ -47,7 +47,8 @@
                   radial-gradient(circle at 90% 80%, rgba(255,77,109,0.15) 0%, transparent 40%),
                   var(--bg);
       color: var(--text);
-      min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
       overflow-y: auto;
       font-variation-settings: 'wght' 400;
       transition: background 0.6s ease;
@@ -105,7 +106,7 @@
       display: grid;
       grid-template-columns: 280px 1fr 400px;
       gap: 1.5rem;
-      min-height: 100vh;
+      height: 100vh;
       padding: 1.5rem;
       max-width: 1920px;
       margin: 0 auto;
@@ -115,7 +116,8 @@
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
-      
+      overflow: hidden;
+      overflow-y: auto;
     }
 
     /* Liquid Glass Base */
@@ -660,6 +662,12 @@
       .calendar-container { height: auto; min-height: 500px; }
     }
 
+    
+    .p-super-high { background: rgba(255,0,80,0.25); color: #ff0050; border: 1px solid rgba(255,0,80,0.4); box-shadow: 0 0 10px rgba(255,0,80,0.3); }
+    .p-super-high:hover { box-shadow: 0 0 15px rgba(255,0,80,0.6); }
+    .task-dot.super-high { background: #ff0050; box-shadow: 0 0 6px #ff0050; }
+    .day-task-item.super-high { border-left-color: #ff0050; }
+
     /* Scrollbar styling */
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -673,12 +681,12 @@
     }
     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
   </style>
-<base target="_blank">
+<!--<base target="_blank">--><base href="." target="_blank">
 </head>
-<body>
+<body class="">
   <!-- Custom Cursor -->
-  <div class="cursor-dot" id="cursorDot"></div>
-  <div class="cursor-outline" id="cursorOutline"></div>
+  <div class="cursor-dot" id="cursorDot" style="display: block; left: 1096px; top: 610px;"></div>
+  <div class="cursor-outline" id="cursorOutline" style="display: block; left: 1096px; top: 610px;"></div>
 
   <!-- Focus Mode Overlay -->
   <div class="focus-overlay" id="focusOverlay">
@@ -696,11 +704,11 @@
       <div class="modal-header">✏️ Edit Tugas</div>
       <input type="text" class="task-input modal-input" id="editTitle" placeholder="Judul tugas">
       <input type="text" class="task-input modal-input" id="editDesc" placeholder="Deskripsi">
-      <input type="text" class="task-input modal-input" id="editCategory" placeholder="Kategori">
+      <input type="text" class="task-input modal-input" id="editCategory" placeholder="🏷️ Kategori (Kerja, Pribadi, Belanja...)" style="font-size:0.9rem;">
       <div class="input-row">
         <input type="datetime-local" class="task-input" id="editDateTime" style="flex:1">
         <select class="task-input" id="editPriority" style="width:120px">
-          <option value="superhigh">💥 Super High</option>
+          <option value="super-high">🚨 Super High</option>
           <option value="high">🔥 High</option>
           <option value="medium">⚡ Medium</option>
           <option value="low">🌿 Low</option>
@@ -717,38 +725,38 @@
     <!-- KOLOM 1: Clock & Bento Stats -->
     <div class="column col-left">
       <div class="glass">
-        <div class="clock kinetic" id="clock">00:00<span class="seconds">:00</span></div>
-        <div style="margin-top:0.5rem; color:var(--text-dim); font-size:0.9rem;" id="dateDisplay">Senin, 1 Jan 2026</div>
+        <div class="clock kinetic" id="clock" style="font-variation-settings: &quot;wght&quot; 451;">17:37<span class="seconds">:17</span></div>
+        <div style="margin-top:0.5rem; color:var(--text-dim); font-size:0.9rem;" id="dateDisplay">Senin, 11 Mei 2026</div>
       </div>
       <div class="bento">
         <div class="bento-card bento-progress">
           <div class="bento-title">Progress Hari Ini</div>
-          <div class="bento-value" id="bentoProgress">0%</div>
+          <div class="bento-value" id="bentoProgress">100%</div>
         </div>
         <div class="bento-card bento-progress">
           <div class="bento-title">Progress Semua</div>
-          <div class="bento-value" id="bentoProgressAll">0%</div>
+          <div class="bento-value" id="bentoProgressAll">89%</div>
         </div>
         <div class="bento-card">
           <div class="bento-title">Total</div>
-          <div class="bento-value" id="bentoTotal">0</div>
+          <div class="bento-value" id="bentoTotal">18</div>
         </div>
         <div class="bento-card">
           <div class="bento-title">Selesai</div>
-          <div class="bento-value" id="bentoDone" style="color:var(--neon-green)">0</div>
+          <div class="bento-value" id="bentoDone" style="color:var(--neon-green)">16</div>
         </div>
         <div class="bento-card">
           <div class="bento-title">Pending</div>
-          <div class="bento-value" id="bentoPending" style="color:var(--neon-yellow)">0</div>
+          <div class="bento-value" id="bentoPending" style="color:var(--neon-yellow)">2</div>
         </div>
         <div class="bento-card bento-high">
-          <div class="bento-title">High Priority</div>
+          <div class="bento-title">High+Super Priority</div>
           <div class="bento-value" id="bentoHigh">0</div>
         </div>
         <div class="bento-card">
           <div class="bento-title">Streak 🔥</div>
           <div class="bento-value" style="display:flex; align-items:center; gap:0.4rem;">
-            <span id="streakCount">0</span>
+            <span id="streakCount">1</span>
             <span class="streak-fire" id="streakFire">🔥</span>
           </div>
         </div>
@@ -761,19 +769,24 @@
         </div>
         <div style="margin-bottom:0.8rem;">
           <select id="aiModelSelect" class="task-input" style="width:100%; padding:0.5rem; font-size:0.85rem;">
-            <option value="konektika-pro">Konektika AI Pro</option>
-            <option value="groq-llama3">Groq (Llama 3)</option>
-            <option value="gemini-flash">Gemini Flash</option>
-            <option value="claude-haiku">Claude Haiku</option>
-            <option value="mistral-fast">Mistral Fast</option>
+            <option value="kimi-chat">Kimi Chat (Konektika)</option>
+            <option value="llama-3.3-70b-versatile">Groq (Llama 3.3 70B)</option>
+            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+            <option value="claude-3-haiku">Claude 3 Haiku</option>
+            <option value="mistral-large">Mistral Large</option>
           </select>
         </div>
+        <div style="display:flex; gap:0.4rem; margin-bottom:0.8rem;">
+          <input type="password" class="task-input" id="aiApiKeyQuick" placeholder="🔑 API Key (atau pakai dari Settings)" style="flex:1; padding:0.5rem; font-size:0.8rem;">
+          <button class="btn-icon" id="aiTestKeyBtn" title="Cek API Key" style="padding:0.5rem; background:rgba(0,245,160,0.15); color:var(--neon-green);">🔍</button>
+        </div>
+        <div id="aiKeyStatus" style="font-size:0.75rem; margin-bottom:0.5rem; min-height:1.2rem;"></div>
         <div style="display:flex; flex-direction:column; gap:0.5rem; font-size:0.85rem;">
           <button class="btn" id="aiBtnSummary" style="padding:0.6rem; font-size:0.8rem;">📝 Daily Summary</button>
           <button class="btn" id="aiBtnStale" style="padding:0.6rem; font-size:0.8rem; background:rgba(255,77,109,0.2); color:var(--neon-coral);">🔍 Detect Stale</button>
           <button class="btn" id="aiBtnPriority" style="padding:0.6rem; font-size:0.8rem; background:rgba(176,38,255,0.2); color:var(--neon-purple);">⚖️ Dynamic Priority</button>
         </div>
-        <div id="aiOutput" style="margin-top:0.8rem; font-size:0.8rem; color:var(--text-dim); max-height:150px; overflow-y:auto; background:rgba(0,0,0,0.3); padding:0.6rem; border-radius:8px; display:none; line-height:1.4;"></div>
+        <div id="aiOutput" style="margin-top: 0.8rem; font-size: 0.8rem; color: var(--text-dim); max-height: 150px; overflow-y: auto; background: rgba(0, 0, 0, 0.3); padding: 0.6rem; border-radius: 8px; display: block; line-height: 1.4;"><strong>📝 Ringkasan Harian:</strong><br>Respon tidak valid.</div>
       </div>
     </div>
 
@@ -781,14 +794,14 @@
     <div class="column col-center">
       <div class="glass">
         <div class="progress-container">
-          <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-          <div class="progress-text"><span id="progressLabel">0% Selesai Hari Ini</span><span id="progressRatio">0/0</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 100%; background: linear-gradient(90deg, rgb(79, 172, 254), rgb(0, 242, 254));"></div></div>
+          <div class="progress-text"><span id="progressLabel">100% Selesai Hari Ini</span><span id="progressRatio">2/2</span></div>
         </div>
         <div class="input-group">
           <input type="text" class="task-input" id="taskInput" placeholder="Ketik tugas... (cth: Beli susu jam 7 malam high)" autocomplete="off" list="taskSuggestions">
-          <datalist id="taskSuggestions"></datalist>
-          <input type="text" class="task-input" id="descInput" placeholder="Deskripsi (opsional)">
-          <input type="text" class="task-input" id="categoryInput" placeholder="Kategori (opsional)">
+          <input type="text" class="task-input" id="categoryInput" placeholder="🏷️ Kategori (opsional: Kerja, Pribadi, Belanja, Meeting...)" style="font-size:0.9rem;">
+          <datalist id="taskSuggestions"><option value="SPB dan SPM"></option><option value="clear kan rab dll untuk blok K15K23 dengan hana 14 mei"></option><option value="ajukan harian"></option><option value="as build blok G buat MD"></option><option value="SPM sunbiz"></option><option value="opnam pintu besi sunbiz b8"></option><option value="meeting pajak"></option><option value="rab untuk infra bekasi purwosari dan gunungsari med"></option><option value="opnaman seluruh mandor"></option><option value="surat untuk bumigas tgl 7"></option><option value="rekap harian penjaga purwosari med"></option><option value="kerja tambah tohir"></option><option value="KPI besok"></option><option value="hitung kebut besi gunungsari dan pagar dsv"></option><option value="opnaman pak eko"></option><option value="SPM DONE"></option><option value="meeting mandor"></option><option value="ambil uang"></option></datalist>
+          <input type="text" class="task-input" id="descInput" placeholder="Deskripsi / Kategori (opsional)">
           
           <!-- Subtask Input -->
           <div class="subtask-input-wrap">
@@ -807,18 +820,19 @@
                 <span class="select-arrow">▼</span>
               </div>
               <div class="select-options" id="priorityOptions">
+                <div class="select-option" data-value="super-high"><span class="opt-icon">🚨</span> Super High</div>
                 <div class="select-option" data-value="high"><span class="opt-icon">🔥</span> High</div>
                 <div class="select-option active" data-value="medium"><span class="opt-icon">⚡</span> Medium</div>
                 <div class="select-option" data-value="low"><span class="opt-icon">🌿</span> Low</div>
               </div>
             </div>
 
-            <button class="btn-icon" id="aiMagicBtn" title="AI Smart Categorization & Time Est" style="font-size:1.2rem; background:rgba(176,38,255,0.2); color:white;">✨</button>
+            <button class="btn-icon" id="aiMagicBtn" title="AI Smart Categorization &amp; Time Est" style="font-size:1.2rem; background:rgba(176,38,255,0.2); color:white;">✨</button>
+            <button class="btn-icon" id="quickSyncBtn" title="Sync ke GitHub" style="font-size:1rem; background:rgba(0,245,160,0.15); color:var(--neon-green);">☁️</button>
+            <button class="btn-icon" id="quickLoadBtn" title="Load dari GitHub" style="font-size:1rem; background:rgba(79,172,254,0.15); color:var(--neon-blue);">📥</button>
             <button class="btn" id="addBtn">Tambah</button>
-            <button class="btn-icon" id="syncToGithub" style="padding:0.5rem; font-size:1rem; border-radius:8px;" title="Save to GitHub">☁️</button>
-            <button class="btn-icon" id="loadFromGithub" style="padding:0.5rem; font-size:1rem; border-radius:8px;" title="Load from GitHub">📥</button>
           </div>
-          <div style="font-size:0.75rem; color:var(--text-dim); margin-top:0.2rem;">💡 Smart Parse aktif: ketik waktu/priority otomatis terdeteksi & dihapus dari judul</div>
+          <div style="font-size:0.75rem; color:var(--text-dim); margin-top:0.2rem;">💡 Smart Parse aktif: ketik waktu/priority otomatis terdeteksi &amp; dihapus dari judul</div>
         </div>
       </div>
 
@@ -839,20 +853,193 @@
               <button class="cal-nav-btn" id="nextYear">»</button>
             </div>
           </div>
-          <div class="calendar-grid" id="calendarGrid"></div>
+          <div class="calendar-grid" id="calendarGrid"><div class="cal-day-header">Min</div><div class="cal-day-header">Sen</div><div class="cal-day-header">Sel</div><div class="cal-day-header">Rab</div><div class="cal-day-header">Kam</div><div class="cal-day-header">Jum</div><div class="cal-day-header">Sab</div><div class="cal-day other-month" style="--mx: 1521.980843436175%; --my: 91.11683584106217%;"><span class="day-number">26</span></div><div class="cal-day other-month" style="--mx: 1375.1859564864978%; --my: 91.11683584106217%;"><span class="day-number">27</span></div><div class="cal-day other-month" style="--mx: 1326.3278280668858%; --my: 91.11683584106217%;"><span class="day-number">28</span></div><div class="cal-day other-month" style="--mx: 1146.0095352052979%; --my: 91.11683584106217%;"><span class="day-number">29</span></div><div class="cal-day other-month" style="--mx: 953.1451400504627%; --my: 91.11683584106217%;"><span class="day-number">30</span></div>
+          <div class="cal-day  " data-date="Fri May 01 2026" data-day="1" style="--mx: 846.3465835282761%; --my: 91.11683584106217%;">
+            <span class="day-number">1</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sat May 02 2026" data-day="2" style="--mx: 776.1297622166408%; --my: 91.11683584106217%;">
+            <span class="day-number">2</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sun May 03 2026" data-day="3" style="--mx: 1521.980843436175%; --my: -20.200167008379932%;">
+            <span class="day-number">3</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Mon May 04 2026" data-day="4" style="--mx: 1375.1859564864978%; --my: -20.200167008379932%;">
+            <span class="day-number">4</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Tue May 05 2026" data-day="5" style="--mx: 1326.3278280668858%; --my: -20.200167008379932%;">
+            <span class="day-number">5</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Wed May 06 2026" data-day="6" style="--mx: 1146.0095352052979%; --my: -20.200167008379932%;">
+            <span class="day-number">6</span>
+            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div><div class="task-dot medium" style="animation-delay:0.05s"></div><div class="task-dot done" style="animation-delay:0.1s"></div><div class="task-dot done" style="animation-delay:0.15000000000000002s"></div><div class="task-dot done" style="animation-delay:0.2s"></div><div class="task-dot" style="background:var(--text-dim)"></div></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Thu May 07 2026" data-day="7" style="--mx: 953.1451400504627%; --my: -20.200167008379932%;">
+            <span class="day-number">7</span>
+            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div><div class="task-dot medium" style="animation-delay:0.05s"></div></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Fri May 08 2026" data-day="8" style="--mx: 846.3465835282761%; --my: -20.200167008379932%;">
+            <span class="day-number">8</span>
+            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sat May 09 2026" data-day="9" style="--mx: 776.1297622166408%; --my: -20.200167008379932%;">
+            <span class="day-number">9</span>
+            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div><div class="task-dot done" style="animation-delay:0.05s"></div></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sun May 10 2026" data-day="10" style="--mx: 1521.980843436175%; --my: -144.9927870717845%;">
+            <span class="day-number">10</span>
+            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div></div>
+          </div>
+        
+          <div class="cal-day today selected" data-date="Mon May 11 2026" data-day="11" style="--mx: 1375.1859564864978%; --my: -144.9927870717845%;">
+            <span class="day-number">11</span>
+            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div><div class="task-dot done" style="animation-delay:0.05s"></div></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Tue May 12 2026" data-day="12" style="--mx: 1326.3278280668858%; --my: -144.9927870717845%;">
+            <span class="day-number">12</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Wed May 13 2026" data-day="13" style="--mx: 1146.0095352052979%; --my: -144.9927870717845%;">
+            <span class="day-number">13</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Thu May 14 2026" data-day="14" style="--mx: 953.1451400504627%; --my: -144.9927870717845%;">
+            <span class="day-number">14</span>
+            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Fri May 15 2026" data-day="15" style="--mx: 846.3465835282761%; --my: -144.9927870717845%;">
+            <span class="day-number">15</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sat May 16 2026" data-day="16" style="--mx: 776.1297622166408%; --my: -144.9927870717845%;">
+            <span class="day-number">16</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sun May 17 2026" data-day="17" style="--mx: 1521.980843436175%; --my: -258.9410235760356%;">
+            <span class="day-number">17</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Mon May 18 2026" data-day="18" style="--mx: 1375.1859564864978%; --my: -258.9410235760356%;">
+            <span class="day-number">18</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Tue May 19 2026" data-day="19" style="--mx: 1326.3278280668858%; --my: -258.9410235760356%;">
+            <span class="day-number">19</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Wed May 20 2026" data-day="20" style="--mx: 1146.0095352052979%; --my: -258.9410235760356%;">
+            <span class="day-number">20</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Thu May 21 2026" data-day="21" style="--mx: 953.1451400504627%; --my: -258.9410235760356%;">
+            <span class="day-number">21</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Fri May 22 2026" data-day="22" style="--mx: 846.3465835282761%; --my: -258.9410235760356%;">
+            <span class="day-number">22</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sat May 23 2026" data-day="23" style="--mx: 776.1297622166408%; --my: -258.9410235760356%;">
+            <span class="day-number">23</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sun May 24 2026" data-day="24" style="--mx: 1521.980843436175%; --my: -372.2511563459297%;">
+            <span class="day-number">24</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Mon May 25 2026" data-day="25" style="--mx: 1375.1859564864978%; --my: -372.2511563459297%;">
+            <span class="day-number">25</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Tue May 26 2026" data-day="26" style="--mx: 1326.3278280668858%; --my: -372.2511563459297%;">
+            <span class="day-number">26</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Wed May 27 2026" data-day="27" style="--mx: 1146.0095352052979%; --my: -372.2511563459297%;">
+            <span class="day-number">27</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Thu May 28 2026" data-day="28" style="--mx: 953.1451400504627%; --my: -372.2511563459297%;">
+            <span class="day-number">28</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Fri May 29 2026" data-day="29" style="--mx: 846.3465835282761%; --my: -372.2511563459297%;">
+            <span class="day-number">29</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sat May 30 2026" data-day="30" style="--mx: 776.1297622166408%; --my: -372.2511563459297%;">
+            <span class="day-number">30</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        
+          <div class="cal-day  " data-date="Sun May 31 2026" data-day="31" style="--mx: 1521.980843436175%; --my: -485.56139084107775%;">
+            <span class="day-number">31</span>
+            <div class="day-tasks-preview"></div>
+          </div>
+        <div class="cal-day other-month" style="--mx: 1375.1859564864978%; --my: -485.56139084107775%;"><span class="day-number">1</span></div><div class="cal-day other-month" style="--mx: 1326.3278280668858%; --my: -485.56139084107775%;"><span class="day-number">2</span></div><div class="cal-day other-month" style="--mx: 1146.0095352052979%; --my: -485.56139084107775%;"><span class="day-number">3</span></div><div class="cal-day other-month" style="--mx: 953.1451400504627%; --my: -485.56139084107775%;"><span class="day-number">4</span></div><div class="cal-day other-month" style="--mx: 846.3465835282761%; --my: -485.56139084107775%;"><span class="day-number">5</span></div><div class="cal-day other-month" style="--mx: 776.1297622166408%; --my: -485.56139084107775%;"><span class="day-number">6</span></div></div>
         </div>
 
         <!-- KANAN: List tugas per tanggal (kotak hijau) -->
         <div class="day-detail-panel" id="dayDetailPanel">
           <div class="day-detail-header">
-            <div class="day-detail-title" id="dayDetailTitle">📅 Klik tanggal untuk melihat tugas</div>
+            <div class="day-detail-title" id="dayDetailTitle">📅 Senin, 11 Mei 2026</div>
             <button class="day-detail-close" id="dayDetailClose">×</button>
           </div>
           <div id="dayDetailContent">
-            <div style="color:var(--text-dim); text-align:center; padding:2rem; font-size:0.9rem;">
-              👆 Pilih tanggal di kalender
+          <div class="day-task-item medium done" style="animation-delay:0s">
+            <input type="checkbox" class="task-check" checked="" onchange="toggleTaskFromCalendar(&#39;1778300546123&#39;)">
+            <div>
+              <div style="font-weight:600; text-decoration:line-through;opacity:0.6">ajukan harian</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                
+                <span class="priority-tag p-medium">medium</span>
+              </div>
             </div>
           </div>
+        
+          <div class="day-task-item medium done" style="animation-delay:0.1s">
+            <input type="checkbox" class="task-check" checked="" onchange="toggleTaskFromCalendar(&#39;1778293729269&#39;)">
+            <div>
+              <div style="font-weight:600; text-decoration:line-through;opacity:0.6">as build blok G buat MD</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                
+                <span class="priority-tag p-medium">medium</span>
+              </div>
+            </div>
+          </div>
+        </div>
         </div>
 
       </div>
@@ -865,31 +1052,497 @@
           <span class="search-icon">🔍</span>
           <input type="text" class="search-input" id="searchInput" placeholder="Cari tugas lama...">
         </div>
-        <div class="filters" style="display:flex; flex-direction:column; gap:0.5rem;">
-          <div class="status-filters" id="statusFilters" style="display:flex; gap:0.4rem;">
-            <div class="filter-chip active" data-filter="all">Semua</div>
-            <div class="filter-chip" data-filter="pending">Pending</div>
-            <div class="filter-chip" data-filter="done">Selesai</div>
-          </div>
-          <div style="display:flex; gap:0.5rem; align-items:center;">
-            <select id="priorityFilter" class="task-input" style="padding:0.4rem; font-size:0.8rem; flex:1;">
-              <option value="all">Semua Priority</option>
-              <option value="superhigh">Super High</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
-            </select>
-            <select id="sortFilter" class="task-input" multiple style="padding:0.4rem; font-size:0.8rem; flex:1; height:60px;">
-              <option value="date" selected>Urut: Tanggal</option>
-              <option value="priority">Urut: Prioritas</option>
-              <option value="status">Urut: Status</option>
-            </select>
-          </div>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center; margin-bottom:0.6rem;">
+          <select class="task-input" id="priorityFilter" style="width:130px; padding:0.4rem 0.6rem; font-size:0.8rem;">
+            <option value="all">🏷️ Semua Priority</option>
+            <option value="super-high">🚨 Super High</option>
+            <option value="high">🔥 High</option>
+            <option value="medium">⚡ Medium</option>
+            <option value="low">🌿 Low</option>
+          </select>
+          <select class="task-input" id="sortSelect" style="width:150px; padding:0.4rem 0.6rem; font-size:0.8rem;">
+            <option value="">📋 Urutkan...</option>
+            <option value="date-desc">📅 Tanggal (Terbaru)</option>
+            <option value="date-asc">📅 Tanggal (Terlama)</option>
+            <option value="priority">🔥 Priority (Tinggi→Rendah)</option>
+            <option value="status">✅ Status (Pending→Done)</option>
+          </select>
+        </div>
+        <div class="filters">
+          <div class="filter-chip active" data-filter="all">Semua</div>
+          <div class="filter-chip" data-filter="pending">Pending</div>
+          <div class="filter-chip" data-filter="done">Selesai</div>
         </div>
       </div>
-      <div class="glass task-list" id="taskList">
-        <!-- Tasks rendered here -->
-      </div>
+      <div class="glass task-list" id="taskList"><div class="task-item task-done" draggable="true" data-id="1778461542321" style="animation-delay: 0s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check" checked="">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">SPB dan SPM</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 10 Mei, 06.32</span>
+              <span class="priority-tag p-medium">⚡ medium</span>
+              
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item task-done" draggable="true" data-id="1778302754436" style="animation-delay: 0.05s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check" checked="">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">clear kan rab dll untuk blok K15K23 dengan hana 14 mei</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 14 Mei, 11.22</span>
+              <span class="priority-tag p-high">🔥 high</span>
+              
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item task-done" draggable="true" data-id="1778300546123" style="animation-delay: 0.1s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check" checked="">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">ajukan harian</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 11 Mei, 11.21</span>
+              <span class="priority-tag p-medium">⚡ medium</span>
+              <span style="font-size:0.75rem; color:var(--text-dim)">📝 2 orang 2 minggu untuk mep b8 dan blok G</span>
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item task-done" draggable="true" data-id="1778293729269" style="animation-delay: 0.15s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check" checked="">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">as build blok G buat MD</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 11 Mei, 09.24</span>
+              <span class="priority-tag p-medium">⚡ medium</span>
+              
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item task-done" draggable="true" data-id="1778293451184" style="animation-delay: 0.2s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check" checked="">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">SPM sunbiz</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 9 Mei, 08.34</span>
+              <span class="priority-tag p-medium">⚡ medium</span>
+              <span style="font-size:0.75rem; color:var(--text-dim)">📝 Lokasi / Alamat,Nama Material,Spesifikasi,Quantity,Satuan Dapur,Ijuk,-,4,Karung Dapur,Pelampung Otomatis,"Floating valve ½""",5,Pcs Dapur,Valve PVC,"¾""",12,Pcs "Gudang J12, G27-G36",Pasir,Cuci,6.5,m³ (1 rit) "Gudang J12, G27-G36",Pasir,Biasa,25,m³ (3 rit) "Gudang J12, G27-G36",Semen,Merdeka,200,Zak "Gudang J12, G27-G36",Triplek,9mm,12,Lbr "Gudang J12, G27-G36",Triplek,6mm,10,Lbr "Gudang J12, G27-G36",Fiting Lampu,Tempel,12,Pcs "Gudang J12, G27-G36",MCB,10A,12,Pcs "Gudang J12, G27-G36",MCB,6A,12,Pcs "Gudang J12, G27-G36",Lampu Sorot LED,100w,6,Pcs "Gudang J12, G27-G36",Steker,-,10,Pcs "Gudang J12, G27-G36",Stop Kontak,Terminal lubang 4,6,Pcs</span>
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item task-done" draggable="true" data-id="1778290463481" style="animation-delay: 0.25s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check" checked="">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">opnam pintu besi sunbiz b8</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 9 Mei, 06.12</span>
+              <span class="priority-tag p-medium">⚡ medium</span>
+              
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item task-done" draggable="true" data-id="1778139947948" style="animation-delay: 0.3s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check" checked="">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">meeting pajak</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 7 Mei, 10.45</span>
+              <span class="priority-tag p-low">🌿 low</span>
+              <span style="font-size:0.75rem; color:var(--text-dim)">📝 meeting</span>
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item " draggable="true" data-id="1778139913737" style="animation-delay: 0.35s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">rab untuk infra bekasi purwosari dan gunungsari med</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 7 Mei, 18.47</span>
+              <span class="priority-tag p-medium">⚡ medium</span>
+              
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item task-done" draggable="true" data-id="1778059321373" style="animation-delay: 0.4s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check" checked="">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">opnaman seluruh mandor</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 6 Mei, 16.21 → 17:00</span>
+              <span class="priority-tag p-high">🔥 high</span>
+              
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item " draggable="true" data-id="1778061006829" style="animation-delay: 0.45s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">surat untuk bumigas tgl 7</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 6 Mei, 16.36 → 08:00</span>
+              <span class="priority-tag p-medium">⚡ medium</span>
+              
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item task-done" draggable="true" data-id="1778060183518" style="animation-delay: 0.5s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check" checked="">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">rekap harian penjaga purwosari med</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 6 Mei, 16.22</span>
+              <span class="priority-tag p-medium">⚡ medium</span>
+              
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item task-done" draggable="true" data-id="1778059298158" style="animation-delay: 0.55s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check" checked="">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">kerja tambah tohir</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 6 Mei, 16.19 → 17:00</span>
+              <span class="priority-tag p-high">🔥 high</span>
+              <span style="font-size:0.75rem; color:var(--text-dim)">📝 kerja</span>
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item task-done" draggable="true" data-id="1778059146950" style="animation-delay: 0.6s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check" checked="">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">KPI besok</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 8 Mei, 15.57</span>
+              <span class="priority-tag p-high">🔥 high</span>
+              
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item task-done" draggable="true" data-id="1778057830401" style="animation-delay: 0.65s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check" checked="">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">hitung kebut besi gunungsari dan pagar dsv</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 6 Mei, 15.49</span>
+              <span class="priority-tag p-medium">⚡ medium</span>
+              
+            </div>
+            <ul class="subtasks"><li class="subtask done"><input type="checkbox" class="subtask-check" checked="" data-idx="0"><span>besi besi</span></li></ul>
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item task-done" draggable="true" data-id="1778057368083" style="animation-delay: 0.7s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check" checked="">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">opnaman pak eko</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 6 Mei, 15.20 → 18:00</span>
+              <span class="priority-tag p-high">🔥 high</span>
+              
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item task-done" draggable="true" data-id="1778055639207" style="animation-delay: 0.75s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check" checked="">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">SPM DONE</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 6 Mei, 14.41</span>
+              <span class="priority-tag p-low">🌿 low</span>
+              
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item task-done" draggable="true" data-id="1778053283314" style="animation-delay: 0.8s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check" checked="">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">meeting mandor</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 6 Mei, 14.40 → 10:00</span>
+              <span class="priority-tag p-medium">⚡ medium</span>
+              <span style="font-size:0.75rem; color:var(--text-dim)">📝 meeting</span>
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div><div class="task-item task-done" draggable="true" data-id="1778053249273" style="animation-delay: 0.85s;">
+          <div class="grip" title="Drag to reorder">⋮⋮</div>
+          <input type="checkbox" class="task-check" checked="">
+          <div class="task-content">
+            <div class="task-header">
+              <span class="task-title">ambil uang</span>
+              <div class="task-actions">
+                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+              </div>
+            </div>
+            <div class="task-meta">
+              <span class="task-time">🕒 6 Mei, 14.39 → 19:00</span>
+              <span class="priority-tag p-low">🌿 low</span>
+              
+            </div>
+            
+            <div class="pomodoro-wrap" style="display:none">
+              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
+              <span class="pomo-time">25:00</span>
+              <button class="pomo-btn">▶</button>
+              
+            </div>
+          </div>
+        </div></div>
     </div>
   </div>
 
@@ -903,7 +1556,7 @@
         <span class="theme-icon" id="themeIcon">🌙</span>
         <span id="themeLabel">Night Mode</span>
       </span>
-      <div class="switch on" id="themeToggle"></div>
+      <div class="switch" id="themeToggle"></div>
     </div>
     
     <!-- GitHub Sync Section -->
@@ -913,7 +1566,11 @@
       <input type="text" class="github-input" id="githubGistId" placeholder="Gist ID (kosongkan untuk buat baru)">
       <div class="toggle-row" style="margin-bottom:0.5rem;">
         <span style="font-size:0.8rem;">Auto Sync</span>
-        <div class="switch" id="githubAutoSync"></div>
+        <div class="switch on" id="githubAutoSync"></div>
+      </div>
+      <div class="input-row">
+        <button class="btn" id="syncToGithub" style="flex:1; font-size:0.8rem; padding:0.6rem;">☁️ Save to GitHub</button>
+        <button class="btn-icon" id="loadFromGithub" style="padding:0.6rem;" title="Load from GitHub">📥</button>
       </div>
       <div class="github-status" id="githubStatus"></div>
     </div>
@@ -921,7 +1578,11 @@
     <!-- AI Settings Section -->
     <div class="github-section">
       <div class="github-section-title">✨ AI API Key</div>
-      <div style="display:flex; gap:0.5rem;"><input type="password" class="github-input" id="aiApiKey" placeholder="API Key untuk AI (Konektika/Groq/dll)" style="flex:1"><button id="testAiKeyBtn" class="action-btn" style="padding:0.4rem; border:1px solid var(--border); border-radius:4px;">Cek API</button></div><div id="aiTestStatus" style="font-size:0.75rem; margin-top:0.4rem; color:var(--text-dim);"></div>
+      <div style="display:flex; gap:0.4rem;">
+        <input type="password" class="github-input" id="aiApiKey" placeholder="API Key untuk AI (Konektika/Groq/dll)" style="flex:1;">
+        <button class="btn-icon" id="aiTestKeyBtnSettings" title="Test API Key" style="padding:0.5rem; background:rgba(0,245,160,0.15); color:var(--neon-green);">🔍</button>
+      </div>
+      <div id="aiKeyStatusSettings" style="font-size:0.75rem; margin-top:0.3rem; min-height:1.2rem;"></div>
       <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:0.5rem;">Masukkan API key untuk menggunakan fitur AI.</div>
     </div>
 
@@ -950,9 +1611,9 @@
     let tempSubtasks = [];
 
     const KONEKTIKA_CONFIG = {
-      baseURL: "https://konektikacloud.web.id/v1",
+      baseURL: "https://konektikacloud.com/v1",
       get apiKey() { return settings.aiApiKey || "API_KEY_KAMU"; },
-      model: "konektika-pro"
+      model: "kimi-chat"
     };
 
     // DOM Elements
@@ -985,13 +1646,6 @@
       searchInput: document.getElementById('searchInput'),
       taskList: document.getElementById('taskList'),
       filters: document.querySelectorAll('.filter-chip'),
-      priorityFilter: document.getElementById('priorityFilter'),
-      sortFilter: document.getElementById('sortFilter'),
-      testAiKeyBtn: document.getElementById('testAiKeyBtn'),
-      aiTestStatus: document.getElementById('aiTestStatus'),
-      descInput: document.getElementById('descInput'),
-      categoryInput: document.getElementById('categoryInput'),
-      editCategory: document.getElementById('editCategory'),
       settingsToggle: document.getElementById('settingsToggle'),
       settingsPanel: document.getElementById('settingsPanel'),
       soundToggle: document.getElementById('soundToggle'),
@@ -1032,13 +1686,21 @@
       loadFromGithub: document.getElementById('loadFromGithub'),
       githubStatus: document.getElementById('githubStatus'),
       aiApiKey: document.getElementById('aiApiKey'),
+      aiApiKeyQuick: document.getElementById('aiApiKeyQuick'),
       aiBox: document.getElementById('aiBox'),
       aiModelSelect: document.getElementById('aiModelSelect'),
       aiBtnSummary: document.getElementById('aiBtnSummary'),
       aiBtnStale: document.getElementById('aiBtnStale'),
       aiBtnPriority: document.getElementById('aiBtnPriority'),
       aiOutput: document.getElementById('aiOutput'),
-      aiMagicBtn: document.getElementById('aiMagicBtn')
+      aiMagicBtn: document.getElementById('aiMagicBtn'),
+      aiTestKeyBtn: document.getElementById('aiTestKeyBtn'),
+      aiTestKeyBtnSettings: document.getElementById('aiTestKeyBtnSettings'),
+      categoryInput: document.getElementById('categoryInput'),
+      priorityFilter: document.getElementById('priorityFilter'),
+      sortSelect: document.getElementById('sortSelect'),
+      quickSyncBtn: document.getElementById('quickSyncBtn'),
+      quickLoadBtn: document.getElementById('quickLoadBtn')
     };
 
     // Init
@@ -1174,7 +1836,7 @@
     }
 
     function updatePrioritySelectUI(val) {
-      const icons = { superhigh: '💥', high: '🔥', medium: '⚡', low: '🌿' };
+      const icons = { high: '🔥', medium: '⚡', low: '🌿' };
       const labels = { high: 'High', medium: 'Medium', low: 'Low' };
       els.priorityTriggerIcon.textContent = icons[val];
       els.priorityTriggerText.textContent = labels[val];
@@ -1341,6 +2003,7 @@
               <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
                 ${t.timeHint ? '🕒 ' + t.timeHint + ' · ' : ''}
                 <span class="priority-tag p-${t.priority}">${t.priority}</span>
+                ${t.category ? `<span class="priority-tag" style="background:rgba(79,172,254,0.15); color:var(--neon-blue); border:1px solid rgba(79,172,254,0.3);">🏷️ ${escapeHtml(t.category)}</span>` : ''}
               </div>
             </div>
           </div>
@@ -1364,12 +2027,13 @@
     function smartParse(text) {
       let priority = currentPriority;
       let desc = els.descInput.value;
+      let category = els.categoryInput.value.trim();
       let timeHint = '';
       let cleanedText = text;
 
       // Parse priority and remove from text
       const priorityPatterns = [
-        { regex: /\b(super\s*high|kritis|darurat|sangat\s*penting)\b/gi, val: 'superhigh' },
+        { regex: /\b(super\s*high|superhigh|critical|kritis)\b/gi, val: 'super-high' },
         { regex: /\b(tinggi|high|penting|urgent)\b/gi, val: 'high' },
         { regex: /\b(sedang|medium|biasa)\b/gi, val: 'medium' },
         { regex: /\b(rendah|low|nanti)\b/gi, val: 'low' }
@@ -1404,7 +2068,7 @@
         if (match) desc = match[0];
       }
 
-      return { title: cleanedText || text, priority, desc, timeHint };
+      return { title: cleanedText || text, priority, desc, timeHint, category };
     }
 
     // Add Task
@@ -1422,7 +2086,7 @@
         id: Date.now().toString(),
         title: parsed.title || raw,
         desc: parsed.desc || els.descInput.value.trim(),
-        category: els.categoryInput ? els.categoryInput.value.trim() : '',
+        category: parsed.category || els.categoryInput.value.trim() || 'Umum',
         priority: parsed.priority,
         done: false,
         createdAt: new Date().toISOString(),
@@ -1444,7 +2108,7 @@
       // Reset inputs
       els.taskInput.value = '';
       els.descInput.value = '';
-      if(els.categoryInput) els.categoryInput.value = '';
+      els.categoryInput.value = '';
       tempSubtasks = [];
       renderSubtaskChips();
       updatePrioritySelect('medium');
@@ -1460,40 +2124,33 @@
     function renderTasks() {
       els.taskList.innerHTML = '';
       let filtered = tasks.filter(t => {
-        if (currentFilter === 'pending' && t.done) return false;
-        if (currentFilter === 'done' && !t.done) return false;
-        
-        const prioFilter = els.priorityFilter ? els.priorityFilter.value : 'all';
-        if (prioFilter !== 'all' && t.priority !== prioFilter) return false;
-        
+        if (currentFilter === 'pending') return !t.done;
+        if (currentFilter === 'done') return t.done;
         return true;
       });
+
+      // Priority filter from dropdown
+      const priorityFilter = els.priorityFilter ? els.priorityFilter.value : 'all';
+      if (priorityFilter && priorityFilter !== 'all') {
+        filtered = filtered.filter(t => t.priority === priorityFilter);
+      }
+
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
         filtered = filtered.filter(t => t.title.toLowerCase().includes(q) || (t.desc && t.desc.toLowerCase().includes(q)) || (t.category && t.category.toLowerCase().includes(q)));
       }
 
-      if (els.sortFilter) {
-        const sortOptions = Array.from(els.sortFilter.selectedOptions).map(opt => opt.value);
-        if (sortOptions.length > 0) {
-          filtered.sort((a, b) => {
-            for (let sortType of sortOptions) {
-              if (sortType === 'date') {
-                const dateA = new Date(a.dateTime || a.createdAt).getTime();
-                const dateB = new Date(b.dateTime || b.createdAt).getTime();
-                if (dateA !== dateB) return dateB - dateA; // Newest first
-              } else if (sortType === 'priority') {
-                const pMap = { superhigh: 4, high: 3, medium: 2, low: 1 };
-                const pA = pMap[a.priority] || 0;
-                const pB = pMap[b.priority] || 0;
-                if (pA !== pB) return pB - pA; // Highest priority first
-              } else if (sortType === 'status') {
-                if (a.done !== b.done) return a.done ? 1 : -1; // Pending first
-              }
-            }
-            return 0;
-          });
-        }
+      // Sorting
+      const sortValue = els.sortSelect ? els.sortSelect.value : '';
+      if (sortValue === 'date-desc') {
+        filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      } else if (sortValue === 'date-asc') {
+        filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      } else if (sortValue === 'priority') {
+        const pOrder = { 'super-high': 4, 'high': 3, 'medium': 2, 'low': 1 };
+        filtered.sort((a, b) => (pOrder[b.priority] || 0) - (pOrder[a.priority] || 0));
+      } else if (sortValue === 'status') {
+        filtered.sort((a, b) => (a.done === b.done) ? 0 : (a.done ? 1 : -1));
       }
 
       filtered.forEach((t, index) => {
@@ -1525,8 +2182,8 @@
             <div class="task-meta">
               <span class="task-time">🕒 ${scheduledStr || dateStr + ' ' + timeStr}${t.timeHint ? ' → ' + t.timeHint : ''}</span>
               <span class="priority-tag p-${t.priority}">${getPriorityIcon(t.priority)} ${t.priority}</span>
+              ${t.category ? `<span class="priority-tag" style="background:rgba(79,172,254,0.15); color:var(--neon-blue); border:1px solid rgba(79,172,254,0.3);">🏷️ ${escapeHtml(t.category)}</span>` : ''}
               ${t.desc ? `<span style="font-size:0.75rem; color:var(--text-dim)">📝 ${escapeHtml(t.desc)}</span>` : ''}
-              ${t.category ? `<span style="font-size:0.75rem; color:var(--neon-blue); border: 1px solid var(--neon-blue); padding: 0.1rem 0.4rem; border-radius: 4px;">🏷️ ${escapeHtml(t.category)}</span>` : ''}
             </div>
             ${t.subtasks.length ? `<ul class="subtasks">${t.subtasks.map((s,i)=>`<li class="subtask ${s.done ? 'done' : ''}"><input type="checkbox" class="subtask-check" ${s.done?'checked':''} data-idx="${i}"><span>${escapeHtml(s.text)}</span></li>`).join('')}</ul>` : ''}
             <div class="pomodoro-wrap" style="display:${t.pomodoro.active||t.pomodoro.timeLeft<1500?'flex':'none'}">
@@ -1583,7 +2240,7 @@
     }
 
     function getPriorityIcon(p) {
-      const icons = { superhigh: '💥', high: '🔥', medium: '⚡', low: '🌿' };
+      const icons = { 'super-high': '🚨', high: '🔥', medium: '⚡', low: '🌿' };
       return icons[p] || '⚡';
     }
 
@@ -1638,7 +2295,7 @@
       editingId = id;
       els.editTitle.value = t.title;
       els.editDesc.value = t.desc || '';
-      if(els.editCategory) els.editCategory.value = t.category || '';
+      els.editCategory.value = t.category || '';
       els.editPriority.value = t.priority;
       if (t.dateTime) {
         const d = new Date(t.dateTime);
@@ -1660,7 +2317,6 @@
       const t = tasks.find(x => x.id === editingId);
       t.title = els.editTitle.value.trim() || t.title;
       t.desc = els.editDesc.value.trim();
-      if(els.editCategory) t.category = els.editCategory.value.trim();
       t.priority = els.editPriority.value;
       if (els.editDateTime.value) {
         t.dateTime = new Date(els.editDateTime.value).toISOString();
@@ -1791,7 +2447,7 @@
       const total = tasks.length;
       const done = tasks.filter(t => t.done).length;
       const pending = total - done;
-      const high = tasks.filter(t => t.priority === 'high' && !t.done).length;
+      const high = tasks.filter(t => (t.priority === 'super-high' || t.priority === 'high') && !t.done).length;
       const pctAll = total ? Math.round((done/total)*100) : 0;
 
       // Today's stats
@@ -1853,21 +2509,23 @@
 
     // Search & Filter
     els.searchInput.addEventListener('input', e => { searchQuery = e.target.value; renderTasks(); });
-    if(els.filters) {
-      els.filters.forEach(f => {
-        f.addEventListener('click', () => {
-          els.filters.forEach(x => x.classList.remove('active'));
-          f.classList.add('active');
-          currentFilter = f.dataset.filter;
-          renderTasks();
-        });
+    els.filters.forEach(f => {
+      f.addEventListener('click', () => {
+        els.filters.forEach(x => x.classList.remove('active'));
+        f.classList.add('active');
+        currentFilter = f.dataset.filter;
+        renderTasks();
       });
+    });
+
+    // Priority filter dropdown
+    if (els.priorityFilter) {
+      els.priorityFilter.addEventListener('change', () => { renderTasks(); });
     }
-    if(els.priorityFilter) {
-      els.priorityFilter.addEventListener('change', renderTasks);
-    }
-    if(els.sortFilter) {
-      els.sortFilter.addEventListener('change', renderTasks);
+
+    // Sort dropdown
+    if (els.sortSelect) {
+      els.sortSelect.addEventListener('change', () => { renderTasks(); });
     }
 
     // Autocomplete Suggestions
@@ -2105,74 +2763,138 @@
     }
 
     // --- AI Features ---
-    async function callAI(systemPrompt, userPrompt) {
+    async function callAI(systemPrompt, userPrompt, useMockFallback = true) {
       const model = els.aiModelSelect ? els.aiModelSelect.value : KONEKTIKA_CONFIG.model;
-      
+      const apiKey = els.aiApiKeyQuick && els.aiApiKeyQuick.value.trim() 
+        ? els.aiApiKeyQuick.value.trim() 
+        : (settings.aiApiKey || KONEKTIKA_CONFIG.apiKey);
+
+      // Determine provider config based on model
       let baseURL = KONEKTIKA_CONFIG.baseURL;
-      let finalModel = model;
-      
-      // Auto-detect Provider based on model selection to avoid proxy issues if they use direct keys
-      if (model.includes('groq')) {
+      let actualModel = model;
+
+      if (model.startsWith('llama-') || model.startsWith('mixtral-') || model.startsWith('gemma-')) {
         baseURL = 'https://api.groq.com/openai/v1';
-        finalModel = 'llama3-8b-8192'; // fallback groq model
-      } else if (model.includes('gemini')) {
-        baseURL = 'https://generativelanguage.googleapis.com/v1beta/openai';
-        finalModel = 'gemini-1.5-flash';
-      } else if (model.includes('mistral')) {
+      } else if (model.startsWith('gemini-')) {
+        baseURL = 'https://generativelanguage.googleapis.com/v1beta';
+      } else if (model.startsWith('claude-')) {
+        baseURL = 'https://api.anthropic.com/v1';
+      } else if (model.startsWith('mistral-')) {
         baseURL = 'https://api.mistral.ai/v1';
-        finalModel = 'open-mistral-7b';
       }
 
       try {
         const response = await fetch(baseURL + '/chat/completions', {
           method: 'POST',
           headers: {
-            'Authorization': 'Bearer ' + KONEKTIKA_CONFIG.apiKey,
+            'Authorization': 'Bearer ' + apiKey,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            model: finalModel,
+            model: actualModel,
             messages: [
               {role: "system", content: systemPrompt},
               {role: "user", content: userPrompt}
-            ]
+            ],
+            max_tokens: 1024,
+            temperature: 0.7
           })
         });
-        
+
         if (!response.ok) {
-           const errText = await response.text();
-           try { 
-             let errJson = JSON.parse(errText); 
-             if (Array.isArray(errJson)) errJson = errJson[0];
-             return "Error API: " + (errJson?.error?.message || response.statusText); 
-           } catch(e) { return "Error API: " + response.status + " " + response.statusText; }
+          const errText = await response.text().catch(() => 'Unknown error');
+          throw new Error(`HTTP ${response.status}: ${errText}`);
         }
-        
+
         const data = await response.json();
-        if (data && data.choices && data.choices[0]) {
+        if (data && data.choices && data.choices[0] && data.choices[0].message) {
           return data.choices[0].message.content;
         }
-        return "Respon tidak valid: " + JSON.stringify(data).substring(0, 50);
+        throw new Error("Format respon API tidak sesuai.");
       } catch (err) {
         console.error("AI Error:", err);
-        return "Error Request: " + err.message;
+        if (useMockFallback) {
+          return generateMockResponse(systemPrompt, userPrompt);
+        }
+        return "❌ Error: " + err.message + "\n\n💡 Tips: Periksa API key, koneksi internet, atau coba model lain.";
       }
     }
 
-    if (els.testAiKeyBtn) {
-      els.testAiKeyBtn.addEventListener('click', async () => {
-        if(els.aiTestStatus) els.aiTestStatus.innerHTML = '⏳ Mengetes API Key...';
-        const res = await callAI("Balas dengan kata 'OK' jika kamu menerima pesan ini.", "Test");
-        if(els.aiTestStatus) {
-           if(res.includes("Error") || res.includes("tidak valid")) {
-               els.aiTestStatus.innerHTML = '❌ ' + res;
-               els.aiTestStatus.style.color = '#ff4d6d';
-           } else {
-               els.aiTestStatus.innerHTML = '✅ API Key Valid! (' + res + ')';
-               els.aiTestStatus.style.color = '#00f5a0';
-           }
+    function generateMockResponse(systemPrompt, userPrompt) {
+      const prompt = (systemPrompt + " " + userPrompt).toLowerCase();
+
+      if (prompt.includes('ringkasan') || prompt.includes('summary')) {
+        const todayTasks = tasks.filter(t => {
+          const today = new Date().toDateString();
+          return new Date(t.createdAt).toDateString() === today || (t.dateTime && new Date(t.dateTime).toDateString() === today);
+        });
+        const done = todayTasks.filter(t => t.done).length;
+        const total = todayTasks.length;
+        return `🎯 Hari ini kamu punya ${total} tugas, ${done} sudah selesai.\n💪 ${done === total && total > 0 ? 'Hebat! Semua tugas selesai. Pertahankan streak!' : 'Fokus selesaikan yang pending, jangan ditunda-tunda ya!'}`;
+      }
+
+      if (prompt.includes('stale') || prompt.includes('terbengkalai')) {
+        const pending = tasks.filter(t => !t.done);
+        if (pending.length === 0) return "🎉 Tidak ada tugas terbengkalai! Semua sudah selesai.";
+        const oldest = pending.sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt))[0];
+        return `⚠️ Tugas tertua yang belum selesai: "${oldest.title}"\n📅 Dibuat: ${new Date(oldest.createdAt).toLocaleDateString('id-ID')}\n💡 Saran: Kerjakan 15 menit saja untuk memulai, jangan tunggu mood!`;
+      }
+
+      if (prompt.includes('prioritas') || prompt.includes('priority')) {
+        const pending = tasks.filter(t => !t.done);
+        if (pending.length === 0) return "✅ Semua tugas sudah selesai!";
+        const highPriority = pending.filter(t => t.priority === 'super-high' || t.priority === 'high');
+        const target = highPriority.length > 0 ? highPriority[0] : pending[0];
+        return `🎯 Kerjakan sekarang: "${target.title}"\n🔥 Priority: ${target.priority}\n💡 Alasan: Tugas ini memiliki prioritas tinggi dan sudah cukup lama di daftar. Selesaikan dalam 1 sesi fokus 25 menit!`;
+      }
+
+      if (prompt.includes('kategori') || prompt.includes('estimasi') || prompt.includes('analisis')) {
+        const titleMatch = userPrompt.match(/Tugas:\s*(.+)/);
+        const title = titleMatch ? titleMatch[1] : 'Tugas';
+        const categories = ['Kerja', 'Pribadi', 'Belanja', 'Meeting', 'Belajar', 'Rutinitas'];
+        const cat = categories[Math.floor(Math.random() * categories.length)];
+        return `{"kategori": "${cat}", "estimasi_menit": ${Math.floor(Math.random() * 60 + 15)}, "prioritas": "medium"}`;
+      }
+
+      return "🤖 AI sedang offline. Gunakan fitur ini saat koneksi/API key sudah benar.";
+    }
+
+    async function testApiKey() {
+      const keyInput = els.aiApiKeyQuick || els.aiApiKey;
+      const key = keyInput ? keyInput.value.trim() : (settings.aiApiKey || '');
+      const statusEl = document.getElementById('aiKeyStatus') || document.getElementById('aiKeyStatusSettings');
+
+      if (!key || key === 'API_KEY_KAMU') {
+        if (statusEl) { statusEl.textContent = '❌ Masukkan API key terlebih dahulu'; statusEl.style.color = 'var(--neon-coral)'; }
+        return false;
+      }
+
+      if (statusEl) { statusEl.textContent = '⏳ Mengecek API key...'; statusEl.style.color = 'var(--neon-blue)'; }
+
+      try {
+        const model = els.aiModelSelect ? els.aiModelSelect.value : KONEKTIKA_CONFIG.model;
+        let baseURL = KONEKTIKA_CONFIG.baseURL;
+        if (model.startsWith('llama-') || model.startsWith('mixtral-') || model.startsWith('gemma-')) {
+          baseURL = 'https://api.groq.com/openai/v1';
         }
-      });
+
+        const response = await fetch(baseURL + '/models', {
+          method: 'GET',
+          headers: { 'Authorization': 'Bearer ' + key }
+        });
+
+        if (response.ok) {
+          if (statusEl) { statusEl.textContent = '✅ API Key valid & terhubung!'; statusEl.style.color = 'var(--neon-green)'; }
+          return true;
+        } else {
+          const err = await response.text().catch(() => 'Invalid key');
+          if (statusEl) { statusEl.textContent = '❌ API Key tidak valid (' + response.status + ')'; statusEl.style.color = 'var(--neon-coral)'; }
+          return false;
+        }
+      } catch (err) {
+        if (statusEl) { statusEl.textContent = '⚠️ Tidak bisa terhubung: ' + err.message; statusEl.style.color = 'var(--neon-yellow)'; }
+        return false;
+      }
     }
 
     function initAI() {
@@ -2242,5 +2964,6 @@
         els.aiOutput.innerHTML = `<strong>⚖️ Prioritas Dinamis:</strong><br>${res.replace(/\\n/g, '<br>')}`;
       });
     }
-    </script></body>
-</html>
+    </script>
+
+<div class="cursor-trail" style="background: var(--neon-coral); left: 1106.8px; top: 616.548px;"></div><div class="cursor-trail" style="background: var(--neon-coral); left: 1089.66px; top: 619.904px;"></div></body></html>
