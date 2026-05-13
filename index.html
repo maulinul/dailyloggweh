@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<!-- saved from url=(0040)https://maulinul.github.io/dailyloggweh/ -->
-<html lang="id"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TaskFlow | Daily Tracker</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com/">
-  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
-  <link href="./TaskFlow _ Daily Tracker_files/css2" rel="stylesheet">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=&#39;http://www.w3.org/2000/svg&#39; viewBox=&#39;0 0 100 100&#39;%3E%3Crect width=&#39;100&#39; height=&#39;100&#39; rx=&#39;22&#39; fill=&#39;%230a0a12&#39;/%3E%3Cpath d=&#39;M28 52 L42 66 L72 34&#39; stroke=&#39;%23b026ff&#39; stroke-width=&#39;10&#39; fill=&#39;none&#39; stroke-linecap=&#39;round&#39; stroke-linejoin=&#39;round&#39;/%3E%3Ccircle cx=&#39;50&#39; cy=&#39;50&#39; r=&#39;36&#39; stroke=&#39;%23ff4d6d&#39; stroke-width=&#39;5&#39; fill=&#39;none&#39; opacity=&#39;0.4&#39;/%3E%3Ccircle cx=&#39;50&#39; cy=&#39;50&#39; r=&#39;8&#39; fill=&#39;%2300f5a0&#39;/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230a0a12'/%3E%3Cpath d='M28 52 L42 66 L72 34' stroke='%23b026ff' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='50' cy='50' r='36' stroke='%23ff4d6d' stroke-width='5' fill='none' opacity='0.4'/%3E%3Ccircle cx='50' cy='50' r='8' fill='%2300f5a0'/%3E%3C/svg%3E">
   <style>
     :root {
       --bg: #0a0a12;
@@ -30,13 +30,13 @@
     }
 
     .day-mode {
-      --bg: #120a1a;
-      --glass: rgba(176, 38, 255, 0.06);
-      --glass-hover: rgba(176, 38, 255, 0.12);
-      --glass-strong: rgba(176, 38, 255, 0.1);
-      --border: rgba(176, 38, 255, 0.2);
-      --text: #f0e6ff;
-      --text-dim: #a090b0;
+      --bg: #f0f0f5;
+      --glass: rgba(255, 255, 255, 0.6);
+      --glass-hover: rgba(255, 255, 255, 0.8);
+      --glass-strong: rgba(255, 255, 255, 0.7);
+      --border: rgba(0, 0, 0, 0.1);
+      --text: #1a1a2e;
+      --text-dim: #666680;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -47,15 +47,13 @@
                   radial-gradient(circle at 90% 80%, rgba(255,77,109,0.15) 0%, transparent 40%),
                   var(--bg);
       color: var(--text);
-      height: 100vh;
-      overflow: hidden;
+      min-height: 100vh;
       overflow-y: auto;
       font-variation-settings: 'wght' 400;
       transition: background 0.6s ease;
-      cursor: none;
     }
 
-    /* Custom Cursor Plasma - Dijamin tetap ada */
+    /* Custom Cursor */
     .cursor-dot, .cursor-outline {
       position: fixed;
       top: 0; left: 0;
@@ -106,7 +104,7 @@
       display: grid;
       grid-template-columns: 280px 1fr 400px;
       gap: 1.5rem;
-      height: 100vh;
+      min-height: 100vh;
       padding: 1.5rem;
       max-width: 1920px;
       margin: 0 auto;
@@ -116,9 +114,10 @@
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
-      overflow: hidden;
-      overflow-y: auto;
+      overflow: visible;
     }
+    .col-right { overflow: hidden; max-height: 100vh; }
+    .col-left { overflow-y: auto; max-height: 100vh; }
 
     /* Liquid Glass Base */
     .glass {
@@ -214,7 +213,7 @@
     .btn {
       background: linear-gradient(135deg, var(--neon-purple), var(--neon-coral));
       border: none; color: white; padding: 0.8rem 1.2rem; border-radius: 10px;
-      font-weight: 600; cursor: none; transition: transform 0.2s, box-shadow 0.2s;
+      font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
       position: relative; overflow: hidden;
     }
     .btn::before {
@@ -225,7 +224,7 @@
     .btn:hover::before { left: 100%; }
     .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(176,38,255,0.4); }
     .btn:active { transform: scale(0.96); }
-    .btn-icon { background: rgba(255,255,255,0.1); padding: 0.6rem; border-radius: 8px; border: none; color: var(--text); cursor: none; transition: all 0.2s; }
+    .btn-icon { background: rgba(255,255,255,0.1); padding: 0.6rem; border-radius: 8px; border: none; color: var(--text); cursor: pointer; transition: all 0.2s; }
     .btn-icon:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
 
     /* Custom Priority Select */
@@ -233,7 +232,7 @@
     .select-trigger {
       background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px;
       padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.5rem;
-      cursor: none; transition: all 0.3s;
+      cursor: pointer; transition: all 0.3s;
     }
     .select-trigger:hover { border-color: var(--neon-purple); }
     .select-trigger.open { border-color: var(--neon-purple); box-shadow: 0 0 0 3px rgba(176,38,255,0.2); }
@@ -250,15 +249,17 @@
       pointer-events: none; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       box-shadow: 0 10px 40px rgba(0,0,0,0.5);
     }
+    .day-mode .select-options { background: rgba(240,240,250,0.98); }
     .select-options.open {
       opacity: 1; transform: translateY(0) scale(1);
       pointer-events: all;
     }
     .select-option {
       padding: 0.6rem 0.8rem; border-radius: 8px; display: flex; align-items: center; gap: 0.5rem;
-      cursor: none; transition: all 0.2s; font-size: 0.9rem; text-transform: capitalize;
+      cursor: pointer; transition: all 0.2s; font-size: 0.9rem; text-transform: capitalize;
     }
     .select-option:hover { background: rgba(255,255,255,0.08); transform: translateX(4px); }
+    .day-mode .select-option:hover { background: rgba(0,0,0,0.05); }
     .select-option.active { background: rgba(176,38,255,0.15); border: 1px solid rgba(176,38,255,0.3); }
     .select-option .opt-icon { font-size: 1.1rem; transition: transform 0.3s; display: inline-block; }
     .select-option:hover .opt-icon { transform: scale(1.3); }
@@ -275,7 +276,7 @@
     }
     @keyframes chipIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     .chip-remove {
-      background: none; border: none; color: var(--neon-coral); cursor: none;
+      background: none; border: none; color: var(--neon-coral); cursor: pointer;
       font-size: 1rem; line-height: 1; width: 18px; height: 18px; display: flex;
       align-items: center; justify-content: center; border-radius: 50%;
       transition: all 0.2s;
@@ -287,13 +288,12 @@
       display: flex;
       flex-direction: row;
       gap: 1rem;
-      height: 520px;        /* lebih kecil dari 645px */
+      height: 520px;
       overflow: hidden;
     }
 
-    /* Bagian kiri: kalender */
     .calendar-left {
-      flex: 0 0 340px;      /* lebar tetap 340px untuk kalender */
+      flex: 0 0 340px;
       display: flex;
       flex-direction: column;
     }
@@ -309,7 +309,7 @@
       background: rgba(255,255,255,0.05); border: 1px solid var(--border);
       color: var(--text); width: 36px; height: 36px; border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
-      cursor: none; transition: all 0.3s; font-size: 1.1rem;
+      cursor: pointer; transition: all 0.3s; font-size: 1.1rem;
     }
     .cal-nav-btn:hover { background: var(--neon-purple); border-color: var(--neon-purple); transform: scale(1.1); }
     .calendar-title {
@@ -323,6 +323,7 @@
       grid-template-columns: repeat(7, 1fr);
       gap: 0.5rem;
       flex: 1;
+      animation: calSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .cal-day-header {
       text-align: center; font-size: 0.75rem; color: var(--text-dim);
@@ -337,7 +338,7 @@
       flex-direction: column;
       align-items: flex-start;
       justify-content: flex-start;
-      cursor: none;
+      cursor: pointer;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
       overflow: hidden;
@@ -391,15 +392,9 @@
     .task-dot.medium { background: var(--neon-yellow); box-shadow: 0 0 4px var(--neon-yellow); }
     .task-dot.low { background: var(--neon-green); box-shadow: 0 0 4px var(--neon-green); }
     .task-dot.done { background: var(--text-dim); opacity: 0.5; }
+    .task-dot.super_high { background: linear-gradient(135deg, #ff4d6d, #ff7800); box-shadow: 0 0 5px #ff7800; }
 
     /* Calendar Slide Animation */
-    .calendar-grid {
-      animation: calSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    @keyframes calSlideIn {
-      from { opacity: 0; transform: translateX(30px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
     .calendar-grid.slide-left { animation: calSlideLeft 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
     .calendar-grid.slide-right { animation: calSlideRight 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
     @keyframes calSlideLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
@@ -407,7 +402,7 @@
 
     /* Day Detail Panel */
     .day-detail-panel {
-      flex: 1;                          /* mengisi sisa ruang di kanan */
+      flex: 1;
       background: rgba(255,255,255,0.03);
       border: 1px solid var(--border);
       border-radius: 12px;
@@ -415,11 +410,11 @@
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      opacity: 0.4;                     /* redup saat belum dipilih */
+      opacity: 0.4;
       transition: opacity 0.3s ease;
     }
     .day-detail-panel.show {
-      opacity: 1;                       /* terang saat tanggal dipilih */
+      opacity: 1;
     }
     .day-detail-header {
       display: flex; justify-content: space-between; align-items: center;
@@ -428,7 +423,7 @@
     .day-detail-title { font-size: 1.1rem; font-weight: 700; }
     .day-detail-close {
       background: none; border: none; color: var(--text-dim);
-      font-size: 1.5rem; cursor: none; transition: all 0.2s;
+      font-size: 1.5rem; cursor: pointer; transition: all 0.2s;
       width: 32px; height: 32px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
     }
@@ -468,11 +463,11 @@
 
     @keyframes springIn { from { transform: translateY(20px) scale(0.9); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
 
-    .grip { cursor: none; color: var(--text-dim); padding: 4px 2px; user-select: none; transition: color 0.2s; }
+    .grip { cursor: grab; color: var(--text-dim); padding: 4px 2px; user-select: none; transition: color 0.2s; }
     .grip:hover { color: var(--neon-purple); }
 
     .task-check {
-      width: 20px; height: 20px; accent-color: var(--neon-green); cursor: none;
+      width: 20px; height: 20px; accent-color: var(--neon-green); cursor: pointer;
       transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .task-check:checked { transform: scale(1.25); }
@@ -491,19 +486,60 @@
     .task-time { font-size: 0.85rem; color: var(--neon-silver); font-weight: 500; }
     .priority-tag {
       font-size: 0.7rem; padding: 2px 6px; border-radius: 6px; font-weight: 600; text-transform: uppercase;
-      transition: all 0.2s; cursor: none; display: inline-flex; align-items: center; gap: 4px;
+      transition: all 0.2s; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
     }
     .p-high { background: rgba(255,77,109,0.2); color: var(--neon-coral); }
     .p-medium { background: rgba(255,209,102,0.2); color: var(--neon-yellow); }
     .p-low { background: rgba(0,245,160,0.2); color: var(--neon-green); }
+    .p-super-high { background: rgba(255,120,0,0.25); color: #ff7800; border: 1px solid rgba(255,120,0,0.4); }
+
+    .category-tag {
+      font-size: 0.7rem; padding: 2px 7px; border-radius: 6px;
+      background: rgba(79,172,254,0.15); color: var(--neon-blue);
+      border: 1px solid rgba(79,172,254,0.3); display: inline-flex; align-items: center; gap: 3px;
+    }
+    .sort-controls { display:flex; flex-wrap:wrap; gap:0.35rem; margin-top:0.4rem; }
+    .sort-chip {
+      background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:20px;
+      padding:0.25rem 0.7rem; font-size:0.7rem; cursor:pointer; transition:all 0.3s;
+      display:inline-flex; align-items:center; gap:3px;
+    }
+    .sort-chip:hover { transform:translateY(-1px); }
+    .sort-chip.active { background: var(--neon-blue); border-color: var(--neon-blue); color:white; box-shadow:0 3px 10px rgba(79,172,254,0.3); }
+    .filter-row { display:flex; gap:0.4rem; align-items:center; flex-wrap:wrap; margin-bottom:0.4rem; }
+    .filter-select {
+      background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.3rem 0.6rem; color: var(--text); font-size: 0.75rem; font-family: var(--font);
+      cursor: pointer; transition: all 0.3s; outline:none;
+    }
+    .filter-select:focus { border-color: var(--neon-purple); }
+    .github-mini-btn {
+      background: rgba(0,245,160,0.1); border: 1px solid rgba(0,245,160,0.3);
+      border-radius: 8px; color: var(--neon-green); font-size: 0.85rem;
+      padding: 0.6rem 0.8rem; cursor: pointer; transition: all 0.25s; display:flex; align-items:center; gap:4px; white-space:nowrap;
+    }
+    .github-mini-btn:hover { background: rgba(0,245,160,0.2); transform:translateY(-1px); box-shadow: 0 4px 12px rgba(0,245,160,0.2); }
+    .test-api-btn {
+      width:100%; margin-top:0.3rem; padding:0.4rem;
+      background: rgba(79,172,254,0.15); border: 1px solid rgba(79,172,254,0.3);
+      border-radius:7px; color:var(--neon-blue); font-size:0.78rem; cursor:pointer;
+      transition:all 0.2s; font-family:var(--font);
+    }
+    .test-api-btn:hover { background: rgba(79,172,254,0.25); }
+    #apiTestResult { font-size:0.72rem; margin-top:0.3rem; min-height:1rem; }
+    #apiTestResult.ok { color: var(--neon-green); }
+    #apiTestResult.fail { color: var(--neon-coral); }
+    #apiTestResult.loading { color: var(--neon-blue); }
     .priority-tag:hover { transform: scale(1.05); }
     .p-high:hover { box-shadow: 0 0 10px rgba(255,77,109,0.5); }
     .p-medium:hover { box-shadow: 0 0 10px rgba(255,209,102,0.5); }
     .p-low:hover { box-shadow: 0 0 10px rgba(0,245,160,0.5); }
+    .p-super-high:hover { box-shadow: 0 0 10px rgba(255,120,0,0.6); }
+    .task-dot.super_high { background: linear-gradient(135deg,#ff4d6d,#ff7800); box-shadow: 0 0 6px #ff7800; }
 
     .task-actions { display: flex; gap: 0.4rem; align-items: center; }
     .action-btn { 
-      background: none; border: none; color: var(--text-dim); cursor: none; 
+      background: none; border: none; color: var(--text-dim); cursor: pointer; 
       font-size: 1.1rem; transition: all 0.2s; width: 28px; height: 28px;
       border-radius: 6px; display: flex; align-items: center; justify-content: center;
     }
@@ -523,7 +559,7 @@
       transition: all 0.2s; border-radius: 4px;
     }
     .subtask:hover { background: rgba(255,255,255,0.03); padding-left: 0.3rem; }
-    .subtask-check { width: 14px; height: 14px; accent-color: var(--neon-purple); cursor: none; }
+    .subtask-check { width: 14px; height: 14px; accent-color: var(--neon-purple); cursor: pointer; }
     .subtask.done { text-decoration: line-through; opacity: 0.5; }
 
     /* Pomodoro */
@@ -532,11 +568,11 @@
     .pomo-bg { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 3; }
     .pomo-progress { fill: none; stroke: var(--neon-purple); stroke-width: 3; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
     .pomo-time { font-size: 0.75rem; color: var(--neon-silver); font-variant-numeric: tabular-nums; }
-    .pomo-btn { font-size: 0.7rem; background: rgba(255,255,255,0.1); border: none; color: var(--text); padding: 2px 6px; border-radius: 4px; cursor: none; transition: all 0.2s; }
+    .pomo-btn { font-size: 0.7rem; background: rgba(255,255,255,0.1); border: none; color: var(--text); padding: 2px 6px; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
     .pomo-btn:hover { background: var(--neon-purple); }
     .pomo-clear-btn {
       font-size: 0.7rem; background: rgba(255,77,109,0.2); border: 1px solid rgba(255,77,109,0.4);
-      color: var(--neon-coral); padding: 2px 8px; border-radius: 4px; cursor: none;
+      color: var(--neon-coral); padding: 2px 8px; border-radius: 4px; cursor: pointer;
       transition: all 0.2s; margin-left: 0.3rem;
     }
     .pomo-clear-btn:hover { background: rgba(255,77,109,0.4); transform: scale(1.05); }
@@ -561,7 +597,7 @@
     .focus-btn-large {
       padding: 1rem 2rem; border-radius: 12px; border: 1px solid var(--border);
       background: rgba(255,255,255,0.05); color: var(--text); font-size: 1rem;
-      cursor: none; transition: all 0.3s;
+      cursor: pointer; transition: all 0.3s;
     }
     .focus-btn-large:hover { background: var(--neon-purple); border-color: var(--neon-purple); transform: scale(1.05); }
     .focus-clear {
@@ -577,13 +613,13 @@
     .filters { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; }
     .filter-chip {
       background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 20px;
-      padding: 0.3rem 0.8rem; font-size: 0.75rem; cursor: none; transition: all 0.3s;
+      padding: 0.3rem 0.8rem; font-size: 0.75rem; cursor: pointer; transition: all 0.3s;
     }
     .filter-chip:hover { transform: translateY(-2px); }
     .filter-chip.active { background: var(--neon-purple); border-color: var(--neon-purple); color: white; box-shadow: 0 4px 12px rgba(176,38,255,0.3); }
 
     /* Settings Toggle */
-    .settings-toggle { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--glass); border: 1px solid var(--border); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: none; z-index: 10; transition: all 0.3s; }
+    .settings-toggle { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--glass); border: 1px solid var(--border); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; transition: all 0.3s; }
     .settings-toggle:hover { transform: rotate(90deg) scale(1.1); background: var(--neon-purple); border-color: var(--neon-purple); }
     .settings-panel {
       position: fixed; bottom: 5rem; right: 1.5rem; background: var(--glass); border: 1px solid var(--border);
@@ -592,7 +628,7 @@
     }
     .settings-panel.show { display: block; animation: fadeUp 0.3s; }
     .toggle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; font-size: 0.85rem; }
-    .switch { position: relative; width: 40px; height: 22px; background: rgba(255,255,255,0.2); border-radius: 11px; cursor: none; transition: all 0.3s; }
+    .switch { position: relative; width: 40px; height: 22px; background: rgba(255,255,255,0.2); border-radius: 11px; cursor: pointer; transition: all 0.3s; }
     .switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; background: white; border-radius: 50%; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
     .switch.on { background: var(--neon-purple); }
     .switch.on::after { left: 20px; }
@@ -662,12 +698,6 @@
       .calendar-container { height: auto; min-height: 500px; }
     }
 
-    
-    .p-super-high { background: rgba(255,0,80,0.25); color: #ff0050; border: 1px solid rgba(255,0,80,0.4); box-shadow: 0 0 10px rgba(255,0,80,0.3); }
-    .p-super-high:hover { box-shadow: 0 0 15px rgba(255,0,80,0.6); }
-    .task-dot.super-high { background: #ff0050; box-shadow: 0 0 6px #ff0050; }
-    .day-task-item.super-high { border-left-color: #ff0050; }
-
     /* Scrollbar styling */
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -681,12 +711,12 @@
     }
     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
   </style>
-<!--<base target="_blank">--><base href="." target="_blank">
+<base target="_blank">
 </head>
-<body class="">
+<body>
   <!-- Custom Cursor -->
-  <div class="cursor-dot" id="cursorDot" style="display: block; left: 1096px; top: 610px;"></div>
-  <div class="cursor-outline" id="cursorOutline" style="display: block; left: 1096px; top: 610px;"></div>
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-outline" id="cursorOutline"></div>
 
   <!-- Focus Mode Overlay -->
   <div class="focus-overlay" id="focusOverlay">
@@ -703,12 +733,19 @@
     <div class="modal-content">
       <div class="modal-header">✏️ Edit Tugas</div>
       <input type="text" class="task-input modal-input" id="editTitle" placeholder="Judul tugas">
-      <input type="text" class="task-input modal-input" id="editDesc" placeholder="Deskripsi">
-      <input type="text" class="task-input modal-input" id="editCategory" placeholder="🏷️ Kategori (Kerja, Pribadi, Belanja...)" style="font-size:0.9rem;">
+      <input type="text" class="task-input modal-input" id="editDesc" placeholder="Deskripsi (opsional)">
+      <input type="text" class="task-input modal-input" id="editCategory" placeholder="📁 Kategori (cth: Kerja, Meeting, Personal)" list="editCategorySuggestions" autocomplete="off">
+      <datalist id="editCategorySuggestions">
+        <option value="Kerja"></option><option value="Meeting"></option>
+        <option value="Laporan"></option><option value="Personal"></option>
+        <option value="Admin"></option><option value="Keuangan"></option>
+        <option value="Proyek"></option><option value="Urgent"></option>
+        <option value="Follow-up"></option><option value="Review"></option>
+      </datalist>
       <div class="input-row">
         <input type="datetime-local" class="task-input" id="editDateTime" style="flex:1">
-        <select class="task-input" id="editPriority" style="width:120px">
-          <option value="super-high">🚨 Super High</option>
+        <select class="task-input" id="editPriority" style="width:130px">
+          <option value="super_high">💥 Super High</option>
           <option value="high">🔥 High</option>
           <option value="medium">⚡ Medium</option>
           <option value="low">🌿 Low</option>
@@ -725,38 +762,38 @@
     <!-- KOLOM 1: Clock & Bento Stats -->
     <div class="column col-left">
       <div class="glass">
-        <div class="clock kinetic" id="clock" style="font-variation-settings: &quot;wght&quot; 451;">17:37<span class="seconds">:17</span></div>
-        <div style="margin-top:0.5rem; color:var(--text-dim); font-size:0.9rem;" id="dateDisplay">Senin, 11 Mei 2026</div>
+        <div class="clock kinetic" id="clock">00:00<span class="seconds">:00</span></div>
+        <div style="margin-top:0.5rem; color:var(--text-dim); font-size:0.9rem;" id="dateDisplay">Memuat...</div>
       </div>
       <div class="bento">
         <div class="bento-card bento-progress">
           <div class="bento-title">Progress Hari Ini</div>
-          <div class="bento-value" id="bentoProgress">100%</div>
+          <div class="bento-value" id="bentoProgress">0%</div>
         </div>
         <div class="bento-card bento-progress">
           <div class="bento-title">Progress Semua</div>
-          <div class="bento-value" id="bentoProgressAll">89%</div>
+          <div class="bento-value" id="bentoProgressAll">0%</div>
         </div>
         <div class="bento-card">
           <div class="bento-title">Total</div>
-          <div class="bento-value" id="bentoTotal">18</div>
+          <div class="bento-value" id="bentoTotal">0</div>
         </div>
         <div class="bento-card">
           <div class="bento-title">Selesai</div>
-          <div class="bento-value" id="bentoDone" style="color:var(--neon-green)">16</div>
+          <div class="bento-value" id="bentoDone" style="color:var(--neon-green)">0</div>
         </div>
         <div class="bento-card">
           <div class="bento-title">Pending</div>
-          <div class="bento-value" id="bentoPending" style="color:var(--neon-yellow)">2</div>
+          <div class="bento-value" id="bentoPending" style="color:var(--neon-yellow)">0</div>
         </div>
         <div class="bento-card bento-high">
-          <div class="bento-title">High+Super Priority</div>
+          <div class="bento-title">🔥 High+</div>
           <div class="bento-value" id="bentoHigh">0</div>
         </div>
         <div class="bento-card">
           <div class="bento-title">Streak 🔥</div>
           <div class="bento-value" style="display:flex; align-items:center; gap:0.4rem;">
-            <span id="streakCount">1</span>
+            <span id="streakCount">0</span>
             <span class="streak-fire" id="streakFire">🔥</span>
           </div>
         </div>
@@ -769,24 +806,20 @@
         </div>
         <div style="margin-bottom:0.8rem;">
           <select id="aiModelSelect" class="task-input" style="width:100%; padding:0.5rem; font-size:0.85rem;">
-            <option value="kimi-chat">Kimi Chat (Konektika)</option>
-            <option value="llama-3.3-70b-versatile">Groq (Llama 3.3 70B)</option>
-            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-            <option value="claude-3-haiku">Claude 3 Haiku</option>
-            <option value="mistral-large">Mistral Large</option>
+            <option value="claude-default">✨ Claude (Gratis / Bawaan)</option>
+            <option value="konektika-pro">Konektika AI Pro</option>
+            <option value="groq-llama3">Groq (Llama 3)</option>
+            <option value="gemini-flash">Gemini Flash</option>
+            <option value="claude-haiku">Claude Haiku</option>
+            <option value="mistral-fast">Mistral Fast</option>
           </select>
         </div>
-        <div style="display:flex; gap:0.4rem; margin-bottom:0.8rem;">
-          <input type="password" class="task-input" id="aiApiKeyQuick" placeholder="🔑 API Key (atau pakai dari Settings)" style="flex:1; padding:0.5rem; font-size:0.8rem;">
-          <button class="btn-icon" id="aiTestKeyBtn" title="Cek API Key" style="padding:0.5rem; background:rgba(0,245,160,0.15); color:var(--neon-green);">🔍</button>
-        </div>
-        <div id="aiKeyStatus" style="font-size:0.75rem; margin-bottom:0.5rem; min-height:1.2rem;"></div>
         <div style="display:flex; flex-direction:column; gap:0.5rem; font-size:0.85rem;">
           <button class="btn" id="aiBtnSummary" style="padding:0.6rem; font-size:0.8rem;">📝 Daily Summary</button>
           <button class="btn" id="aiBtnStale" style="padding:0.6rem; font-size:0.8rem; background:rgba(255,77,109,0.2); color:var(--neon-coral);">🔍 Detect Stale</button>
           <button class="btn" id="aiBtnPriority" style="padding:0.6rem; font-size:0.8rem; background:rgba(176,38,255,0.2); color:var(--neon-purple);">⚖️ Dynamic Priority</button>
         </div>
-        <div id="aiOutput" style="margin-top: 0.8rem; font-size: 0.8rem; color: var(--text-dim); max-height: 150px; overflow-y: auto; background: rgba(0, 0, 0, 0.3); padding: 0.6rem; border-radius: 8px; display: block; line-height: 1.4;"><strong>📝 Ringkasan Harian:</strong><br>Respon tidak valid.</div>
+        <div id="aiOutput" style="margin-top: 0.8rem; font-size: 0.8rem; color: var(--text-dim); max-height: 150px; overflow-y: auto; background: rgba(0, 0, 0, 0.3); padding: 0.6rem; border-radius: 8px; display: none; line-height: 1.4;"></div>
       </div>
     </div>
 
@@ -794,14 +827,21 @@
     <div class="column col-center">
       <div class="glass">
         <div class="progress-container">
-          <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 100%; background: linear-gradient(90deg, rgb(79, 172, 254), rgb(0, 242, 254));"></div></div>
-          <div class="progress-text"><span id="progressLabel">100% Selesai Hari Ini</span><span id="progressRatio">2/2</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 0%;"></div></div>
+          <div class="progress-text"><span id="progressLabel">0% Selesai Hari Ini</span><span id="progressRatio">0/0</span></div>
         </div>
         <div class="input-group">
           <input type="text" class="task-input" id="taskInput" placeholder="Ketik tugas... (cth: Beli susu jam 7 malam high)" autocomplete="off" list="taskSuggestions">
-          <input type="text" class="task-input" id="categoryInput" placeholder="🏷️ Kategori (opsional: Kerja, Pribadi, Belanja, Meeting...)" style="font-size:0.9rem;">
-          <datalist id="taskSuggestions"><option value="SPB dan SPM"></option><option value="clear kan rab dll untuk blok K15K23 dengan hana 14 mei"></option><option value="ajukan harian"></option><option value="as build blok G buat MD"></option><option value="SPM sunbiz"></option><option value="opnam pintu besi sunbiz b8"></option><option value="meeting pajak"></option><option value="rab untuk infra bekasi purwosari dan gunungsari med"></option><option value="opnaman seluruh mandor"></option><option value="surat untuk bumigas tgl 7"></option><option value="rekap harian penjaga purwosari med"></option><option value="kerja tambah tohir"></option><option value="KPI besok"></option><option value="hitung kebut besi gunungsari dan pagar dsv"></option><option value="opnaman pak eko"></option><option value="SPM DONE"></option><option value="meeting mandor"></option><option value="ambil uang"></option></datalist>
-          <input type="text" class="task-input" id="descInput" placeholder="Deskripsi / Kategori (opsional)">
+          <datalist id="taskSuggestions"></datalist>
+          <input type="text" class="task-input" id="descInput" placeholder="Deskripsi (opsional)">
+          <input type="text" class="task-input" id="categoryInput" placeholder="📁 Kategori (cth: Kerja, Meeting, Personal, Admin)" list="categorySuggestions" autocomplete="off">
+          <datalist id="categorySuggestions">
+            <option value="Kerja"></option><option value="Meeting"></option>
+            <option value="Laporan"></option><option value="Personal"></option>
+            <option value="Admin"></option><option value="Keuangan"></option>
+            <option value="Proyek"></option><option value="Urgent"></option>
+            <option value="Follow-up"></option><option value="Review"></option>
+          </datalist>
           
           <!-- Subtask Input -->
           <div class="subtask-input-wrap">
@@ -820,26 +860,23 @@
                 <span class="select-arrow">▼</span>
               </div>
               <div class="select-options" id="priorityOptions">
-                <div class="select-option" data-value="super-high"><span class="opt-icon">🚨</span> Super High</div>
                 <div class="select-option" data-value="high"><span class="opt-icon">🔥</span> High</div>
                 <div class="select-option active" data-value="medium"><span class="opt-icon">⚡</span> Medium</div>
                 <div class="select-option" data-value="low"><span class="opt-icon">🌿</span> Low</div>
+                <div class="select-option" data-value="super_high"><span class="opt-icon">💥</span> Super High</div>
               </div>
             </div>
 
-            <button class="btn-icon" id="aiMagicBtn" title="AI Smart Categorization &amp; Time Est" style="font-size:1.2rem; background:rgba(176,38,255,0.2); color:white;">✨</button>
-            <button class="btn-icon" id="quickSyncBtn" title="Sync ke GitHub" style="font-size:1rem; background:rgba(0,245,160,0.15); color:var(--neon-green);">☁️</button>
-            <button class="btn-icon" id="quickLoadBtn" title="Load dari GitHub" style="font-size:1rem; background:rgba(79,172,254,0.15); color:var(--neon-blue);">📥</button>
+            <button class="btn-icon" id="aiMagicBtn" title="AI Smart Categorization & Time Est" style="font-size:1.2rem; background:rgba(176,38,255,0.2); color:white;">✨</button>
             <button class="btn" id="addBtn">Tambah</button>
+            <button class="github-mini-btn" id="githubMiniSync" title="Load & Sync GitHub Gist">☁️ Sync</button>
           </div>
-          <div style="font-size:0.75rem; color:var(--text-dim); margin-top:0.2rem;">💡 Smart Parse aktif: ketik waktu/priority otomatis terdeteksi &amp; dihapus dari judul</div>
+          <div style="font-size:0.75rem; color:var(--text-dim); margin-top:0.2rem;">💡 Smart Parse aktif: ketik waktu/priority otomatis terdeteksi & dihapus dari judul</div>
         </div>
       </div>
 
       <!-- CALENDAR BOX -->
       <div class="glass calendar-container" id="calendarBox">
-
-        <!-- KIRI: Kalender kecil (kotak merah) -->
         <div class="calendar-left">
           <div class="calendar-header">
             <div class="calendar-nav">
@@ -847,201 +884,23 @@
               <button class="cal-nav-btn" id="prevMonth">‹</button>
               <button class="cal-nav-btn" id="backToToday" title="Hari Ini">📍</button>
             </div>
-            <div class="calendar-title" id="calendarTitle">Mei 2026</div>
+            <div class="calendar-title" id="calendarTitle">Bulan Tahun</div>
             <div class="calendar-nav">
               <button class="cal-nav-btn" id="nextMonth">›</button>
               <button class="cal-nav-btn" id="nextYear">»</button>
             </div>
           </div>
-          <div class="calendar-grid" id="calendarGrid"><div class="cal-day-header">Min</div><div class="cal-day-header">Sen</div><div class="cal-day-header">Sel</div><div class="cal-day-header">Rab</div><div class="cal-day-header">Kam</div><div class="cal-day-header">Jum</div><div class="cal-day-header">Sab</div><div class="cal-day other-month" style="--mx: 1521.980843436175%; --my: 91.11683584106217%;"><span class="day-number">26</span></div><div class="cal-day other-month" style="--mx: 1375.1859564864978%; --my: 91.11683584106217%;"><span class="day-number">27</span></div><div class="cal-day other-month" style="--mx: 1326.3278280668858%; --my: 91.11683584106217%;"><span class="day-number">28</span></div><div class="cal-day other-month" style="--mx: 1146.0095352052979%; --my: 91.11683584106217%;"><span class="day-number">29</span></div><div class="cal-day other-month" style="--mx: 953.1451400504627%; --my: 91.11683584106217%;"><span class="day-number">30</span></div>
-          <div class="cal-day  " data-date="Fri May 01 2026" data-day="1" style="--mx: 846.3465835282761%; --my: 91.11683584106217%;">
-            <span class="day-number">1</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Sat May 02 2026" data-day="2" style="--mx: 776.1297622166408%; --my: 91.11683584106217%;">
-            <span class="day-number">2</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Sun May 03 2026" data-day="3" style="--mx: 1521.980843436175%; --my: -20.200167008379932%;">
-            <span class="day-number">3</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Mon May 04 2026" data-day="4" style="--mx: 1375.1859564864978%; --my: -20.200167008379932%;">
-            <span class="day-number">4</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Tue May 05 2026" data-day="5" style="--mx: 1326.3278280668858%; --my: -20.200167008379932%;">
-            <span class="day-number">5</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Wed May 06 2026" data-day="6" style="--mx: 1146.0095352052979%; --my: -20.200167008379932%;">
-            <span class="day-number">6</span>
-            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div><div class="task-dot medium" style="animation-delay:0.05s"></div><div class="task-dot done" style="animation-delay:0.1s"></div><div class="task-dot done" style="animation-delay:0.15000000000000002s"></div><div class="task-dot done" style="animation-delay:0.2s"></div><div class="task-dot" style="background:var(--text-dim)"></div></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Thu May 07 2026" data-day="7" style="--mx: 953.1451400504627%; --my: -20.200167008379932%;">
-            <span class="day-number">7</span>
-            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div><div class="task-dot medium" style="animation-delay:0.05s"></div></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Fri May 08 2026" data-day="8" style="--mx: 846.3465835282761%; --my: -20.200167008379932%;">
-            <span class="day-number">8</span>
-            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Sat May 09 2026" data-day="9" style="--mx: 776.1297622166408%; --my: -20.200167008379932%;">
-            <span class="day-number">9</span>
-            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div><div class="task-dot done" style="animation-delay:0.05s"></div></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Sun May 10 2026" data-day="10" style="--mx: 1521.980843436175%; --my: -144.9927870717845%;">
-            <span class="day-number">10</span>
-            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div></div>
-          </div>
-        
-          <div class="cal-day today selected" data-date="Mon May 11 2026" data-day="11" style="--mx: 1375.1859564864978%; --my: -144.9927870717845%;">
-            <span class="day-number">11</span>
-            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div><div class="task-dot done" style="animation-delay:0.05s"></div></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Tue May 12 2026" data-day="12" style="--mx: 1326.3278280668858%; --my: -144.9927870717845%;">
-            <span class="day-number">12</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Wed May 13 2026" data-day="13" style="--mx: 1146.0095352052979%; --my: -144.9927870717845%;">
-            <span class="day-number">13</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Thu May 14 2026" data-day="14" style="--mx: 953.1451400504627%; --my: -144.9927870717845%;">
-            <span class="day-number">14</span>
-            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Fri May 15 2026" data-day="15" style="--mx: 846.3465835282761%; --my: -144.9927870717845%;">
-            <span class="day-number">15</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Sat May 16 2026" data-day="16" style="--mx: 776.1297622166408%; --my: -144.9927870717845%;">
-            <span class="day-number">16</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Sun May 17 2026" data-day="17" style="--mx: 1521.980843436175%; --my: -258.9410235760356%;">
-            <span class="day-number">17</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Mon May 18 2026" data-day="18" style="--mx: 1375.1859564864978%; --my: -258.9410235760356%;">
-            <span class="day-number">18</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Tue May 19 2026" data-day="19" style="--mx: 1326.3278280668858%; --my: -258.9410235760356%;">
-            <span class="day-number">19</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Wed May 20 2026" data-day="20" style="--mx: 1146.0095352052979%; --my: -258.9410235760356%;">
-            <span class="day-number">20</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Thu May 21 2026" data-day="21" style="--mx: 953.1451400504627%; --my: -258.9410235760356%;">
-            <span class="day-number">21</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Fri May 22 2026" data-day="22" style="--mx: 846.3465835282761%; --my: -258.9410235760356%;">
-            <span class="day-number">22</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Sat May 23 2026" data-day="23" style="--mx: 776.1297622166408%; --my: -258.9410235760356%;">
-            <span class="day-number">23</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Sun May 24 2026" data-day="24" style="--mx: 1521.980843436175%; --my: -372.2511563459297%;">
-            <span class="day-number">24</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Mon May 25 2026" data-day="25" style="--mx: 1375.1859564864978%; --my: -372.2511563459297%;">
-            <span class="day-number">25</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Tue May 26 2026" data-day="26" style="--mx: 1326.3278280668858%; --my: -372.2511563459297%;">
-            <span class="day-number">26</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Wed May 27 2026" data-day="27" style="--mx: 1146.0095352052979%; --my: -372.2511563459297%;">
-            <span class="day-number">27</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Thu May 28 2026" data-day="28" style="--mx: 953.1451400504627%; --my: -372.2511563459297%;">
-            <span class="day-number">28</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Fri May 29 2026" data-day="29" style="--mx: 846.3465835282761%; --my: -372.2511563459297%;">
-            <span class="day-number">29</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Sat May 30 2026" data-day="30" style="--mx: 776.1297622166408%; --my: -372.2511563459297%;">
-            <span class="day-number">30</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Sun May 31 2026" data-day="31" style="--mx: 1521.980843436175%; --my: -485.56139084107775%;">
-            <span class="day-number">31</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        <div class="cal-day other-month" style="--mx: 1375.1859564864978%; --my: -485.56139084107775%;"><span class="day-number">1</span></div><div class="cal-day other-month" style="--mx: 1326.3278280668858%; --my: -485.56139084107775%;"><span class="day-number">2</span></div><div class="cal-day other-month" style="--mx: 1146.0095352052979%; --my: -485.56139084107775%;"><span class="day-number">3</span></div><div class="cal-day other-month" style="--mx: 953.1451400504627%; --my: -485.56139084107775%;"><span class="day-number">4</span></div><div class="cal-day other-month" style="--mx: 846.3465835282761%; --my: -485.56139084107775%;"><span class="day-number">5</span></div><div class="cal-day other-month" style="--mx: 776.1297622166408%; --my: -485.56139084107775%;"><span class="day-number">6</span></div></div>
+          <div class="calendar-grid" id="calendarGrid"></div>
         </div>
-
-        <!-- KANAN: List tugas per tanggal (kotak hijau) -->
         <div class="day-detail-panel" id="dayDetailPanel">
           <div class="day-detail-header">
-            <div class="day-detail-title" id="dayDetailTitle">📅 Senin, 11 Mei 2026</div>
+            <div class="day-detail-title" id="dayDetailTitle">📅 Pilih tanggal</div>
             <button class="day-detail-close" id="dayDetailClose">×</button>
           </div>
           <div id="dayDetailContent">
-          <div class="day-task-item medium done" style="animation-delay:0s">
-            <input type="checkbox" class="task-check" checked="" onchange="toggleTaskFromCalendar(&#39;1778300546123&#39;)">
-            <div>
-              <div style="font-weight:600; text-decoration:line-through;opacity:0.6">ajukan harian</div>
-              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
-                
-                <span class="priority-tag p-medium">medium</span>
-              </div>
-            </div>
-          </div>
-        
-          <div class="day-task-item medium done" style="animation-delay:0.1s">
-            <input type="checkbox" class="task-check" checked="" onchange="toggleTaskFromCalendar(&#39;1778293729269&#39;)">
-            <div>
-              <div style="font-weight:600; text-decoration:line-through;opacity:0.6">as build blok G buat MD</div>
-              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
-                
-                <span class="priority-tag p-medium">medium</span>
-              </div>
-            </div>
+            <div class="empty-state">✨ Klik tanggal di kalender untuk melihat detail</div>
           </div>
         </div>
-        </div>
-
       </div>
     </div>
 
@@ -1052,497 +911,31 @@
           <span class="search-icon">🔍</span>
           <input type="text" class="search-input" id="searchInput" placeholder="Cari tugas lama...">
         </div>
-        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center; margin-bottom:0.6rem;">
-          <select class="task-input" id="priorityFilter" style="width:130px; padding:0.4rem 0.6rem; font-size:0.8rem;">
-            <option value="all">🏷️ Semua Priority</option>
-            <option value="super-high">🚨 Super High</option>
-            <option value="high">🔥 High</option>
-            <option value="medium">⚡ Medium</option>
-            <option value="low">🌿 Low</option>
-          </select>
-          <select class="task-input" id="sortSelect" style="width:150px; padding:0.4rem 0.6rem; font-size:0.8rem;">
-            <option value="">📋 Urutkan...</option>
-            <option value="date-desc">📅 Tanggal (Terbaru)</option>
-            <option value="date-asc">📅 Tanggal (Terlama)</option>
-            <option value="priority">🔥 Priority (Tinggi→Rendah)</option>
-            <option value="status">✅ Status (Pending→Done)</option>
-          </select>
-        </div>
-        <div class="filters">
+        <div class="filters" id="statusFilters">
           <div class="filter-chip active" data-filter="all">Semua</div>
           <div class="filter-chip" data-filter="pending">Pending</div>
           <div class="filter-chip" data-filter="done">Selesai</div>
         </div>
+        <div class="filter-row">
+          <span style="font-size:0.72rem;color:var(--text-dim);">Prioritas:</span>
+          <select class="filter-select" id="priorityFilterSelect">
+            <option value="all">Semua</option>
+            <option value="super_high">💥 Super High</option>
+            <option value="high">🔥 High</option>
+            <option value="medium">⚡ Medium</option>
+            <option value="low">🌿 Low</option>
+          </select>
+        </div>
+        <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:0.25rem;">Urutkan (pilih satu atau lebih):</div>
+        <div class="sort-controls" id="sortControls">
+          <div class="sort-chip" data-sort="date">📅 Tanggal</div>
+          <div class="sort-chip" data-sort="priority">🔥 Prioritas</div>
+          <div class="sort-chip" data-sort="status">✅ Status</div>
+        </div>
       </div>
-      <div class="glass task-list" id="taskList"><div class="task-item task-done" draggable="true" data-id="1778461542321" style="animation-delay: 0s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">SPB dan SPM</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 10 Mei, 06.32</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:none">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778302754436" style="animation-delay: 0.05s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">clear kan rab dll untuk blok K15K23 dengan hana 14 mei</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 14 Mei, 11.22</span>
-              <span class="priority-tag p-high">🔥 high</span>
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:none">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778300546123" style="animation-delay: 0.1s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">ajukan harian</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 11 Mei, 11.21</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              <span style="font-size:0.75rem; color:var(--text-dim)">📝 2 orang 2 minggu untuk mep b8 dan blok G</span>
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:none">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778293729269" style="animation-delay: 0.15s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">as build blok G buat MD</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 11 Mei, 09.24</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:none">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778293451184" style="animation-delay: 0.2s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">SPM sunbiz</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 9 Mei, 08.34</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              <span style="font-size:0.75rem; color:var(--text-dim)">📝 Lokasi / Alamat,Nama Material,Spesifikasi,Quantity,Satuan Dapur,Ijuk,-,4,Karung Dapur,Pelampung Otomatis,"Floating valve ½""",5,Pcs Dapur,Valve PVC,"¾""",12,Pcs "Gudang J12, G27-G36",Pasir,Cuci,6.5,m³ (1 rit) "Gudang J12, G27-G36",Pasir,Biasa,25,m³ (3 rit) "Gudang J12, G27-G36",Semen,Merdeka,200,Zak "Gudang J12, G27-G36",Triplek,9mm,12,Lbr "Gudang J12, G27-G36",Triplek,6mm,10,Lbr "Gudang J12, G27-G36",Fiting Lampu,Tempel,12,Pcs "Gudang J12, G27-G36",MCB,10A,12,Pcs "Gudang J12, G27-G36",MCB,6A,12,Pcs "Gudang J12, G27-G36",Lampu Sorot LED,100w,6,Pcs "Gudang J12, G27-G36",Steker,-,10,Pcs "Gudang J12, G27-G36",Stop Kontak,Terminal lubang 4,6,Pcs</span>
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:none">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778290463481" style="animation-delay: 0.25s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">opnam pintu besi sunbiz b8</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 9 Mei, 06.12</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:none">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778139947948" style="animation-delay: 0.3s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">meeting pajak</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 7 Mei, 10.45</span>
-              <span class="priority-tag p-low">🌿 low</span>
-              <span style="font-size:0.75rem; color:var(--text-dim)">📝 meeting</span>
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:none">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item " draggable="true" data-id="1778139913737" style="animation-delay: 0.35s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">rab untuk infra bekasi purwosari dan gunungsari med</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 7 Mei, 18.47</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:none">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778059321373" style="animation-delay: 0.4s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">opnaman seluruh mandor</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 6 Mei, 16.21 → 17:00</span>
-              <span class="priority-tag p-high">🔥 high</span>
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:none">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item " draggable="true" data-id="1778061006829" style="animation-delay: 0.45s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">surat untuk bumigas tgl 7</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 6 Mei, 16.36 → 08:00</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:none">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778060183518" style="animation-delay: 0.5s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">rekap harian penjaga purwosari med</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 6 Mei, 16.22</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:none">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778059298158" style="animation-delay: 0.55s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">kerja tambah tohir</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 6 Mei, 16.19 → 17:00</span>
-              <span class="priority-tag p-high">🔥 high</span>
-              <span style="font-size:0.75rem; color:var(--text-dim)">📝 kerja</span>
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:none">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778059146950" style="animation-delay: 0.6s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">KPI besok</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 8 Mei, 15.57</span>
-              <span class="priority-tag p-high">🔥 high</span>
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:none">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778057830401" style="animation-delay: 0.65s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">hitung kebut besi gunungsari dan pagar dsv</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 6 Mei, 15.49</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              
-            </div>
-            <ul class="subtasks"><li class="subtask done"><input type="checkbox" class="subtask-check" checked="" data-idx="0"><span>besi besi</span></li></ul>
-            <div class="pomodoro-wrap" style="display:none">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778057368083" style="animation-delay: 0.7s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">opnaman pak eko</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 6 Mei, 15.20 → 18:00</span>
-              <span class="priority-tag p-high">🔥 high</span>
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:none">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778055639207" style="animation-delay: 0.75s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">SPM DONE</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 6 Mei, 14.41</span>
-              <span class="priority-tag p-low">🌿 low</span>
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:none">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778053283314" style="animation-delay: 0.8s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">meeting mandor</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 6 Mei, 14.40 → 10:00</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              <span style="font-size:0.75rem; color:var(--text-dim)">📝 meeting</span>
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:none">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778053249273" style="animation-delay: 0.85s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">ambil uang</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 6 Mei, 14.39 → 19:00</span>
-              <span class="priority-tag p-low">🌿 low</span>
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:none">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div></div>
+      <div class="glass task-list" id="taskList">
+        <div class="empty-state">📭 Tidak ada tugas</div>
+      </div>
     </div>
   </div>
 
@@ -1559,7 +952,6 @@
       <div class="switch" id="themeToggle"></div>
     </div>
     
-    <!-- GitHub Sync Section -->
     <div class="github-section">
       <div class="github-section-title">🔗 GitHub Gist Sync</div>
       <input type="password" class="github-input" id="githubToken" placeholder="GitHub Personal Access Token">
@@ -1575,15 +967,12 @@
       <div class="github-status" id="githubStatus"></div>
     </div>
 
-    <!-- AI Settings Section -->
     <div class="github-section">
       <div class="github-section-title">✨ AI API Key</div>
-      <div style="display:flex; gap:0.4rem;">
-        <input type="password" class="github-input" id="aiApiKey" placeholder="API Key untuk AI (Konektika/Groq/dll)" style="flex:1;">
-        <button class="btn-icon" id="aiTestKeyBtnSettings" title="Test API Key" style="padding:0.5rem; background:rgba(0,245,160,0.15); color:var(--neon-green);">🔍</button>
-      </div>
-      <div id="aiKeyStatusSettings" style="font-size:0.75rem; margin-top:0.3rem; min-height:1.2rem;"></div>
-      <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:0.5rem;">Masukkan API key untuk menggunakan fitur AI.</div>
+      <input type="password" class="github-input" id="aiApiKey" placeholder="API Key (Konektika/Groq/Anthropic/dll)">
+      <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:0.4rem;">Masukkan API key. Kosongkan untuk pakai Claude bawaan (dalam claude.ai).</div>
+      <button class="test-api-btn" id="testApiKeyBtn">🔑 Cek API Key</button>
+      <div id="apiTestResult"></div>
     </div>
 
     <div style="margin-top:0.8rem; font-size:0.75rem; color:var(--text-dim);">Data tersimpan di LocalStorage</div>
@@ -1592,13 +981,15 @@
 
   <script>
     // State & Config
-    let tasks = JSON.parse(localStorage.getItem('tf_tasks')) || [];
-    let settings = JSON.parse(localStorage.getItem('tf_settings')) || { 
+    let tasks = [];
+    let settings = { 
       sound: true, haptic: true, dayMode: false,
       githubToken: '', githubGistId: '', githubAutoSync: false,
       aiApiKey: ''
     };
     let currentFilter = 'all';
+    let currentPriorityFilter = 'all';
+    let currentSortFields = [];
     let searchQuery = '';
     let audioCtx = null;
     let currentCalendarDate = new Date();
@@ -1609,141 +1000,110 @@
     let focusTimeLeft = 1500;
     let currentPriority = 'medium';
     let tempSubtasks = [];
+    let isInitialized = false;
 
     const KONEKTIKA_CONFIG = {
-      baseURL: "https://konektikacloud.com/v1",
+      baseURL: "https://konektikacloud.web.id/v1",
       get apiKey() { return settings.aiApiKey || "API_KEY_KAMU"; },
-      model: "kimi-chat"
+      model: "konektika-pro"
     };
 
-    // DOM Elements
-    const els = {
-      clock: document.getElementById('clock'),
-      date: document.getElementById('dateDisplay'),
-      progressFill: document.getElementById('progressFill'),
-      progressLabel: document.getElementById('progressLabel'),
-      progressRatio: document.getElementById('progressRatio'),
-      bentoProgress: document.getElementById('bentoProgress'),
-      bentoProgressAll: document.getElementById('bentoProgressAll'),
-      bentoTotal: document.getElementById('bentoTotal'),
-      bentoDone: document.getElementById('bentoDone'),
-      bentoPending: document.getElementById('bentoPending'),
-      bentoHigh: document.getElementById('bentoHigh'),
-      streakCount: document.getElementById('streakCount'),
-      streakFire: document.getElementById('streakFire'),
-      taskInput: document.getElementById('taskInput'),
-      descInput: document.getElementById('descInput'),
-      subtaskInput: document.getElementById('subtaskInput'),
-      subtaskChips: document.getElementById('subtaskChips'),
-      priorityCustomSelect: document.getElementById('priorityCustomSelect'),
-      priorityTrigger: document.getElementById('priorityTrigger'),
-      priorityTriggerIcon: document.getElementById('priorityTriggerIcon'),
-      priorityTriggerText: document.getElementById('priorityTriggerText'),
-      priorityOptions: document.getElementById('priorityOptions'),
-      dateTimeInput: document.getElementById('dateTimeInput'),
-      addBtn: document.getElementById('addBtn'),
-      suggestions: document.getElementById('taskSuggestions'),
-      searchInput: document.getElementById('searchInput'),
-      taskList: document.getElementById('taskList'),
-      filters: document.querySelectorAll('.filter-chip'),
-      settingsToggle: document.getElementById('settingsToggle'),
-      settingsPanel: document.getElementById('settingsPanel'),
-      soundToggle: document.getElementById('soundToggle'),
-      hapticToggle: document.getElementById('hapticToggle'),
-      themeToggle: document.getElementById('themeToggle'),
-      themeIcon: document.getElementById('themeIcon'),
-      themeLabel: document.getElementById('themeLabel'),
-      clearData: document.getElementById('clearData'),
-      calendarGrid: document.getElementById('calendarGrid'),
-      calendarTitle: document.getElementById('calendarTitle'),
-      prevMonth: document.getElementById('prevMonth'),
-      nextMonth: document.getElementById('nextMonth'),
-      prevYear: document.getElementById('prevYear'),
-      nextYear: document.getElementById('nextYear'),
-      backToToday: document.getElementById('backToToday'),
-      dayDetailPanel: document.getElementById('dayDetailPanel'),
-      dayDetailTitle: document.getElementById('dayDetailTitle'),
-      dayDetailContent: document.getElementById('dayDetailContent'),
-      dayDetailClose: document.getElementById('dayDetailClose'),
-      focusOverlay: document.getElementById('focusOverlay'),
-      focusTitle: document.getElementById('focusTitle'),
-      focusTimer: document.getElementById('focusTimer'),
-      focusPause: document.getElementById('focusPause'),
-      focusClear: document.getElementById('focusClear'),
-      editModal: document.getElementById('editModal'),
-      editTitle: document.getElementById('editTitle'),
-      editDesc: document.getElementById('editDesc'),
-      editDateTime: document.getElementById('editDateTime'),
-      editPriority: document.getElementById('editPriority'),
-      editSave: document.getElementById('editSave'),
-      editCancel: document.getElementById('editCancel'),
-      cursorDot: document.getElementById('cursorDot'),
-      cursorOutline: document.getElementById('cursorOutline'),
-      githubToken: document.getElementById('githubToken'),
-      githubGistId: document.getElementById('githubGistId'),
-      githubAutoSync: document.getElementById('githubAutoSync'),
-      syncToGithub: document.getElementById('syncToGithub'),
-      loadFromGithub: document.getElementById('loadFromGithub'),
-      githubStatus: document.getElementById('githubStatus'),
-      aiApiKey: document.getElementById('aiApiKey'),
-      aiApiKeyQuick: document.getElementById('aiApiKeyQuick'),
-      aiBox: document.getElementById('aiBox'),
-      aiModelSelect: document.getElementById('aiModelSelect'),
-      aiBtnSummary: document.getElementById('aiBtnSummary'),
-      aiBtnStale: document.getElementById('aiBtnStale'),
-      aiBtnPriority: document.getElementById('aiBtnPriority'),
-      aiOutput: document.getElementById('aiOutput'),
-      aiMagicBtn: document.getElementById('aiMagicBtn'),
-      aiTestKeyBtn: document.getElementById('aiTestKeyBtn'),
-      aiTestKeyBtnSettings: document.getElementById('aiTestKeyBtnSettings'),
-      categoryInput: document.getElementById('categoryInput'),
-      priorityFilter: document.getElementById('priorityFilter'),
-      sortSelect: document.getElementById('sortSelect'),
-      quickSyncBtn: document.getElementById('quickSyncBtn'),
-      quickLoadBtn: document.getElementById('quickLoadBtn')
-    };
+    // DOM Elements cache
+    const els = {};
 
-    // Init
-    document.addEventListener('DOMContentLoaded', () => {
-      initClock();
-      initCursor();
-      initCalendar();
-      initCustomSelect();
-      initSubtaskInput();
-      setDefaultDateTime();
-      renderTasks();
-      updateStats();
-      updateSuggestions();
-      loadSettings();
-      checkStreak();
-      initAI();
-      initKeyboard();
-    });
+    function getEl(id) {
+      const el = document.getElementById(id);
+      if (!el && !isInitialized) console.warn('Element not found:', id);
+      return el;
+    }
+
+    function cacheElements() {
+      const ids = [
+        'clock','dateDisplay','progressFill','progressLabel','progressRatio',
+        'bentoProgress','bentoProgressAll','bentoTotal','bentoDone','bentoPending',
+        'bentoHigh','streakCount','streakFire','taskInput','descInput','subtaskInput',
+        'subtaskChips','priorityCustomSelect','priorityTrigger','priorityTriggerIcon',
+        'priorityTriggerText','priorityOptions','dateTimeInput','addBtn','taskSuggestions',
+        'searchInput','taskList','settingsToggle','settingsPanel','soundToggle','hapticToggle',
+        'themeToggle','themeIcon','themeLabel','clearData','calendarGrid','calendarTitle',
+        'prevMonth','nextMonth','prevYear','nextYear','backToToday','dayDetailPanel',
+        'dayDetailTitle','dayDetailContent','dayDetailClose','focusOverlay','focusTitle',
+        'focusTimer','focusPause','focusClear','editModal','editTitle','editDesc',
+        'editDateTime','editPriority','editSave','editCancel','cursorDot','cursorOutline',
+        'githubToken','githubGistId','githubAutoSync','syncToGithub','loadFromGithub',
+        'githubStatus','aiApiKey','aiBox','aiModelSelect','aiBtnSummary','aiBtnStale',
+        'aiBtnPriority','aiOutput','aiMagicBtn','categoryInput','editCategory',
+        'priorityFilterSelect','sortControls','testApiKeyBtn','apiTestResult','githubMiniSync'
+      ];
+      ids.forEach(id => els[id] = getEl(id));
+    }
+
+    // Safe init wrapper
+    function safeInit() {
+      if (isInitialized) return;
+      try {
+        cacheElements();
+        loadData();
+        initClock();
+        initCursor();
+        initCalendar();
+        initCustomSelect();
+        initSubtaskInput();
+        initEnterKey();
+        setDefaultDateTime();
+        renderTasks();
+        updateStats();
+        updateSuggestions();
+        loadSettings();
+        checkStreak();
+        initAI();
+        initKeyboard();
+        initButtonListeners();
+        isInitialized = true;
+        console.log('TaskFlow initialized successfully');
+      } catch (err) {
+        console.error('Init error:', err);
+      }
+    }
+
+    function loadData() {
+      try {
+        const savedTasks = localStorage.getItem('tf_tasks');
+        if (savedTasks) tasks = JSON.parse(savedTasks);
+        const savedSettings = localStorage.getItem('tf_settings');
+        if (savedSettings) {
+          const parsed = JSON.parse(savedSettings);
+          settings = { ...settings, ...parsed };
+        }
+      } catch (e) {
+        console.error('Load data error:', e);
+      }
+    }
 
     // Set default datetime to now
     function setDefaultDateTime() {
+      if (!els.dateTimeInput) return;
       const now = new Date();
       now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
       els.dateTimeInput.value = now.toISOString().slice(0, 16);
     }
 
-    // Custom Cursor - Dijamin tetap ada
+    // Custom Cursor - Fixed
     function initCursor() {
-      // Force cursor visibility
+      if (!els.cursorDot || !els.cursorOutline) return;
+      
+      // Show cursors
       els.cursorDot.style.display = 'block';
       els.cursorOutline.style.display = 'block';
       
+      let mouseX = 0, mouseY = 0;
+      let dotX = 0, dotY = 0;
+      let outlineX = 0, outlineY = 0;
+      
       document.addEventListener('mousemove', (e) => {
-        els.cursorDot.style.left = e.clientX + 'px';
-        els.cursorDot.style.top = e.clientY + 'px';
-        els.cursorOutline.style.left = e.clientX + 'px';
-        els.cursorOutline.style.top = e.clientY + 'px';
-
-        // Plasma trail effect
-        if (Math.random() > 0.7) {
-          createTrail(e.clientX, e.clientY);
-        }
-
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        
         // Update CSS variables for calendar hover glow
         const calDays = document.querySelectorAll('.cal-day');
         calDays.forEach(day => {
@@ -1753,18 +1113,38 @@
           day.style.setProperty('--mx', x + '%');
           day.style.setProperty('--my', y + '%');
         });
+
+        // Trail effect
+        if (Math.random() > 0.85) {
+          createTrail(e.clientX, e.clientY);
+        }
       });
 
+      // Smooth follow animation
+      function animateCursor() {
+        dotX += (mouseX - dotX) * 0.2;
+        dotY += (mouseY - dotY) * 0.2;
+        outlineX += (mouseX - outlineX) * 0.1;
+        outlineY += (mouseY - outlineY) * 0.1;
+        
+        els.cursorDot.style.left = dotX + 'px';
+        els.cursorDot.style.top = dotY + 'px';
+        els.cursorOutline.style.left = outlineX + 'px';
+        els.cursorOutline.style.top = outlineY + 'px';
+        
+        requestAnimationFrame(animateCursor);
+      }
+      animateCursor();
+
       // Hover effects
-      const addHoverListeners = () => {
-        const interactiveElements = document.querySelectorAll('button, .cal-day, .filter-chip, .task-item, .action-btn, .switch, .grip, .select-trigger, .select-option, .chip-remove');
+      function addHoverListeners() {
+        const interactiveElements = document.querySelectorAll('button, .cal-day, .filter-chip, .task-item, .action-btn, .switch, .grip, .select-trigger, .select-option, .chip-remove, .sort-chip, .github-mini-btn');
         interactiveElements.forEach(el => {
           el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
           el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
         });
-      };
+      }
       addHoverListeners();
-      // Re-apply periodically for dynamic elements
       setInterval(addHoverListeners, 2000);
     }
 
@@ -1776,18 +1156,21 @@
       trail.style.left = (x + (Math.random() - 0.5) * 20) + 'px';
       trail.style.top = (y + (Math.random() - 0.5) * 20) + 'px';
       document.body.appendChild(trail);
-      setTimeout(() => trail.remove(), 800);
+      setTimeout(() => { if(trail.parentNode) trail.remove(); }, 800);
     }
 
     // Clock & Kinetic Typography
     function initClock() {
+      if (!els.clock) return;
       const update = () => {
         const now = new Date();
         const h = String(now.getHours()).padStart(2,'0');
         const m = String(now.getMinutes()).padStart(2,'0');
         const s = String(now.getSeconds()).padStart(2,'0');
         els.clock.innerHTML = `${h}:${m}<span class="seconds">:${s}</span>`;
-        els.date.textContent = now.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'short', year:'numeric' });
+        if (els.date) {
+          els.date.textContent = now.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'short', year:'numeric' });
+        }
         const weight = 400 + (now.getSeconds() % 60) * 3;
         els.clock.style.fontVariationSettings = `'wght' ${weight}`;
       };
@@ -1797,14 +1180,13 @@
 
     // Custom Priority Select
     function initCustomSelect() {
+      if (!els.priorityTrigger || !els.priorityOptions) return;
+      
       els.priorityTrigger.addEventListener('click', (e) => {
         e.stopPropagation();
         const isOpen = els.priorityOptions.classList.contains('open');
-        if (isOpen) {
-          closePrioritySelect();
-        } else {
-          openPrioritySelect();
-        }
+        if (isOpen) closePrioritySelect();
+        else openPrioritySelect();
       });
 
       document.querySelectorAll('.select-option').forEach(opt => {
@@ -1814,11 +1196,6 @@
           currentPriority = val;
           updatePrioritySelectUI(val);
           closePrioritySelect();
-          
-          // Animate icon
-          els.priorityTriggerIcon.style.animation = 'none';
-          els.priorityTriggerIcon.offsetHeight;
-          els.priorityTriggerIcon.style.animation = 'pulseFire 0.5s';
         });
       });
 
@@ -1826,20 +1203,20 @@
     }
 
     function openPrioritySelect() {
-      els.priorityOptions.classList.add('open');
-      els.priorityTrigger.classList.add('open');
+      if (els.priorityOptions) els.priorityOptions.classList.add('open');
+      if (els.priorityTrigger) els.priorityTrigger.classList.add('open');
     }
 
     function closePrioritySelect() {
-      els.priorityOptions.classList.remove('open');
-      els.priorityTrigger.classList.remove('open');
+      if (els.priorityOptions) els.priorityOptions.classList.remove('open');
+      if (els.priorityTrigger) els.priorityTrigger.classList.remove('open');
     }
 
     function updatePrioritySelectUI(val) {
-      const icons = { high: '🔥', medium: '⚡', low: '🌿' };
-      const labels = { high: 'High', medium: 'Medium', low: 'Low' };
-      els.priorityTriggerIcon.textContent = icons[val];
-      els.priorityTriggerText.textContent = labels[val];
+      const icons = { super_high: '💥', high: '🔥', medium: '⚡', low: '🌿' };
+      const labels = { super_high: 'Super High', high: 'High', medium: 'Medium', low: 'Low' };
+      if (els.priorityTriggerIcon) els.priorityTriggerIcon.textContent = icons[val] || '⚡';
+      if (els.priorityTriggerText) els.priorityTriggerText.textContent = labels[val] || val;
       
       document.querySelectorAll('.select-option').forEach(opt => {
         opt.classList.toggle('active', opt.dataset.value === val);
@@ -1853,6 +1230,7 @@
 
     // Subtask Input
     function initSubtaskInput() {
+      if (!els.subtaskInput) return;
       els.subtaskInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
@@ -1868,6 +1246,7 @@
     }
 
     function renderSubtaskChips() {
+      if (!els.subtaskChips) return;
       els.subtaskChips.innerHTML = tempSubtasks.map((s, i) => `
         <span class="subtask-chip">
           ${escapeHtml(s.text)}
@@ -1886,22 +1265,53 @@
       });
     }
 
+    // Enter key on ALL inputs
+    function initEnterKey() {
+      const inputs = ['taskInput', 'descInput', 'categoryInput', 'subtaskInput', 'dateTimeInput'];
+      inputs.forEach(id => {
+        const el = els[id];
+        if (el) {
+          el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              // If subtask input and has value, add subtask chip instead
+              if (id === 'subtaskInput' && el.value.trim()) {
+                tempSubtasks.push({ text: el.value.trim(), done: false });
+                renderSubtaskChips();
+                el.value = '';
+                playSound('add');
+                return;
+              }
+              addTask();
+            }
+          });
+        }
+      });
+    }
+
     // Calendar Logic
     function initCalendar() {
+      if (!els.calendarGrid) return;
       renderCalendar();
-      els.prevMonth.addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1); renderCalendar('right'); });
-      els.nextMonth.addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1); renderCalendar('left'); });
-      els.prevYear.addEventListener('click', () => { currentCalendarDate.setFullYear(currentCalendarDate.getFullYear() - 1); renderCalendar('right'); });
-      els.nextYear.addEventListener('click', () => { currentCalendarDate.setFullYear(currentCalendarDate.getFullYear() + 1); renderCalendar('left'); });
-      els.backToToday.addEventListener('click', () => { currentCalendarDate = new Date(); selectedDate = new Date().toDateString(); renderCalendar(); showDayDetail(selectedDate, new Date().getDate()); });
-      els.dayDetailClose.addEventListener('click', () => {
-        els.dayDetailPanel.classList.remove('show');
+      if (els.prevMonth) els.prevMonth.addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1); renderCalendar('right'); });
+      if (els.nextMonth) els.nextMonth.addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1); renderCalendar('left'); });
+      if (els.prevYear) els.prevYear.addEventListener('click', () => { currentCalendarDate.setFullYear(currentCalendarDate.getFullYear() - 1); renderCalendar('right'); });
+      if (els.nextYear) els.nextYear.addEventListener('click', () => { currentCalendarDate.setFullYear(currentCalendarDate.getFullYear() + 1); renderCalendar('left'); });
+      if (els.backToToday) els.backToToday.addEventListener('click', () => { 
+        currentCalendarDate = new Date(); 
+        selectedDate = new Date().toDateString(); 
+        renderCalendar(); 
+        showDayDetail(selectedDate, new Date().getDate()); 
+      });
+      if (els.dayDetailClose) els.dayDetailClose.addEventListener('click', () => {
+        if (els.dayDetailPanel) els.dayDetailPanel.classList.remove('show');
         selectedDate = null;
         renderCalendar();
       });
     }
 
     function renderCalendar(direction) {
+      if (!els.calendarGrid || !els.calendarTitle) return;
       const year = currentCalendarDate.getFullYear();
       const month = currentCalendarDate.getMonth();
       els.calendarTitle.textContent = new Date(year, month).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
@@ -1913,24 +1323,19 @@
       const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
       let html = '';
 
-      dayNames.forEach(d => {
-        html += `<div class="cal-day-header">${d}</div>`;
-      });
+      dayNames.forEach(d => html += `<div class="cal-day-header">${d}</div>`);
 
-      // Previous month days
       for (let i = firstDay - 1; i >= 0; i--) {
         const day = daysInPrevMonth - i;
         html += `<div class="cal-day other-month"><span class="day-number">${day}</span></div>`;
       }
 
-      // Current month days
       const today = new Date();
       for (let day = 1; day <= daysInMonth; day++) {
         const dateStr = new Date(year, month, day).toDateString();
         const isToday = today.toDateString() === dateStr;
         const isSelected = selectedDate === dateStr;
 
-        // Find tasks for this day
         const dayTasks = tasks.filter(t => {
           if (t.dateTime) {
             const tDate = new Date(t.dateTime);
@@ -1941,7 +1346,7 @@
 
         let dotsHtml = '';
         dayTasks.slice(0, 5).forEach((t, i) => {
-          const dotClass = t.done ? 'done' : t.priority;
+          const dotClass = t.done ? 'done' : (t.priority || 'medium');
           dotsHtml += `<div class="task-dot ${dotClass}" style="animation-delay:${i * 0.05}s"></div>`;
         });
         if (dayTasks.length > 5) dotsHtml += `<div class="task-dot" style="background:var(--text-dim)"></div>`;
@@ -1954,7 +1359,6 @@
         `;
       }
 
-      // Next month days
       const remainingCells = (7 - ((firstDay + daysInMonth) % 7)) % 7;
       for (let day = 1; day <= remainingCells; day++) {
         html += `<div class="cal-day other-month"><span class="day-number">${day}</span></div>`;
@@ -1962,13 +1366,11 @@
 
       els.calendarGrid.innerHTML = html;
 
-      // Animation direction
       if (direction) {
         els.calendarGrid.className = 'calendar-grid slide-' + direction;
         setTimeout(() => els.calendarGrid.className = 'calendar-grid', 400);
       }
 
-      // Bind click events
       document.querySelectorAll('.cal-day:not(.other-month)').forEach(dayEl => {
         dayEl.addEventListener('click', () => {
           const dateStr = dayEl.dataset.date;
@@ -1980,6 +1382,7 @@
     }
 
     function showDayDetail(dateStr, dayNum) {
+      if (!els.dayDetailPanel || !els.dayDetailTitle || !els.dayDetailContent) return;
       const date = new Date(dateStr);
       const formatted = date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
       els.dayDetailTitle.textContent = `📅 ${formatted}`;
@@ -2002,14 +1405,13 @@
               <div style="font-weight:600; ${t.done ? 'text-decoration:line-through;opacity:0.6' : ''}">${escapeHtml(t.title)}</div>
               <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
                 ${t.timeHint ? '🕒 ' + t.timeHint + ' · ' : ''}
-                <span class="priority-tag p-${t.priority}">${t.priority}</span>
-                ${t.category ? `<span class="priority-tag" style="background:rgba(79,172,254,0.15); color:var(--neon-blue); border:1px solid rgba(79,172,254,0.3);">🏷️ ${escapeHtml(t.category)}</span>` : ''}
+                <span class="priority-tag p-${t.priority}">${getPriorityIcon(t.priority)} ${t.priority === 'super_high' ? 'Super High' : t.priority}</span>
+                ${t.category ? `<span class="category-tag" style="margin-left:3px;">📁 ${escapeHtml(t.category)}</span>` : ''}
               </div>
             </div>
           </div>
         `).join('');
       }
-
       els.dayDetailPanel.classList.add('show');
     }
 
@@ -2023,17 +1425,14 @@
       }
     }
 
-    // Smart Parser - Priority & Time dihapus dari judul
+    // Smart Parser
     function smartParse(text) {
       let priority = currentPriority;
-      let desc = els.descInput.value;
-      let category = els.categoryInput.value.trim();
+      let desc = els.descInput ? els.descInput.value : '';
       let timeHint = '';
       let cleanedText = text;
 
-      // Parse priority and remove from text
       const priorityPatterns = [
-        { regex: /\b(super\s*high|superhigh|critical|kritis)\b/gi, val: 'super-high' },
         { regex: /\b(tinggi|high|penting|urgent)\b/gi, val: 'high' },
         { regex: /\b(sedang|medium|biasa)\b/gi, val: 'medium' },
         { regex: /\b(rendah|low|nanti)\b/gi, val: 'low' }
@@ -2048,7 +1447,6 @@
         }
       }
 
-      // Parse time and remove from text
       const timeMatch = cleanedText.match(/(jam|pukul)\s*(\d{1,2})(?::(\d{2}))?\s*(pagi|siang|sore|malam)?/i);
       if (timeMatch) {
         let h = parseInt(timeMatch[2]);
@@ -2060,33 +1458,29 @@
         cleanedText = cleanedText.replace(timeMatch[0], '').trim();
       }
 
-      // Clean up extra spaces
       cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
-
       if (!desc && /(beli|bayar|rapat|meeting|olahraga|belajar|kerja)/i.test(cleanedText)) {
         const match = cleanedText.match(/(beli|bayar|rapat|meeting|olahraga|belajar|kerja)/i);
         if (match) desc = match[0];
       }
 
-      return { title: cleanedText || text, priority, desc, timeHint, category };
+      return { title: cleanedText || text, priority, desc, timeHint };
     }
 
     // Add Task
-    els.addBtn.addEventListener('click', addTask);
-    els.taskInput.addEventListener('keydown', e => { if(e.key==='Enter') addTask(); });
-
     function addTask() {
+      if (!els.taskInput) return;
       const raw = els.taskInput.value.trim();
       if (!raw) return;
 
       const parsed = smartParse(raw);
-      const dateTimeVal = els.dateTimeInput.value;
+      const dateTimeVal = els.dateTimeInput ? els.dateTimeInput.value : '';
 
       const newTask = {
         id: Date.now().toString(),
         title: parsed.title || raw,
-        desc: parsed.desc || els.descInput.value.trim(),
-        category: parsed.category || els.categoryInput.value.trim() || 'Umum',
+        desc: parsed.desc || (els.descInput ? els.descInput.value.trim() : ''),
+        category: els.categoryInput ? els.categoryInput.value.trim() : '',
         priority: parsed.priority,
         done: false,
         createdAt: new Date().toISOString(),
@@ -2107,50 +1501,57 @@
       
       // Reset inputs
       els.taskInput.value = '';
-      els.descInput.value = '';
-      els.categoryInput.value = '';
+      if (els.descInput) els.descInput.value = '';
+      if (els.categoryInput) els.categoryInput.value = '';
       tempSubtasks = [];
       renderSubtaskChips();
       updatePrioritySelect('medium');
       setDefaultDateTime();
       
-      // Auto sync to GitHub if enabled
       if (settings.githubAutoSync && settings.githubToken) {
         syncToGitHub();
       }
     }
 
+    if (els.addBtn) els.addBtn.addEventListener('click', addTask);
+
     // Render Tasks
     function renderTasks() {
+      if (!els.taskList) return;
       els.taskList.innerHTML = '';
       let filtered = tasks.filter(t => {
         if (currentFilter === 'pending') return !t.done;
         if (currentFilter === 'done') return t.done;
         return true;
       });
-
-      // Priority filter from dropdown
-      const priorityFilter = els.priorityFilter ? els.priorityFilter.value : 'all';
-      if (priorityFilter && priorityFilter !== 'all') {
-        filtered = filtered.filter(t => t.priority === priorityFilter);
+      
+      if (currentPriorityFilter && currentPriorityFilter !== 'all') {
+        filtered = filtered.filter(t => t.priority === currentPriorityFilter);
       }
-
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
-        filtered = filtered.filter(t => t.title.toLowerCase().includes(q) || (t.desc && t.desc.toLowerCase().includes(q)) || (t.category && t.category.toLowerCase().includes(q)));
+        filtered = filtered.filter(t =>
+          t.title.toLowerCase().includes(q) ||
+          (t.desc && t.desc.toLowerCase().includes(q)) ||
+          (t.category && t.category.toLowerCase().includes(q))
+        );
       }
-
-      // Sorting
-      const sortValue = els.sortSelect ? els.sortSelect.value : '';
-      if (sortValue === 'date-desc') {
-        filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      } else if (sortValue === 'date-asc') {
-        filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-      } else if (sortValue === 'priority') {
-        const pOrder = { 'super-high': 4, 'high': 3, 'medium': 2, 'low': 1 };
-        filtered.sort((a, b) => (pOrder[b.priority] || 0) - (pOrder[a.priority] || 0));
-      } else if (sortValue === 'status') {
-        filtered.sort((a, b) => (a.done === b.done) ? 0 : (a.done ? 1 : -1));
+      
+      if (currentSortFields.length > 0) {
+        filtered.sort((a, b) => {
+          for (const field of currentSortFields) {
+            let diff = 0;
+            if (field === 'date') {
+              diff = new Date(b.dateTime || b.createdAt) - new Date(a.dateTime || a.createdAt);
+            } else if (field === 'priority') {
+              diff = (PRIORITY_ORDER[b.priority] || 2) - (PRIORITY_ORDER[a.priority] || 2);
+            } else if (field === 'status') {
+              diff = (a.done ? 1 : 0) - (b.done ? 1 : 0);
+            }
+            if (diff !== 0) return diff;
+          }
+          return 0;
+        });
       }
 
       filtered.forEach((t, index) => {
@@ -2164,7 +1565,7 @@
         const timeStr = created.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
         const dateStr = created.toLocaleDateString('id-ID', { day:'numeric', month:'short' });
         const taskDateTime = t.dateTime ? new Date(t.dateTime) : null;
-        const scheduledStr = taskDateTime ? taskDateTime.toLocaleDateString('id-ID', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) : '';
+        const scheduledStr = taskDateTime ? taskDateTime.toLocaleDateString('id-ID',{day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) : '';
 
         el.innerHTML = `
           <div class="grip" title="Drag to reorder">⋮⋮</div>
@@ -2181,12 +1582,12 @@
             </div>
             <div class="task-meta">
               <span class="task-time">🕒 ${scheduledStr || dateStr + ' ' + timeStr}${t.timeHint ? ' → ' + t.timeHint : ''}</span>
-              <span class="priority-tag p-${t.priority}">${getPriorityIcon(t.priority)} ${t.priority}</span>
-              ${t.category ? `<span class="priority-tag" style="background:rgba(79,172,254,0.15); color:var(--neon-blue); border:1px solid rgba(79,172,254,0.3);">🏷️ ${escapeHtml(t.category)}</span>` : ''}
-              ${t.desc ? `<span style="font-size:0.75rem; color:var(--text-dim)">📝 ${escapeHtml(t.desc)}</span>` : ''}
+              <span class="priority-tag p-${t.priority}">${getPriorityIcon(t.priority)} ${t.priority === 'super_high' ? 'Super High' : t.priority}</span>
+              ${t.category ? `<span class="category-tag">📁 ${escapeHtml(t.category)}</span>` : ''}
+              ${t.desc ? `<span style="font-size:0.72rem; color:var(--text-dim)">📝 ${escapeHtml(t.desc.length > 40 ? t.desc.slice(0,40)+'…' : t.desc)}</span>` : ''}
             </div>
             ${t.subtasks.length ? `<ul class="subtasks">${t.subtasks.map((s,i)=>`<li class="subtask ${s.done ? 'done' : ''}"><input type="checkbox" class="subtask-check" ${s.done?'checked':''} data-idx="${i}"><span>${escapeHtml(s.text)}</span></li>`).join('')}</ul>` : ''}
-            <div class="pomodoro-wrap" style="display:${t.pomodoro.active||t.pomodoro.timeLeft<1500?'flex':'none'}">
+            <div class="pomodoro-wrap" style="display:${t.pomodoro.active||t.pomodoro.timeLeft<<1500?'flex':'none'}">
               <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="${100 - (t.pomodoro.timeLeft/1500)*100}"/></svg>
               <span class="pomo-time">${formatTime(t.pomodoro.timeLeft)}</span>
               <button class="pomo-btn">${t.pomodoro.active ? '⏸' : '▶'}</button>
@@ -2196,27 +1597,33 @@
         `;
 
         const check = el.querySelector('.task-check');
-        check.addEventListener('change', () => toggleTask(t.id, check));
+        if (check) check.addEventListener('change', () => toggleTask(t.id, check));
 
-        el.querySelector('.delete-btn').addEventListener('click', function() {
+        const delBtn = el.querySelector('.delete-btn');
+        if (delBtn) delBtn.addEventListener('click', function() {
           this.classList.add('poof');
-          setTimeout(() => { deleteTask(t.id); }, 300);
+          setTimeout(() => deleteTask(t.id), 300);
         });
 
-        el.querySelector('.edit-btn').addEventListener('click', () => openEditModal(t.id));
-        el.querySelector('.subtask-btn').addEventListener('click', () => addSubtask(t.id));
+        const editBtn = el.querySelector('.edit-btn');
+        if (editBtn) editBtn.addEventListener('click', () => openEditModal(t.id));
+
+        const subBtn = el.querySelector('.subtask-btn');
+        if (subBtn) subBtn.addEventListener('click', () => addSubtask(t.id));
+
         el.querySelectorAll('.subtask-check').forEach(cb => {
           cb.addEventListener('change', (e) => toggleSubtask(t.id, e.target.dataset.idx, e.target.checked));
         });
 
-        el.querySelector('.focus-btn').addEventListener('click', () => enterFocusMode(t.id));
+        const focusBtn = el.querySelector('.focus-btn');
+        if (focusBtn) focusBtn.addEventListener('click', () => enterFocusMode(t.id));
+
         const pomoBtn = el.querySelector('.pomo-btn');
-        if(pomoBtn) pomoBtn.addEventListener('click', () => togglePomodoro(t.id, el));
+        if (pomoBtn) pomoBtn.addEventListener('click', () => togglePomodoro(t.id, el));
 
         const clearBtn = el.querySelector('.pomo-clear-btn');
-        if(clearBtn) clearBtn.addEventListener('click', () => clearPomodoro(t.id, el));
+        if (clearBtn) clearBtn.addEventListener('click', () => clearPomodoro(t.id, el));
 
-        // Drag & Drop
         el.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', t.id); el.classList.add('dragging'); });
         el.addEventListener('dragend', () => el.classList.remove('dragging'));
         el.addEventListener('dragover', e => e.preventDefault());
@@ -2226,9 +1633,11 @@
           if (draggedId === t.id) return;
           const fromIdx = tasks.findIndex(x => x.id === draggedId);
           const toIdx = tasks.findIndex(x => x.id === t.id);
-          const [moved] = tasks.splice(fromIdx, 1);
-          tasks.splice(toIdx, 0, moved);
-          save(); renderTasks();
+          if (fromIdx >= 0 && toIdx >= 0) {
+            const [moved] = tasks.splice(fromIdx, 1);
+            tasks.splice(toIdx, 0, moved);
+            save(); renderTasks();
+          }
         });
 
         els.taskList.appendChild(el);
@@ -2240,11 +1649,11 @@
     }
 
     function getPriorityIcon(p) {
-      const icons = { 'super-high': '🚨', high: '🔥', medium: '⚡', low: '🌿' };
+      const icons = { super_high: '💥', high: '🔥', medium: '⚡', low: '🌿' };
       return icons[p] || '⚡';
     }
+    const PRIORITY_ORDER = { super_high: 4, high: 3, medium: 2, low: 1 };
 
-    // Task Actions
     function toggleTask(id, checkbox) {
       const t = tasks.find(x => x.id === id);
       if (!t) return;
@@ -2266,23 +1675,23 @@
       tasks = tasks.filter(x => x.id !== id);
       save(); renderTasks(); updateStats(); updateSuggestions(); renderCalendar();
       playSound('delete'); vibrate();
-      
-      if (settings.githubAutoSync && settings.githubToken) {
-        syncToGitHub();
-      }
+      if (settings.githubAutoSync && settings.githubToken) syncToGitHub();
     }
 
     function addSubtask(id) {
       const text = prompt('Subtask baru:');
       if (!text?.trim()) return;
       const t = tasks.find(x => x.id === id);
-      t.subtasks.push({ text: text.trim(), done: false });
-      save(); renderTasks();
-      playSound('add');
+      if (t) {
+        t.subtasks.push({ text: text.trim(), done: false });
+        save(); renderTasks();
+        playSound('add');
+      }
     }
 
     function toggleSubtask(id, idx, done) {
       const t = tasks.find(x => x.id === id);
+      if (!t || !t.subtasks[idx]) return;
       t.subtasks[idx].done = done;
       save(); renderTasks();
       if (done) { playSound('complete'); vibrate(); }
@@ -2291,11 +1700,11 @@
     // Edit Modal
     function openEditModal(id) {
       const t = tasks.find(x => x.id === id);
-      if (!t) return;
+      if (!t || !els.editModal) return;
       editingId = id;
       els.editTitle.value = t.title;
       els.editDesc.value = t.desc || '';
-      els.editCategory.value = t.category || '';
+      if (els.editCategory) els.editCategory.value = t.category || '';
       els.editPriority.value = t.priority;
       if (t.dateTime) {
         const d = new Date(t.dateTime);
@@ -2307,31 +1716,30 @@
       els.editModal.classList.add('show');
     }
 
-    els.editCancel.addEventListener('click', () => {
-      els.editModal.classList.remove('show');
+    if (els.editCancel) els.editCancel.addEventListener('click', () => {
+      if (els.editModal) els.editModal.classList.remove('show');
       editingId = null;
     });
 
-    els.editSave.addEventListener('click', () => {
+    if (els.editSave) els.editSave.addEventListener('click', () => {
       if (!editingId) return;
       const t = tasks.find(x => x.id === editingId);
+      if (!t) return;
       t.title = els.editTitle.value.trim() || t.title;
       t.desc = els.editDesc.value.trim();
+      t.category = els.editCategory ? els.editCategory.value.trim() : (t.category || '');
       t.priority = els.editPriority.value;
       if (els.editDateTime.value) {
         t.dateTime = new Date(els.editDateTime.value).toISOString();
       }
       save(); renderTasks(); updateStats(); renderCalendar();
-      els.editModal.classList.remove('show');
+      if (els.editModal) els.editModal.classList.remove('show');
       editingId = null;
       playSound('add');
-      
-      if (settings.githubAutoSync && settings.githubToken) {
-        syncToGitHub();
-      }
+      if (settings.githubAutoSync && settings.githubToken) syncToGitHub();
     });
 
-    els.editModal.addEventListener('click', (e) => {
+    if (els.editModal) els.editModal.addEventListener('click', (e) => {
       if (e.target === els.editModal) {
         els.editModal.classList.remove('show');
         editingId = null;
@@ -2341,7 +1749,7 @@
     // Focus Mode
     function enterFocusMode(id) {
       const t = tasks.find(x => x.id === id);
-      if (!t) return;
+      if (!t || !els.focusOverlay) return;
       focusTaskId = id;
       focusTimeLeft = t.pomodoro.timeLeft;
       els.focusTitle.textContent = `🎯 ${t.title}`;
@@ -2351,12 +1759,11 @@
 
     function startFocusTimer() {
       if (focusInterval) clearInterval(focusInterval);
-      els.focusPause.textContent = '⏸ Pause';
+      if (els.focusPause) els.focusPause.textContent = '⏸ Pause';
       focusInterval = setInterval(() => {
         if (focusTimeLeft > 0) {
           focusTimeLeft--;
-          els.focusTimer.textContent = formatTime(focusTimeLeft);
-          // Update task pomodoro too
+          if (els.focusTimer) els.focusTimer.textContent = formatTime(focusTimeLeft);
           const t = tasks.find(x => x.id === focusTaskId);
           if (t) { t.pomodoro.timeLeft = focusTimeLeft; save(); }
         } else {
@@ -2368,7 +1775,7 @@
       }, 1000);
     }
 
-    els.focusPause.addEventListener('click', () => {
+    if (els.focusPause) els.focusPause.addEventListener('click', () => {
       if (focusInterval) {
         clearInterval(focusInterval);
         focusInterval = null;
@@ -2378,7 +1785,7 @@
       }
     });
 
-    els.focusClear.addEventListener('click', () => {
+    if (els.focusClear) els.focusClear.addEventListener('click', () => {
       if (confirm('Yakin ingin menghentikan focus mode?')) {
         exitFocusMode();
       }
@@ -2389,7 +1796,7 @@
       focusInterval = null;
       focusTaskId = null;
       focusTimeLeft = 1500;
-      els.focusOverlay.classList.remove('active');
+      if (els.focusOverlay) els.focusOverlay.classList.remove('active');
       renderTasks();
     }
 
@@ -2400,9 +1807,9 @@
       if (!t) return;
       t.pomodoro.active = !t.pomodoro.active;
       const wrap = el.querySelector('.pomodoro-wrap');
-      wrap.style.display = 'flex';
+      if (wrap) wrap.style.display = 'flex';
       const btn = el.querySelector('.pomo-btn');
-      btn.textContent = t.pomodoro.active ? '⏸' : '▶';
+      if (btn) btn.textContent = t.pomodoro.active ? '⏸' : '▶';
 
       if (t.pomodoro.active && !pomoIntervals[id]) {
         pomoIntervals[id] = setInterval(() => {
@@ -2416,7 +1823,7 @@
             clearInterval(pomoIntervals[id]);
             delete pomoIntervals[id];
             t.pomodoro.active = false;
-            btn.textContent = '▶';
+            if (btn) btn.textContent = '▶';
             playSound('complete');
             alert(`⏰ Fokus selesai untuk: ${t.title}`);
           }
@@ -2442,15 +1849,14 @@
       playSound('delete');
     }
 
-    // Stats & Progress - Dual Progress (Today & All)
+    // Stats & Progress
     function updateStats() {
       const total = tasks.length;
       const done = tasks.filter(t => t.done).length;
       const pending = total - done;
-      const high = tasks.filter(t => (t.priority === 'super-high' || t.priority === 'high') && !t.done).length;
+      const high = tasks.filter(t => (t.priority === 'high' || t.priority === 'super_high') && !t.done).length;
       const pctAll = total ? Math.round((done/total)*100) : 0;
 
-      // Today's stats
       const todayStr = new Date().toDateString();
       const todayTasks = tasks.filter(t => {
         if (t.dateTime) return new Date(t.dateTime).toDateString() === todayStr;
@@ -2460,31 +1866,22 @@
       const todayDone = todayTasks.filter(t => t.done).length;
       const todayPct = todayTotal ? Math.round((todayDone/todayTotal)*100) : 0;
 
-      els.progressFill.style.width = `${todayPct}%`;
-      els.progressLabel.textContent = `${todayPct}% Selesai Hari Ini`;
-      els.progressRatio.textContent = `${todayDone}/${todayTotal}`;
-      els.bentoProgress.textContent = `${todayPct}%`;
-      els.bentoProgressAll.textContent = `${pctAll}%`;
-      els.bentoTotal.textContent = total;
-      els.bentoDone.textContent = done;
-      els.bentoPending.textContent = pending;
-      els.bentoHigh.textContent = high;
+      if (els.progressFill) els.progressFill.style.width = `${todayPct}%`;
+      if (els.progressLabel) els.progressLabel.textContent = `${todayPct}% Selesai Hari Ini`;
+      if (els.progressRatio) els.progressRatio.textContent = `${todayDone}/${todayTotal}`;
+      if (els.bentoProgress) els.bentoProgress.textContent = `${todayPct}%`;
+      if (els.bentoProgressAll) els.bentoProgressAll.textContent = `${pctAll}%`;
+      if (els.bentoTotal) els.bentoTotal.textContent = total;
+      if (els.bentoDone) els.bentoDone.textContent = done;
+      if (els.bentoPending) els.bentoPending.textContent = pending;
+      if (els.bentoHigh) els.bentoHigh.textContent = high;
 
       let color1, color2;
-      if (todayPct <= 25) {
-        color1 = '#ff4d6d'; // Merah (Coral)
-        color2 = '#ff8fa3';
-      } else if (todayPct <= 50) {
-        color1 = '#ffd166'; // Kuning
-        color2 = '#ffe399';
-      } else if (todayPct <= 75) {
-        color1 = '#00f5a0'; // Hijau
-        color2 = '#66f8c6';
-      } else {
-        color1 = '#4facfe'; // Biru
-        color2 = '#00f2fe';
-      }
-      els.progressFill.style.background = `linear-gradient(90deg, ${color1}, ${color2})`;
+      if (todayPct <= 25) { color1 = '#ff4d6d'; color2 = '#ff8fa3'; }
+      else if (todayPct <= 50) { color1 = '#ffd166'; color2 = '#ffe399'; }
+      else if (todayPct <= 75) { color1 = '#00f5a0'; color2 = '#66f8c6'; }
+      else { color1 = '#4facfe'; color2 = '#00f2fe'; }
+      if (els.progressFill) els.progressFill.style.background = `linear-gradient(90deg, ${color1}, ${color2})`;
     }
 
     // Streak Logic
@@ -2503,33 +1900,126 @@
           localStorage.setItem('tf_lastComplete', today);
         }
       }
-      els.streakCount.textContent = streak;
-      els.streakFire.classList.toggle('active', streak >= 3);
+      if (els.streakCount) els.streakCount.textContent = streak;
+      if (els.streakFire) els.streakFire.classList.toggle('active', streak >= 3);
     }
 
     // Search & Filter
-    els.searchInput.addEventListener('input', e => { searchQuery = e.target.value; renderTasks(); });
-    els.filters.forEach(f => {
-      f.addEventListener('click', () => {
-        els.filters.forEach(x => x.classList.remove('active'));
-        f.classList.add('active');
-        currentFilter = f.dataset.filter;
-        renderTasks();
+    if (els.searchInput) els.searchInput.addEventListener('input', e => { searchQuery = e.target.value; renderTasks(); });
+
+    function initButtonListeners() {
+      // Status filters
+      document.querySelectorAll('#statusFilters .filter-chip').forEach(f => {
+        f.addEventListener('click', () => {
+          document.querySelectorAll('#statusFilters .filter-chip').forEach(x => x.classList.remove('active'));
+          f.classList.add('active');
+          currentFilter = f.dataset.filter;
+          renderTasks();
+        });
       });
-    });
 
-    // Priority filter dropdown
-    if (els.priorityFilter) {
-      els.priorityFilter.addEventListener('change', () => { renderTasks(); });
-    }
+      // Priority filter
+      if (els.priorityFilterSelect) {
+        els.priorityFilterSelect.addEventListener('change', () => {
+          currentPriorityFilter = els.priorityFilterSelect.value;
+          renderTasks();
+        });
+      }
 
-    // Sort dropdown
-    if (els.sortSelect) {
-      els.sortSelect.addEventListener('change', () => { renderTasks(); });
+      // Sort chips
+      if (els.sortControls) {
+        els.sortControls.querySelectorAll('.sort-chip').forEach(chip => {
+          chip.addEventListener('click', () => {
+            const field = chip.dataset.sort;
+            if (currentSortFields.includes(field)) {
+              currentSortFields = currentSortFields.filter(f => f !== field);
+              chip.classList.remove('active');
+            } else {
+              currentSortFields.push(field);
+              chip.classList.add('active');
+            }
+            renderTasks();
+          });
+        });
+      }
+
+      // Settings
+      if (els.settingsToggle) els.settingsToggle.addEventListener('click', () => {
+        if (els.settingsPanel) els.settingsPanel.classList.toggle('show');
+      });
+
+      if (els.soundToggle) els.soundToggle.addEventListener('click', () => { 
+        settings.sound = !settings.sound; 
+        els.soundToggle.classList.toggle('on'); 
+        saveSettings(); 
+      });
+
+      if (els.hapticToggle) els.hapticToggle.addEventListener('click', () => { 
+        settings.haptic = !settings.haptic; 
+        els.hapticToggle.classList.toggle('on'); 
+        saveSettings(); 
+      });
+
+      if (els.themeToggle) els.themeToggle.addEventListener('click', () => { 
+        settings.dayMode = !settings.dayMode; 
+        els.themeToggle.classList.toggle('on');
+        document.body.classList.toggle('day-mode');
+        if (els.themeIcon) els.themeIcon.classList.add('spin');
+        setTimeout(() => { if(els.themeIcon) els.themeIcon.classList.remove('spin'); }, 500);
+        if (settings.dayMode) {
+          if (els.themeIcon) els.themeIcon.textContent = '☀️';
+          if (els.themeLabel) els.themeLabel.textContent = 'Day Mode';
+        } else {
+          if (els.themeIcon) els.themeIcon.textContent = '🌙';
+          if (els.themeLabel) els.themeLabel.textContent = 'Night Mode';
+        }
+        saveSettings(); 
+      });
+
+      if (els.githubAutoSync) els.githubAutoSync.addEventListener('click', () => {
+        settings.githubAutoSync = !settings.githubAutoSync;
+        els.githubAutoSync.classList.toggle('on');
+        saveSettings();
+      });
+
+      if (els.githubToken) els.githubToken.addEventListener('change', () => {
+        settings.githubToken = els.githubToken.value.trim();
+        saveSettings();
+      });
+
+      if (els.githubGistId) els.githubGistId.addEventListener('change', () => {
+        settings.githubGistId = els.githubGistId.value.trim();
+        saveSettings();
+      });
+
+      if (els.aiApiKey) els.aiApiKey.addEventListener('change', () => {
+        settings.aiApiKey = els.aiApiKey.value.trim();
+        saveSettings();
+      });
+
+      if (els.clearData) els.clearData.addEventListener('click', () => { 
+        if(confirm('Hapus semua data?')) { 
+          tasks=[]; save(); renderTasks(); updateStats(); renderCalendar();
+          localStorage.removeItem('tf_streak'); localStorage.removeItem('tf_lastComplete'); 
+        } 
+      });
+
+      // GitHub buttons
+      if (els.syncToGithub) els.syncToGithub.addEventListener('click', syncToGitHub);
+      if (els.loadFromGithub) els.loadFromGithub.addEventListener('click', loadFromGitHub);
+
+      // AI buttons
+      if (els.aiMagicBtn) els.aiMagicBtn.addEventListener('click', aiMagicHandler);
+      if (els.aiBtnSummary) els.aiBtnSummary.addEventListener('click', aiSummaryHandler);
+      if (els.aiBtnStale) els.aiBtnStale.addEventListener('click', aiStaleHandler);
+      if (els.aiBtnPriority) els.aiBtnPriority.addEventListener('click', aiPriorityHandler);
+      if (els.testApiKeyBtn) els.testApiKeyBtn.addEventListener('click', testApiHandler);
+      if (els.githubMiniSync) els.githubMiniSync.addEventListener('click', githubMiniHandler);
     }
 
     // Autocomplete Suggestions
     function updateSuggestions() {
+      if (!els.suggestions) return;
       els.suggestions.innerHTML = '';
       const titles = [...new Set(tasks.map(t => t.title))];
       titles.forEach(t => {
@@ -2543,27 +2033,51 @@
     function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
     function playSound(type) {
       if (!settings.sound) return;
-      initAudio();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain); gain.connect(audioCtx.destination);
-      if (type === 'add') { osc.frequency.value = 600; gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.1); osc.start(); osc.stop(audioCtx.currentTime+0.1); }
-      else if (type === 'complete') { osc.type='sine'; osc.frequency.setValueAtTime(500, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(1000, audioCtx.currentTime+0.2); gain.gain.setValueAtTime(0.15, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.4); osc.start(); osc.stop(audioCtx.currentTime+0.4); }
-      else if (type === 'delete') { osc.frequency.value = 300; gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.15); osc.start(); osc.stop(audioCtx.currentTime+0.15); }
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        if (type === 'add') { 
+          osc.frequency.value = 600; 
+          gain.gain.setValueAtTime(0.1, audioCtx.currentTime); 
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.1); 
+          osc.start(); osc.stop(audioCtx.currentTime+0.1); 
+        }
+        else if (type === 'complete') { 
+          osc.type='sine'; 
+          osc.frequency.setValueAtTime(500, audioCtx.currentTime); 
+          osc.frequency.exponentialRampToValueAtTime(1000, audioCtx.currentTime+0.2); 
+          gain.gain.setValueAtTime(0.15, audioCtx.currentTime); 
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.4); 
+          osc.start(); osc.stop(audioCtx.currentTime+0.4); 
+        }
+        else if (type === 'delete') { 
+          osc.frequency.value = 300; 
+          gain.gain.setValueAtTime(0.1, audioCtx.currentTime); 
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.15); 
+          osc.start(); osc.stop(audioCtx.currentTime+0.15); 
+        }
+      } catch(e) { console.error('Sound error:', e); }
     }
-    function vibrate() { if (settings.haptic && navigator.vibrate) navigator.vibrate(40); }
+    function vibrate() { 
+      if (settings.haptic && navigator.vibrate) navigator.vibrate(40); 
+    }
 
     // GitHub Gist Sync
     function showGithubStatus(msg, type) {
+      if (!els.githubStatus) return;
       els.githubStatus.textContent = msg;
       els.githubStatus.className = 'github-status ' + (type || '');
       if (type === 'success' || type === 'error') {
-        setTimeout(() => { els.githubStatus.textContent = ''; els.githubStatus.className = 'github-status'; }, 5000);
+        setTimeout(() => { 
+          if(els.githubStatus) { els.githubStatus.textContent = ''; els.githubStatus.className = 'github-status'; }
+        }, 5000);
       }
     }
 
     async function syncToGitHub() {
-      const token = els.githubToken.value.trim();
+      const token = els.githubToken ? els.githubToken.value.trim() : '';
       if (!token) { showGithubStatus('❌ Token diperlukan', 'error'); return; }
       
       showGithubStatus('☁️ Menyinkronkan...', 'info');
@@ -2575,7 +2089,7 @@
         };
         const content = JSON.stringify(data, null, 2);
         
-        const gistId = els.githubGistId.value.trim();
+        const gistId = els.githubGistId ? els.githubGistId.value.trim() : '';
         
         if (gistId) {
           const res = await fetch(`https://api.github.com/gists/${gistId}`, {
@@ -2591,7 +2105,7 @@
               }
             })
           });
-          if (!res.ok) throw new Error('Gagal update Gist');
+          if (!res.ok) throw new Error('Gagal update Gist: ' + res.status);
           showGithubStatus('✅ Tersimpan ke GitHub', 'success');
         } else {
           const res = await fetch('https://api.github.com/gists', {
@@ -2607,9 +2121,9 @@
               files: { 'taskflow-data.json': { content } }
             })
           });
-          if (!res.ok) throw new Error('Gagal membuat Gist');
+          if (!res.ok) throw new Error('Gagal membuat Gist: ' + res.status);
           const json = await res.json();
-          els.githubGistId.value = json.id;
+          if (els.githubGistId) els.githubGistId.value = json.id;
           settings.githubGistId = json.id;
           saveSettings();
           showGithubStatus(`✅ Gist dibuat: ${json.id}`, 'success');
@@ -2620,8 +2134,8 @@
     }
 
     async function loadFromGitHub() {
-      const token = els.githubToken.value.trim();
-      const gistId = els.githubGistId.value.trim();
+      const token = els.githubToken ? els.githubToken.value.trim() : '';
+      const gistId = els.githubGistId ? els.githubGistId.value.trim() : '';
       
       if (!token) { showGithubStatus('❌ Token diperlukan', 'error'); return; }
       if (!gistId) { showGithubStatus('❌ Gist ID diperlukan', 'error'); return; }
@@ -2634,7 +2148,7 @@
             'Accept': 'application/vnd.github.v3+json'
           }
         });
-        if (!res.ok) throw new Error('Gist tidak ditemukan');
+        if (!res.ok) throw new Error('Gist tidak ditemukan: ' + res.status);
         const json = await res.json();
         const file = json.files['taskflow-data.json'];
         if (!file) throw new Error('File taskflow-data.json tidak ditemukan');
@@ -2653,317 +2167,221 @@
       }
     }
 
-    els.syncToGithub.addEventListener('click', syncToGitHub);
-    els.loadFromGithub.addEventListener('click', loadFromGitHub);
-
     // Settings
     function loadSettings() {
+      if (!els.soundToggle || !els.hapticToggle || !els.themeToggle) return;
       els.soundToggle.classList.toggle('on', settings.sound);
       els.hapticToggle.classList.toggle('on', settings.haptic);
       els.themeToggle.classList.toggle('on', settings.dayMode);
-      els.githubAutoSync.classList.toggle('on', settings.githubAutoSync);
-      els.githubToken.value = settings.githubToken || '';
-      els.githubGistId.value = settings.githubGistId || '';
+      if (els.githubAutoSync) els.githubAutoSync.classList.toggle('on', settings.githubAutoSync);
+      if (els.githubToken) els.githubToken.value = settings.githubToken || '';
+      if (els.githubGistId) els.githubGistId.value = settings.githubGistId || '';
       if (els.aiApiKey) els.aiApiKey.value = settings.aiApiKey || '';
       
       if (settings.dayMode) {
         document.body.classList.add('day-mode');
-        els.themeIcon.textContent = '☀️';
-        els.themeLabel.textContent = 'Day Mode';
+        if (els.themeIcon) els.themeIcon.textContent = '☀️';
+        if (els.themeLabel) els.themeLabel.textContent = 'Day Mode';
       }
     }
 
-    els.settingsToggle.addEventListener('click', () => els.settingsPanel.classList.toggle('show'));
-
-    els.soundToggle.addEventListener('click', () => { 
-      settings.sound = !settings.sound; 
-      els.soundToggle.classList.toggle('on'); 
-      saveSettings(); 
-    });
-
-    els.hapticToggle.addEventListener('click', () => { 
-      settings.haptic = !settings.haptic; 
-      els.hapticToggle.classList.toggle('on'); 
-      saveSettings(); 
-    });
-
-    els.themeToggle.addEventListener('click', () => { 
-      settings.dayMode = !settings.dayMode; 
-      els.themeToggle.classList.toggle('on');
-      document.body.classList.toggle('day-mode');
-      els.themeIcon.classList.add('spin');
-      setTimeout(() => els.themeIcon.classList.remove('spin'), 500);
-      if (settings.dayMode) {
-        els.themeIcon.textContent = '☀️';
-        els.themeLabel.textContent = 'Day Mode';
-      } else {
-        els.themeIcon.textContent = '🌙';
-        els.themeLabel.textContent = 'Night Mode';
-      }
-      saveSettings(); 
-    });
-
-    els.githubAutoSync.addEventListener('click', () => {
-      settings.githubAutoSync = !settings.githubAutoSync;
-      els.githubAutoSync.classList.toggle('on');
-      saveSettings();
-    });
-
-    els.githubToken.addEventListener('change', () => {
-      settings.githubToken = els.githubToken.value.trim();
-      saveSettings();
-    });
-
-    els.githubGistId.addEventListener('change', () => {
-      settings.githubGistId = els.githubGistId.value.trim();
-      saveSettings();
-    });
-
-    if (els.aiApiKey) {
-      els.aiApiKey.addEventListener('change', () => {
-        settings.aiApiKey = els.aiApiKey.value.trim();
-        saveSettings();
-      });
+    function save() { 
+      try { localStorage.setItem('tf_tasks', JSON.stringify(tasks)); } catch(e) { console.error('Save error:', e); }
     }
-
-    els.clearData.addEventListener('click', () => { 
-      if(confirm('Hapus semua data?')) { 
-        tasks=[]; save(); renderTasks(); updateStats(); renderCalendar();
-        localStorage.removeItem('tf_streak'); localStorage.removeItem('tf_lastComplete'); 
-      } 
-    });
-
-    function save() { localStorage.setItem('tf_tasks', JSON.stringify(tasks)); }
-    function saveSettings() { localStorage.setItem('tf_settings', JSON.stringify(settings)); }
+    function saveSettings() { 
+      try { localStorage.setItem('tf_settings', JSON.stringify(settings)); } catch(e) { console.error('Save settings error:', e); }
+    }
     function escapeHtml(str) {
       if (!str) return '';
       const d=document.createElement('div'); d.textContent=str; return d.innerHTML;
     }
     function formatTime(s) { const m=Math.floor(s/60); const sec=s%60; return `${m}:${String(sec).padStart(2,'0')}`; }
 
-    // --- ESC Key Bindings ---
+    // Keyboard
     function initKeyboard() {
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-          // Clear input
-          els.taskInput.value = '';
-          els.descInput.value = '';
-          els.subtaskInput.value = '';
+          if (els.taskInput) els.taskInput.value = '';
+          if (els.descInput) els.descInput.value = '';
+          if (els.subtaskInput) els.subtaskInput.value = '';
           tempSubtasks = [];
           renderSubtaskChips();
           if (document.activeElement) document.activeElement.blur();
-
-          // Close popups
-          els.settingsPanel.classList.remove('show');
-          els.editModal.classList.remove('show');
-          els.dayDetailPanel.classList.remove('show');
+          if (els.settingsPanel) els.settingsPanel.classList.remove('show');
+          if (els.editModal) els.editModal.classList.remove('show');
+          if (els.dayDetailPanel) els.dayDetailPanel.classList.remove('show');
           closePrioritySelect();
         }
       });
     }
 
-    // --- AI Features ---
-    async function callAI(systemPrompt, userPrompt, useMockFallback = true) {
-      const model = els.aiModelSelect ? els.aiModelSelect.value : KONEKTIKA_CONFIG.model;
-      const apiKey = els.aiApiKeyQuick && els.aiApiKeyQuick.value.trim() 
-        ? els.aiApiKeyQuick.value.trim() 
-        : (settings.aiApiKey || KONEKTIKA_CONFIG.apiKey);
-
-      // Determine provider config based on model
-      let baseURL = KONEKTIKA_CONFIG.baseURL;
-      let actualModel = model;
-
-      if (model.startsWith('llama-') || model.startsWith('mixtral-') || model.startsWith('gemma-')) {
-        baseURL = 'https://api.groq.com/openai/v1';
-      } else if (model.startsWith('gemini-')) {
-        baseURL = 'https://generativelanguage.googleapis.com/v1beta';
-      } else if (model.startsWith('claude-')) {
-        baseURL = 'https://api.anthropic.com/v1';
-      } else if (model.startsWith('mistral-')) {
-        baseURL = 'https://api.mistral.ai/v1';
-      }
-
+    // AI Handlers
+    async function callAI(systemPrompt, userPrompt) {
+      const apiKey = settings.aiApiKey;
+      const model = els.aiModelSelect ? els.aiModelSelect.value : 'claude-default';
+      const useAnthropic = !apiKey || apiKey.startsWith('sk-ant-');
+      
       try {
-        const response = await fetch(baseURL + '/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Bearer ' + apiKey,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            model: actualModel,
-            messages: [
-              {role: "system", content: systemPrompt},
-              {role: "user", content: userPrompt}
-            ],
-            max_tokens: 1024,
-            temperature: 0.7
-          })
-        });
-
-        if (!response.ok) {
-          const errText = await response.text().catch(() => 'Unknown error');
-          throw new Error(`HTTP ${response.status}: ${errText}`);
-        }
-
-        const data = await response.json();
-        if (data && data.choices && data.choices[0] && data.choices[0].message) {
-          return data.choices[0].message.content;
-        }
-        throw new Error("Format respon API tidak sesuai.");
-      } catch (err) {
-        console.error("AI Error:", err);
-        if (useMockFallback) {
-          return generateMockResponse(systemPrompt, userPrompt);
-        }
-        return "❌ Error: " + err.message + "\n\n💡 Tips: Periksa API key, koneksi internet, atau coba model lain.";
-      }
-    }
-
-    function generateMockResponse(systemPrompt, userPrompt) {
-      const prompt = (systemPrompt + " " + userPrompt).toLowerCase();
-
-      if (prompt.includes('ringkasan') || prompt.includes('summary')) {
-        const todayTasks = tasks.filter(t => {
-          const today = new Date().toDateString();
-          return new Date(t.createdAt).toDateString() === today || (t.dateTime && new Date(t.dateTime).toDateString() === today);
-        });
-        const done = todayTasks.filter(t => t.done).length;
-        const total = todayTasks.length;
-        return `🎯 Hari ini kamu punya ${total} tugas, ${done} sudah selesai.\n💪 ${done === total && total > 0 ? 'Hebat! Semua tugas selesai. Pertahankan streak!' : 'Fokus selesaikan yang pending, jangan ditunda-tunda ya!'}`;
-      }
-
-      if (prompt.includes('stale') || prompt.includes('terbengkalai')) {
-        const pending = tasks.filter(t => !t.done);
-        if (pending.length === 0) return "🎉 Tidak ada tugas terbengkalai! Semua sudah selesai.";
-        const oldest = pending.sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt))[0];
-        return `⚠️ Tugas tertua yang belum selesai: "${oldest.title}"\n📅 Dibuat: ${new Date(oldest.createdAt).toLocaleDateString('id-ID')}\n💡 Saran: Kerjakan 15 menit saja untuk memulai, jangan tunggu mood!`;
-      }
-
-      if (prompt.includes('prioritas') || prompt.includes('priority')) {
-        const pending = tasks.filter(t => !t.done);
-        if (pending.length === 0) return "✅ Semua tugas sudah selesai!";
-        const highPriority = pending.filter(t => t.priority === 'super-high' || t.priority === 'high');
-        const target = highPriority.length > 0 ? highPriority[0] : pending[0];
-        return `🎯 Kerjakan sekarang: "${target.title}"\n🔥 Priority: ${target.priority}\n💡 Alasan: Tugas ini memiliki prioritas tinggi dan sudah cukup lama di daftar. Selesaikan dalam 1 sesi fokus 25 menit!`;
-      }
-
-      if (prompt.includes('kategori') || prompt.includes('estimasi') || prompt.includes('analisis')) {
-        const titleMatch = userPrompt.match(/Tugas:\s*(.+)/);
-        const title = titleMatch ? titleMatch[1] : 'Tugas';
-        const categories = ['Kerja', 'Pribadi', 'Belanja', 'Meeting', 'Belajar', 'Rutinitas'];
-        const cat = categories[Math.floor(Math.random() * categories.length)];
-        return `{"kategori": "${cat}", "estimasi_menit": ${Math.floor(Math.random() * 60 + 15)}, "prioritas": "medium"}`;
-      }
-
-      return "🤖 AI sedang offline. Gunakan fitur ini saat koneksi/API key sudah benar.";
-    }
-
-    async function testApiKey() {
-      const keyInput = els.aiApiKeyQuick || els.aiApiKey;
-      const key = keyInput ? keyInput.value.trim() : (settings.aiApiKey || '');
-      const statusEl = document.getElementById('aiKeyStatus') || document.getElementById('aiKeyStatusSettings');
-
-      if (!key || key === 'API_KEY_KAMU') {
-        if (statusEl) { statusEl.textContent = '❌ Masukkan API key terlebih dahulu'; statusEl.style.color = 'var(--neon-coral)'; }
-        return false;
-      }
-
-      if (statusEl) { statusEl.textContent = '⏳ Mengecek API key...'; statusEl.style.color = 'var(--neon-blue)'; }
-
-      try {
-        const model = els.aiModelSelect ? els.aiModelSelect.value : KONEKTIKA_CONFIG.model;
-        let baseURL = KONEKTIKA_CONFIG.baseURL;
-        if (model.startsWith('llama-') || model.startsWith('mixtral-') || model.startsWith('gemma-')) {
-          baseURL = 'https://api.groq.com/openai/v1';
-        }
-
-        const response = await fetch(baseURL + '/models', {
-          method: 'GET',
-          headers: { 'Authorization': 'Bearer ' + key }
-        });
-
-        if (response.ok) {
-          if (statusEl) { statusEl.textContent = '✅ API Key valid & terhubung!'; statusEl.style.color = 'var(--neon-green)'; }
-          return true;
+        if (useAnthropic) {
+          const headers = { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01' };
+          if (apiKey) headers['x-api-key'] = apiKey;
+          const response = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({
+              model: 'claude-haiku-20240307',
+              max_tokens: 800,
+              system: systemPrompt,
+              messages: [{ role: 'user', content: userPrompt }]
+            })
+          });
+          const data = await response.json();
+          if (data.content && data.content[0] && data.content[0].text) return data.content[0].text;
+          if (data.error) return 'Error: ' + (data.error.message || JSON.stringify(data.error));
+          return 'Respon tidak valid dari Anthropic API.';
         } else {
-          const err = await response.text().catch(() => 'Invalid key');
-          if (statusEl) { statusEl.textContent = '❌ API Key tidak valid (' + response.status + ')'; statusEl.style.color = 'var(--neon-coral)'; }
-          return false;
+          const response = await fetch(KONEKTIKA_CONFIG.baseURL + '/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Bearer ' + apiKey,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              model: model,
+              messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userPrompt }
+              ]
+            })
+          });
+          const data = await response.json();
+          if (data && data.choices && data.choices[0]) return data.choices[0].message.content;
+          if (data.error) return 'Error: ' + (data.error.message || JSON.stringify(data.error));
+          return 'Respon tidak valid.';
         }
       } catch (err) {
-        if (statusEl) { statusEl.textContent = '⚠️ Tidak bisa terhubung: ' + err.message; statusEl.style.color = 'var(--neon-yellow)'; }
-        return false;
+        console.error('AI Error:', err);
+        return 'Error: ' + err.message;
       }
     }
 
     function initAI() {
-      els.aiMagicBtn.addEventListener('click', async () => {
-        const text = els.taskInput.value.trim();
-        if (!text) return;
-        const originalIcon = els.aiMagicBtn.innerHTML;
-        els.aiMagicBtn.innerHTML = '⏳';
-
-        const prompt = "Kamu adalah asisten produktivitas. Analisis judul tugas berikut. Berikan output HANYA dalam format JSON valid: {\"kategori\": \"nama kategori singkat\", \"estimasi_menit\": angka_menit, \"prioritas\": \"high\" atau \"medium\" atau \"low\"}";
-        const res = await callAI(prompt, "Tugas: " + text);
-        try {
-          const match = res.match(/\{[\s\S]*\}/);
-          if (match) {
-            const data = JSON.parse(match[0]);
-            if (data.kategori) els.descInput.value = data.kategori + (data.estimasi_menit ? ` (${data.estimasi_menit}m)` : '');
-            if (data.prioritas) updatePrioritySelect(data.prioritas.toLowerCase());
-          }
-        } catch(e) {
-          console.error("Parse JSON error:", e);
-        }
-        els.aiMagicBtn.innerHTML = originalIcon;
-      });
-
-      els.aiBtnSummary.addEventListener('click', async () => {
-        els.aiOutput.style.display = 'block';
-        els.aiOutput.innerHTML = '⏳ Menghasilkan ringkasan harian...';
-        const today = new Date().toDateString();
-        const todayTasks = tasks.filter(t => new Date(t.createdAt).toDateString() === today || (t.dateTime && new Date(t.dateTime).toDateString() === today));
-        const taskText = todayTasks.length ? todayTasks.map(t => `- ${t.title} [${t.done ? 'Selesai' : 'Pending'}]`).join('\\n') : "Belum ada tugas hari ini.";
-        const res = await callAI(
-          "Kamu asisten produktivitas. Berikan ringkasan, motivasi, dan evaluasi untuk tugas hari ini dalam 2 kalimat singkat.",
-          "Tugas hari ini:\\n" + taskText
-        );
-        els.aiOutput.innerHTML = `<strong>📝 Ringkasan Harian:</strong><br>${res.replace(/\\n/g, '<br>')}`;
-      });
-
-      els.aiBtnStale.addEventListener('click', async () => {
-        els.aiOutput.style.display = 'block';
-        els.aiOutput.innerHTML = '⏳ Mendeteksi tugas terbengkalai...';
-        const pendingTasks = tasks.filter(t => !t.done);
-        if (pendingTasks.length === 0) {
-          els.aiOutput.innerHTML = '🎉 Tidak ada tugas terbengkalai!';
-          return;
-        }
-        const taskText = pendingTasks.map(t => `- ${t.title} (Dibuat: ${new Date(t.createdAt).toLocaleDateString()})`).join('\\n');
-        const res = await callAI(
-          "Analisis daftar tugas berikut. Identifikasi 1 tugas yang terkesan paling lama atau dihindari. Berikan alasan singkat mengapa terbengkalai dan berikan saran solusi.",
-          taskText
-        );
-        els.aiOutput.innerHTML = `<strong>🔍 Stale Task:</strong><br>${res.replace(/\\n/g, '<br>')}`;
-      });
-
-      els.aiBtnPriority.addEventListener('click', async () => {
-        els.aiOutput.style.display = 'block';
-        els.aiOutput.innerHTML = '⏳ Menganalisis prioritas...';
-        const pendingTasks = tasks.filter(t => !t.done);
-        if (pendingTasks.length === 0) {
-          els.aiOutput.innerHTML = 'Semua tugas selesai!';
-          return;
-        }
-        const taskText = pendingTasks.map(t => `- ${t.title} (Saat ini: ${t.priority})`).join('\\n');
-        const res = await callAI(
-          "Analisis daftar tugas berikut dan rekomendasikan 1 tugas yang harus dikerjakan SEKARANG JUGA beserta alasan logisnya.",
-          taskText
-        );
-        els.aiOutput.innerHTML = `<strong>⚖️ Prioritas Dinamis:</strong><br>${res.replace(/\\n/g, '<br>')}`;
-      });
+      // AI initialized via button listeners in initButtonListeners
     }
-    </script>
 
-<div class="cursor-trail" style="background: var(--neon-coral); left: 1106.8px; top: 616.548px;"></div><div class="cursor-trail" style="background: var(--neon-coral); left: 1089.66px; top: 619.904px;"></div></body></html>
+    async function aiMagicHandler() {
+      if (!els.taskInput || !els.aiMagicBtn) return;
+      const text = els.taskInput.value.trim();
+      if (!text) return;
+      const originalIcon = els.aiMagicBtn.innerHTML;
+      els.aiMagicBtn.innerHTML = '⏳';
+      els.aiMagicBtn.disabled = true;
+
+      const prompt = "Kamu adalah asisten produktivitas. Analisis judul tugas berikut. Berikan output HANYA dalam format JSON valid (tanpa markdown): {\"kategori\": \"nama kategori singkat\", \"estimasi_menit\": angka_menit, \"prioritas\": \"high\" atau \"medium\" atau \"low\"}";
+      const res = await callAI(prompt, "Tugas: " + text);
+      try {
+        const match = res.match(/\{[\s\S]*?\}/);
+        if (match) {
+          const data = JSON.parse(match[0]);
+          if (data.kategori && els.categoryInput) els.categoryInput.value = data.kategori;
+          if (data.estimasi_menit && els.descInput) els.descInput.value = els.descInput.value || `Est: ${data.estimasi_menit}m`;
+          if (data.prioritas) updatePrioritySelect(data.prioritas.toLowerCase());
+        }
+      } catch(e) {
+        console.error("Parse JSON error:", e, "Raw:", res);
+      }
+      els.aiMagicBtn.innerHTML = originalIcon;
+      els.aiMagicBtn.disabled = false;
+    }
+
+    async function aiSummaryHandler() {
+      if (!els.aiOutput) return;
+      els.aiOutput.style.display = 'block';
+      els.aiOutput.innerHTML = '⏳ Menghasilkan ringkasan harian...';
+      const today = new Date().toDateString();
+      const todayTasks = tasks.filter(t => new Date(t.createdAt).toDateString() === today || (t.dateTime && new Date(t.dateTime).toDateString() === today));
+      const taskText = todayTasks.length ? todayTasks.map(t => `- ${t.title} [${t.done ? 'Selesai' : 'Pending'}]`).join('\n') : "Belum ada tugas hari ini.";
+      const res = await callAI(
+        "Kamu asisten produktivitas. Berikan ringkasan, motivasi, dan evaluasi untuk tugas hari ini dalam 2 kalimat singkat.",
+        "Tugas hari ini:\n" + taskText
+      );
+      els.aiOutput.innerHTML = `<strong>📝 Ringkasan Harian:</strong><br>${res.replace(/\n/g, '<br>')}`;
+    }
+
+    async function aiStaleHandler() {
+      if (!els.aiOutput) return;
+      els.aiOutput.style.display = 'block';
+      els.aiOutput.innerHTML = '⏳ Mendeteksi tugas terbengkalai...';
+      const pendingTasks = tasks.filter(t => !t.done);
+      if (pendingTasks.length === 0) {
+        els.aiOutput.innerHTML = '🎉 Tidak ada tugas terbengkalai!';
+        return;
+      }
+      const taskText = pendingTasks.map(t => `- ${t.title} (Dibuat: ${new Date(t.createdAt).toLocaleDateString()})`).join('\n');
+      const res = await callAI(
+        "Analisis daftar tugas berikut. Identifikasi 1 tugas yang terkesan paling lama atau dihindari. Berikan alasan singkat mengapa terbengkalai dan berikan saran solusi.",
+        taskText
+      );
+      els.aiOutput.innerHTML = `<strong>🔍 Stale Task:</strong><br>${res.replace(/\n/g, '<br>')}`;
+    }
+
+    async function aiPriorityHandler() {
+      if (!els.aiOutput) return;
+      els.aiOutput.style.display = 'block';
+      els.aiOutput.innerHTML = '⏳ Menganalisis prioritas...';
+      const pendingTasks = tasks.filter(t => !t.done);
+      if (pendingTasks.length === 0) {
+        els.aiOutput.innerHTML = 'Semua tugas selesai!';
+        return;
+      }
+      const taskText = pendingTasks.map(t => `- ${t.title} (Saat ini: ${t.priority})`).join('\n');
+      const res = await callAI(
+        "Analisis daftar tugas berikut dan rekomendasikan 1 tugas yang harus dikerjakan SEKARANG JUGA beserta alasan logisnya.",
+        taskText
+      );
+      els.aiOutput.innerHTML = `<strong>⚖️ Prioritas Dinamis:</strong><br>${res.replace(/\n/g, '<br>')}`;
+    }
+
+    async function testApiHandler() {
+      if (!els.apiTestResult) return;
+      els.apiTestResult.textContent = '🔄 Menguji API key...';
+      els.apiTestResult.className = 'loading';
+      const result = await callAI("Jawab hanya dengan kata: OK", "Test koneksi");
+      if (result && result.toLowerCase().includes('ok')) {
+        els.apiTestResult.textContent = '✅ API Key valid! Koneksi berhasil.';
+        els.apiTestResult.className = 'ok';
+      } else if (result && result.startsWith('Error:')) {
+        els.apiTestResult.textContent = '❌ ' + result;
+        els.apiTestResult.className = 'fail';
+      } else {
+        els.apiTestResult.textContent = '✅ Terhubung. Resp: ' + (result||'').slice(0,60);
+        els.apiTestResult.className = 'ok';
+      }
+    }
+
+    function githubMiniHandler() {
+      const token = settings.githubToken;
+      const gistId = settings.githubGistId;
+      if (!token) {
+        alert('⚠️ Masukkan GitHub Token di Settings (⚙️) terlebih dulu.');
+        if (els.settingsPanel) els.settingsPanel.classList.add('show');
+        return;
+      }
+      if (gistId) {
+        const choice = confirm('Sync ke GitHub?\n\nOK = Upload (Save)\nCancel = Download (Load)');
+        if (choice) syncToGitHub();
+        else loadFromGitHub();
+      } else {
+        syncToGitHub();
+      }
+    }
+
+    // Start
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', safeInit);
+    } else {
+      safeInit();
+    }
+  </script>
+</body>
+</html>
