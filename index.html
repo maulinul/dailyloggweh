@@ -497,7 +497,7 @@
       background: var(--neon-coral); transition: width 0.4s ease;
     }
     .task-done .task-title::after { width: 100%; transition-delay: 0.3s; }
-    .task-done .task-title { color: var(--text-dim); }
+    .task-done .task-title { color: var(--text-dim); text-decoration: line-through; text-decoration-color: var(--neon-coral); text-decoration-thickness: 2px; }
 
     .task-meta { display: flex; gap: 0.4rem; align-items: center; margin-top: 0.3rem; flex-wrap: wrap; row-gap: 0.3rem; }
     .task-time { font-size: 0.85rem; color: var(--neon-silver); font-weight: 500; }
@@ -755,13 +755,497 @@
       animation: float 3s ease-in-out infinite;
     }
     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  
+    /* ===== KANBAN BOARD VIEW ===== */
+    .view-toggle-wrap {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 0.6rem;
+      gap: 0.4rem;
+    }
+    .view-toggle-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.4rem 0.8rem;
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .view-toggle-btn:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: var(--neon-purple);
+      color: var(--text);
+    }
+    .view-toggle-btn.active {
+      background: rgba(176,38,255,0.15);
+      border-color: var(--neon-purple);
+      color: var(--neon-purple);
+      box-shadow: 0 0 12px rgba(176,38,255,0.2);
+    }
+
+    .kanban-board {
+      display: none;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+      flex: 1;
+    }
+    .kanban-board.active {
+      display: grid;
+    }
+    .kanban-board::-webkit-scrollbar { width: 6px; }
+    .kanban-board::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+
+    .kanban-column {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      min-height: 200px;
+      transition: all 0.3s;
+    }
+    .kanban-column:hover {
+      background: rgba(255,255,255,0.035);
+    }
+    .kanban-column.drag-over {
+      border-color: var(--neon-purple);
+      background: rgba(176,38,255,0.06);
+      box-shadow: 0 0 20px rgba(176,38,255,0.1), inset 0 0 30px rgba(176,38,255,0.03);
+    }
+
+    .kanban-column-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.6rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .kanban-column-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .kanban-column-count {
+      background: rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 0.15rem 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      min-width: 24px;
+      text-align: center;
+    }
+    .kanban-column.pending .kanban-column-title { color: var(--neon-yellow); }
+    .kanban-column.ongoing .kanban-column-title { color: var(--neon-purple); }
+    .kanban-column.done .kanban-column-title { color: var(--neon-green); }
+    .kanban-column.pending .kanban-column-count { background: rgba(255,209,102,0.12); color: var(--neon-yellow); }
+    .kanban-column.ongoing .kanban-column-count { background: rgba(176,38,255,0.12); color: var(--neon-purple); }
+    .kanban-column.done .kanban-column-count { background: rgba(0,245,160,0.12); color: var(--neon-green); }
+
+    .kanban-dropzone {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      min-height: 60px;
+    }
+
+    .kanban-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 0.75rem;
+      cursor: grab;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      animation: springIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .kanban-card:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      border-color: rgba(176,38,255,0.25);
+    }
+    .kanban-card.dragging {
+      opacity: 0.5;
+      transform: rotate(3deg) scale(0.95);
+      cursor: grabbing;
+    }
+    .kanban-card.priority-high { border-left: 3px solid var(--neon-coral); }
+    .kanban-card.priority-super_high { border-left: 3px solid #ff7800; }
+    .kanban-card.priority-medium { border-left: 3px solid var(--neon-yellow); }
+    .kanban-card.priority-low { border-left: 3px solid var(--neon-green); }
+    .kanban-card.done-card { opacity: 0.6; }
+    .kanban-card.done-card .kanban-card-title { text-decoration: line-through; text-decoration-color: var(--neon-coral); }
+
+    .kanban-card-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      word-break: break-word;
+      line-height: 1.3;
+    }
+    .kanban-card-meta {
+      display: flex;
+      gap: 0.3rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .kanban-card-tag {
+      font-size: 0.65rem;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .kanban-card-time {
+      font-size: 0.7rem;
+      color: var(--neon-silver);
+      font-variant-numeric: tabular-nums;
+    }
+    .kanban-card-actions {
+      display: flex;
+      gap: 0.2rem;
+      margin-top: 0.4rem;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: all 0.25s ease;
+    }
+    .kanban-card:hover .kanban-card-actions {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .kanban-card-actions .action-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+
+    /* Hide list view when kanban is active */
+    .task-list.hidden { display: none; }
+    /* Show list view when active */
+    .task-list { display: flex; }
+
+  
+    /* ===== TOAST NOTIFICATIONS ===== */
+    .toast-container {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 9999;
+      pointer-events: none;
+    }
+    .toast {
+      background: var(--glass-strong);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.9rem 1.1rem;
+      min-width: 260px;
+      max-width: 360px;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.88rem;
+      color: var(--text);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      pointer-events: all;
+      animation: toastSlide 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), toastFade 0.3s ease 2.7s forwards;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .toast:hover { transform: translateX(-4px); }
+    @keyframes toastSlide {
+      from { opacity: 0; transform: translateX(40px) scale(0.95); }
+      to { opacity: 1; transform: translateX(0) scale(1); }
+    }
+    @keyframes toastFade {
+      from { opacity: 1; transform: translateX(0); }
+      to { opacity: 0; transform: translateX(20px); pointer-events: none; }
+    }
+    .toast-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .toast-success { border-color: rgba(0,245,160,0.3); box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 20px rgba(0,245,160,0.15); }
+    .toast-error { border-color: rgba(255,77,109,0.3); box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 20px rgba(255,77,109,0.15); }
+    .toast-info { border-color: rgba(79,172,254,0.3); box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 20px rgba(79,172,254,0.15); }
+    .toast-warn { border-color: rgba(255,209,102,0.3); box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 20px rgba(255,209,102,0.15); }
+
+  
+    /* ===== CONFETTI ===== */
+    .confetti-container {
+      position: fixed; inset: 0; pointer-events: none; z-index: 9998; overflow: hidden;
+    }
+    .confetti-piece {
+      position: absolute; top: -20px;
+      animation: confettiFall linear forwards;
+    }
+    @keyframes confettiFall {
+      0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg) scale(0.5); opacity: 0; }
+    }
+
+    /* ===== TASK PRIORITY GLOW ===== */
+    @keyframes glowSuperHigh {
+      0%, 100% { box-shadow: 0 0 8px rgba(255,120,0,0.3), inset 0 0 10px rgba(255,120,0,0.05); }
+      50% { box-shadow: 0 0 20px rgba(255,120,0,0.5), inset 0 0 15px rgba(255,120,0,0.1); }
+    }
+    @keyframes glowHigh {
+      0%, 100% { box-shadow: 0 0 8px rgba(255,77,109,0.3), inset 0 0 10px rgba(255,77,109,0.05); }
+      50% { box-shadow: 0 0 20px rgba(255,77,109,0.5), inset 0 0 15px rgba(255,77,109,0.1); }
+    }
+    .task-item.glow-super_high, .kanban-card.priority-super_high {
+      animation: glowSuperHigh 2.5s ease-in-out infinite;
+      border-left: 3px solid #ff7800;
+    }
+    .task-item.glow-high, .kanban-card.priority-high {
+      animation: glowHigh 3s ease-in-out infinite;
+    }
+
+    /* ===== EMPTY STATE SVG ===== */
+    .empty-illustration {
+      width: 120px; height: 120px; margin: 0 auto 1rem;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes floatSvg {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .empty-illustration svg {
+      width: 100%; height: 100%;
+      filter: drop-shadow(0 0 20px rgba(176,38,255,0.3));
+    }
+
+  
+    /* ===== QUICK TEMPLATES ===== */
+    .quick-templates {
+      display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.3rem;
+    }
+    .template-chip {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 0.35rem 0.7rem;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.25s;
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      user-select: none;
+    }
+    .template-chip:hover {
+      background: rgba(176,38,255,0.12);
+      border-color: var(--neon-purple);
+      color: var(--text);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(176,38,255,0.2);
+    }
+
+    /* ===== EXPORT/IMPORT BUTTONS ===== */
+    .data-actions {
+      display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.5rem;
+    }
+    .data-action-btn {
+      flex: 1;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.25s;
+      font-family: var(--font);
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 0.3rem;
+    }
+    .data-action-btn:hover {
+      background: rgba(0,245,160,0.1);
+      border-color: rgba(0,245,160,0.3);
+      color: var(--neon-green);
+    }
+
+    /* ===== MULTI-SELECT ===== */
+    .batch-bar {
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: rgba(176,38,255,0.1);
+      border: 1px solid rgba(176,38,255,0.25);
+      border-radius: 12px;
+      margin-bottom: 0.6rem;
+      animation: fadeUp 0.3s;
+    }
+    .batch-bar.active { display: flex; }
+    .batch-bar-text { font-size: 0.8rem; color: var(--neon-purple); font-weight: 600; flex: 1; }
+    .batch-btn {
+      font-size: 0.72rem; padding: 0.3rem 0.6rem; border-radius: 8px;
+      border: 1px solid var(--border); background: rgba(255,255,255,0.05);
+      color: var(--text); cursor: pointer; transition: all 0.2s;
+      font-family: var(--font);
+    }
+    .batch-btn:hover { transform: translateY(-1px); }
+    .batch-done:hover { background: rgba(0,245,160,0.15); border-color: rgba(0,245,160,0.4); color: var(--neon-green); }
+    .batch-delete:hover { background: rgba(255,77,109,0.15); border-color: rgba(255,77,109,0.4); color: var(--neon-coral); }
+    .task-select { width: 16px; height: 16px; accent-color: var(--neon-purple); cursor: pointer; margin-right: 0.4rem; }
+    .task-item.selecting { border-color: rgba(176,38,255,0.3); }
+
+  
+    /* ===== PARSING EDITOR ===== */
+    .pe-tabs {
+      display: flex;
+      gap: 0.3rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    .pe-tab {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.4rem 0.8rem;
+      color: var(--text-dim);
+      font-size: 0.82rem;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: all 0.25s;
+      white-space: nowrap;
+    }
+    .pe-tab:hover {
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+    }
+    .pe-tab.active {
+      background: rgba(176,38,255,0.15);
+      border-color: var(--neon-purple);
+      color: var(--neon-purple);
+    }
+    .pe-panel {
+      display: none;
+    }
+    .pe-panel.active {
+      display: block;
+      animation: fadeUp 0.3s;
+    }
+    .pe-table-header {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0.3rem;
+    }
+    .pe-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      padding: 0.35rem 0;
+      animation: fadeUp 0.2s;
+    }
+    .pe-input {
+      flex: 1;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.4rem 0.6rem;
+      color: var(--text);
+      font-size: 0.82rem;
+      font-family: var(--font);
+      transition: all 0.25s;
+    }
+    .pe-input:focus {
+      outline: none;
+      border-color: var(--neon-purple);
+      box-shadow: 0 0 0 3px rgba(176,38,255,0.15);
+    }
+    .pe-select {
+      width: 120px;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.4rem 0.5rem;
+      color: var(--text);
+      font-size: 0.82rem;
+      font-family: var(--font);
+    }
+    .pe-select:focus { outline: none; border-color: var(--neon-purple); }
+    .pe-number {
+      width: 100px;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.4rem 0.5rem;
+      color: var(--text);
+      font-size: 0.82rem;
+      font-family: var(--font);
+    }
+    .pe-delete {
+      width: 36px;
+      height: 36px;
+      background: rgba(255,77,109,0.08);
+      border: 1px solid rgba(255,77,109,0.2);
+      border-radius: 8px;
+      color: var(--neon-coral);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pe-delete:hover {
+      background: rgba(255,77,109,0.2);
+      transform: scale(1.1);
+    }
+    .pe-add-btn {
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: rgba(0,245,160,0.08);
+      border: 1px dashed rgba(0,245,160,0.3);
+      border-radius: 10px;
+      color: var(--neon-green);
+      font-size: 0.82rem;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .pe-add-btn:hover {
+      background: rgba(0,245,160,0.15);
+      border-style: solid;
+    }
+    .day-mode .pe-input, .day-mode .pe-select, .day-mode .pe-number {
+      background: rgba(0,0,0,0.08);
+    }
+
   </style>
-<!--<base target="_blank">--><base href="." target="_blank">
+<!--<base target="_blank">--><!--<base href="." target="_blank">--><base href="." target="_blank">
+<base target="_blank">
 </head>
-<body class="">
+<body class="hovering">
   <!-- Custom Cursor -->
-  <div class="cursor-dot" id="cursorDot" style="display: block; left: 1024.43px; top: 464.486px;"></div>
-  <div class="cursor-outline" id="cursorOutline" style="display: block; left: 1013.31px; top: 431.788px;"></div>
+  <div class="cursor-dot" id="cursorDot" style="display: block; left: 886px; top: 807px;"></div>
+  <div class="cursor-outline" id="cursorOutline" style="display: block; left: 886px; top: 807px;"></div>
 
   <!-- Focus Mode Overlay -->
   <div class="focus-overlay" id="focusOverlay">
@@ -808,33 +1292,104 @@
     </div>
   </div>
 
+  <!-- Parsing Keywords Editor Modal -->
+  <div class="modal-overlay" id="parsingEditorModal">
+    <div class="modal-content" style="max-width: 650px; max-height: 85vh; overflow-y: auto;">
+      <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
+        <span>⚙️ Pengaturan Parsing Kata</span>
+        <button class="btn-icon" id="parsingEditorClose" style="font-size:1.2rem; padding:0.3rem 0.5rem;">✕</button>
+      </div>
+      <p style="font-size:0.75rem; color:var(--text-dim); margin-bottom:0.8rem;">Edit kata kunci yang diparsing untuk prioritas, status, tanggal, dan waktu. Setiap baris: kata kunci (pisahkan dengan koma) → hasil.</p>
+
+      <!-- Tabs -->
+      <div class="pe-tabs">
+        <button class="pe-tab active" data-tab="priority">🎯 Prioritas</button>
+        <button class="pe-tab" data-tab="status">🏷️ Status</button>
+        <button class="pe-tab" data-tab="dates">📅 Tanggal</button>
+        <button class="pe-tab" data-tab="timeOfDay">⏰ Waktu</button>
+      </div>
+
+      <!-- Tab Content: Priority -->
+      <div class="pe-panel active" id="pe-panel-priority">
+        <div class="pe-table-header">
+          <span style="flex:1;">Kata Kunci (pisah koma)</span>
+          <span style="width:120px;">Prioritas</span>
+          <span style="width:50px;"></span>
+        </div>
+        <div class="pe-table-body" id="pe-body-priority"></div>
+        <button class="pe-add-btn" data-type="priority">+ Tambah</button>
+      </div>
+
+      <!-- Tab Content: Status -->
+      <div class="pe-panel" id="pe-panel-status">
+        <div class="pe-table-header">
+          <span style="flex:1;">Kata Kunci (pisah koma)</span>
+          <span style="width:120px;">Status</span>
+          <span style="width:50px;"></span>
+        </div>
+        <div class="pe-table-body" id="pe-body-status"></div>
+        <button class="pe-add-btn" data-type="status">+ Tambah</button>
+      </div>
+
+      <!-- Tab Content: Dates -->
+      <div class="pe-panel" id="pe-panel-dates">
+        <div class="pe-table-header">
+          <span style="flex:1;">Kata Kunci (pisah koma)</span>
+          <span style="width:100px;">+Hari</span>
+          <span style="width:50px;"></span>
+        </div>
+        <div class="pe-table-body" id="pe-body-dates"></div>
+        <button class="pe-add-btn" data-type="dates">+ Tambah</button>
+      </div>
+
+      <!-- Tab Content: Time of Day -->
+      <div class="pe-panel" id="pe-panel-timeOfDay">
+        <div class="pe-table-header">
+          <span style="flex:1;">Kata Kunci (pisah koma)</span>
+          <span style="width:100px;">Jam</span>
+          <span style="width:50px;"></span>
+        </div>
+        <div class="pe-table-body" id="pe-body-timeOfDay"></div>
+        <button class="pe-add-btn" data-type="timeOfDay">+ Tambah</button>
+      </div>
+
+      <div class="modal-actions" style="margin-top:1rem; justify-content:space-between;">
+        <button class="btn-icon" id="parsingResetDefault" title="Reset ke Default" style="color:var(--neon-coral); border-color:rgba(255,77,109,0.3);">🔄 Reset Default</button>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn-icon" id="parsingCancel">Batal</button>
+          <button class="btn" id="parsingSave">Simpan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="app-grid">
     <!-- KOLOM 1: Clock & Bento Stats -->
     <div class="column col-left">
       <div class="glass">
-        <div class="clock kinetic" id="clock" style="font-variation-settings: &quot;wght&quot; 409;">17:07<span class="seconds">:03</span></div>
-        <div style="margin-top:0.5rem; color:var(--text-dim); font-size:0.9rem;" id="dateDisplay">Memuat...</div>
+        <div class="clock kinetic" id="clock" style="font-variation-settings: &quot;wght&quot; 406;">10:41<span class="seconds">:02</span></div>
+        <div style="margin-top:0.5rem; color:var(--text-dim); font-size:0.9rem;" id="dateDisplay">Sabtu, 6 Jun 2026</div>
       </div>
       <div class="bento">
         <div class="bento-card bento-progress">
           <div class="bento-title">Progress Hari Ini</div>
-          <div class="bento-value" id="bentoProgress">50%</div>
+          <div class="bento-value" id="bentoProgress">0%</div>
         </div>
         <div class="bento-card bento-progress">
           <div class="bento-title">Progress Semua</div>
-          <div class="bento-value" id="bentoProgressAll">81%</div>
+          <div class="bento-value" id="bentoProgressAll">0%</div>
         </div>
         <div class="bento-card">
           <div class="bento-title">Total</div>
-          <div class="bento-value" id="bentoTotal">31</div>
+          <div class="bento-value" id="bentoTotal">0</div>
         </div>
         <div class="bento-card">
           <div class="bento-title">Selesai</div>
-          <div class="bento-value" id="bentoDone" style="color:var(--neon-green)">25</div>
+          <div class="bento-value" id="bentoDone" style="color:var(--neon-green)">0</div>
         </div>
         <div class="bento-card">
           <div class="bento-title">Pending</div>
-          <div class="bento-value" id="bentoPending" style="color:var(--neon-yellow)">6</div>
+          <div class="bento-value" id="bentoPending" style="color:var(--neon-yellow)">0</div>
         </div>
         <div class="bento-card bento-high">
           <div class="bento-title">🔥 High+</div>
@@ -856,16 +1411,16 @@
     <div class="column col-center">
       <div class="glass">
         <div class="progress-container">
-          <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 50%; background: linear-gradient(90deg, rgb(255, 209, 102), rgb(255, 227, 153));"></div></div>
-          <div class="progress-text"><span id="progressLabel">50% Selesai Hari Ini</span><span id="progressRatio">1/2</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 0%; background: linear-gradient(90deg, rgb(255, 77, 109), rgb(255, 143, 163));"></div></div>
+          <div class="progress-text"><span id="progressLabel">0% Selesai Hari Ini</span><span id="progressRatio">0/0</span></div>
         </div>
         <div class="input-group">
           <div class="input-header-row">
-            <div id="inputClock">--:--</div>
-            <div id="inputDate">--</div>
+            <div id="inputClock">10:41:02</div>
+            <div id="inputDate">Sabtu, 6 Juni 2026</div>
           </div>
           <input type="text" class="task-input" id="taskInput" placeholder="Tugas | tanggal | status | waktu | prioritas" autocomplete="off" list="taskSuggestions">
-          <datalist id="taskSuggestions"></datalist>
+          <datalist id="taskSuggestions"><option value="PO baru"></option><option value="rekap cat pak reksa BMP"></option><option value="opnam2 mandor dapur"></option><option value="meetni blok g"></option><option value="spm, ba retensi saiin"></option><option value="rab rab dapur sehat selesaikan"></option><option value="cicil cicil gambar blok G"></option><option value="cek potongan pajak bumi srikandi"></option><option value="cek hitungan baja bongkar pasar dari jayamahe"></option><option value="BA retensi jayamaeh atap baja talang K12K22"></option><option value="kontrak kontrak ttd dan kasih materai"></option><option value="buat perbandingan harga baja pamungkas dari blok g ke blok K"></option><option value="Rekap harian"></option><option value="Ba ac bekasi kirim hana"></option><option value="BA hw jaya kali urang"></option><option value="opnam sutar DSV"></option><option value="Tambah masukkan harga NPA dan aziz baja blok G"></option><option value="Cek TB molen blok G"></option><option value="Follow2 up BQ di hana"></option><option value="Buat ba ac + kerja tambah nya"></option><option value="INput harga sutar di blok K15K23"></option><option value="cek ulang BQ dari dapur sukorejo"></option><option value="opnaman susulan"></option><option value="Edit gambar pos dan toilet"></option><option value="PO PO narotama"></option><option value="spm spm"></option><option value="opanman mandor full"></option><option value="cek kerja tambah mandor2 mbg"></option><option value="undang pak viki 12 mei super"></option><option value="SPB dan SPM"></option><option value="clear kan rab dll untuk blok K15K23 dengan hana 14 mei"></option><option value="ajukan harian"></option><option value="as build blok G buat MD"></option><option value="SPM sunbiz"></option><option value="opnam pintu besi sunbiz b8"></option><option value="meeting pajak"></option><option value="rab untuk infra bekasi purwosari dan gunungsari med"></option><option value="opnaman seluruh mandor"></option><option value="surat untuk bumigas tgl 7"></option><option value="rekap harian penjaga purwosari med"></option><option value="kerja tambah tohir"></option><option value="KPI besok"></option><option value="hitung kebut besi gunungsari dan pagar dsv"></option><option value="opnaman pak eko"></option><option value="SPM DONE"></option><option value="meeting mandor"></option><option value="ambil uang"></option></datalist>
           <input type="text" class="task-input" id="descInput" placeholder="Deskripsi (opsional)">
           <input type="text" class="task-input" id="categoryInput" placeholder="📁 Kategori (cth: Kerja, Meeting, Personal, Admin)" list="categorySuggestions" autocomplete="off">
           <datalist id="categorySuggestions">
@@ -903,6 +1458,7 @@
             <button class="btn" id="addBtn">Tambah</button>
             <button class="github-mini-btn" id="githubMiniSync" title="Load &amp; Sync GitHub Gist">☁️ Sync</button>
           </div>
+          <div class="quick-templates" id="quickTemplates"></div>
           <div style="font-size:0.7rem; color:var(--text-dim); margin-top:0.3rem; line-height:1.5;">
           💡 <strong>Format:</strong> <code style="background:rgba(176,38,255,0.15); padding:1px 6px; border-radius:4px; color:var(--neon-purple);">Tugas | tanggal | status | waktu | prioritas</code><br>
           <span style="margin-left:1.2rem;">📅 <em>hari ini, besok, lusa, 2 hari lagi, seminggu, sebulan, 2 bulan…</em> | 🏷️ <em>DNE, OGG, PND</em> | 🕐 <em>jam 19, 19.00, 12am, 12pm</em> | ⚡ <em>high, med, low, superh</em></span><br>
@@ -920,199 +1476,170 @@
               <button class="cal-nav-btn" id="prevMonth">‹</button>
               <button class="cal-nav-btn" id="backToToday" title="Hari Ini">📍</button>
             </div>
-            <div class="calendar-title" id="calendarTitle">Mei 2026</div>
+            <div class="calendar-title" id="calendarTitle">Juni 2026</div>
             <div class="calendar-nav">
               <button class="cal-nav-btn" id="nextMonth">›</button>
               <button class="cal-nav-btn" id="nextYear">»</button>
             </div>
           </div>
-          <div class="calendar-grid" id="calendarGrid"><div class="cal-day-header">Min</div><div class="cal-day-header">Sen</div><div class="cal-day-header">Sel</div><div class="cal-day-header">Rab</div><div class="cal-day-header">Kam</div><div class="cal-day-header">Jum</div><div class="cal-day-header">Sab</div><div class="cal-day other-month" style="--mx: 1612.4675324675322%; --my: -244.08854166666666%;"><span class="day-number">26</span></div><div class="cal-day other-month" style="--mx: 1464.132411786104%; --my: -244.08854166666666%;"><span class="day-number">27</span></div><div class="cal-day other-month" style="--mx: 1419.8848368522074%; --my: -244.08854166666666%;"><span class="day-number">28</span></div><div class="cal-day other-month" style="--mx: 1234.8158950054685%; --my: -244.08854166666666%;"><span class="day-number">29</span></div><div class="cal-day other-month" style="--mx: 1035.723951285521%; --my: -244.08854166666666%;"><span class="day-number">30</span></div>
-          <div class="cal-day  " data-date="Fri May 01 2026" data-day="1" style="--mx: 929.7260273972603%; --my: -244.08854166666666%;">
+          <div class="calendar-grid" id="calendarGrid"><div class="cal-day-header">Min</div><div class="cal-day-header">Sen</div><div class="cal-day-header">Sel</div><div class="cal-day-header">Rab</div><div class="cal-day-header">Kam</div><div class="cal-day-header">Jum</div><div class="cal-day-header">Sab</div><div class="cal-day other-month" style="--mx: 1309.7560975609756%; --my: 182.75058275058277%;"><span class="day-number">31</span></div>
+          <div class="cal-day  " data-date="Mon Jun 01 2026" data-day="1" style="--mx: 1117.0243204577969%; --my: 182.75058275058277%;">
             <span class="day-number">1</span>
             <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Sat May 02 2026" data-day="2" style="--mx: 864.9161196207148%; --my: -244.08854166666666%;">
+          <div class="cal-day  " data-date="Tue Jun 02 2026" data-day="2" style="--mx: 1046.6266866566716%; --my: 182.75058275058277%;">
             <span class="day-number">2</span>
             <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Sun May 03 2026" data-day="3" style="--mx: 1612.4675324675322%; --my: -330.00721327242127%;">
+          <div class="cal-day  " data-date="Wed Jun 03 2026" data-day="3" style="--mx: 884.9785407725323%; --my: 182.75058275058277%;">
             <span class="day-number">3</span>
             <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Mon May 04 2026" data-day="4" style="--mx: 1464.132411786104%; --my: -330.00721327242127%;">
+          <div class="cal-day  " data-date="Thu Jun 04 2026" data-day="4" style="--mx: 744.0472058313086%; --my: 182.75058275058277%;">
             <span class="day-number">4</span>
             <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Tue May 05 2026" data-day="5" style="--mx: 1419.8848368522074%; --my: -330.00721327242127%;">
+          <div class="cal-day  selected" data-date="Fri Jun 05 2026" data-day="5" style="--mx: 645.5456171735242%; --my: 182.75058275058277%;">
             <span class="day-number">5</span>
             <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Wed May 06 2026" data-day="6" style="--mx: 1234.8158950054685%; --my: -330.00721327242127%;">
+          <div class="cal-day today " data-date="Sat Jun 06 2026" data-day="6" style="--mx: 535.2706138757719%; --my: 182.75058275058277%;">
             <span class="day-number">6</span>
-            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div><div class="task-dot medium" style="animation-delay:0.05s"></div><div class="task-dot done" style="animation-delay:0.1s"></div><div class="task-dot done" style="animation-delay:0.15000000000000002s"></div><div class="task-dot done" style="animation-delay:0.2s"></div><div class="task-dot" style="background:var(--text-dim)"></div></div>
+            <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Thu May 07 2026" data-day="7" style="--mx: 1035.723951285521%; --my: -330.00721327242127%;">
+          <div class="cal-day  " data-date="Sun Jun 07 2026" data-day="7" style="--mx: 1309.7560975609756%; --my: 70.81585081585081%;">
             <span class="day-number">7</span>
-            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div><div class="task-dot done" style="animation-delay:0.05s"></div></div>
+            <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Fri May 08 2026" data-day="8" style="--mx: 929.7260273972603%; --my: -330.00721327242127%;">
+          <div class="cal-day  " data-date="Mon Jun 08 2026" data-day="8" style="--mx: 1117.0243204577969%; --my: 70.81585081585081%;">
             <span class="day-number">8</span>
-            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div></div>
+            <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Sat May 09 2026" data-day="9" style="--mx: 864.9161196207148%; --my: -330.00721327242127%;">
+          <div class="cal-day  " data-date="Tue Jun 09 2026" data-day="9" style="--mx: 1046.6266866566716%; --my: 70.81585081585081%;">
             <span class="day-number">9</span>
-            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div><div class="task-dot done" style="animation-delay:0.05s"></div></div>
+            <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Sun May 10 2026" data-day="10" style="--mx: 1612.4675324675322%; --my: -479.06250000000006%;">
+          <div class="cal-day  " data-date="Wed Jun 10 2026" data-day="10" style="--mx: 884.9785407725323%; --my: 70.81585081585081%;">
             <span class="day-number">10</span>
-            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div></div>
+            <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Mon May 11 2026" data-day="11" style="--mx: 1464.132411786104%; --my: -479.06250000000006%;">
+          <div class="cal-day  " data-date="Thu Jun 11 2026" data-day="11" style="--mx: 744.0472058313086%; --my: 70.81585081585081%;">
             <span class="day-number">11</span>
-            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div><div class="task-dot done" style="animation-delay:0.05s"></div></div>
+            <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Tue May 12 2026" data-day="12" style="--mx: 1419.8848368522074%; --my: -479.06250000000006%;">
+          <div class="cal-day  " data-date="Fri Jun 12 2026" data-day="12" style="--mx: 645.5456171735242%; --my: 70.81585081585081%;">
             <span class="day-number">12</span>
-            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div><div class="task-dot done" style="animation-delay:0.05s"></div></div>
+            <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Wed May 13 2026" data-day="13" style="--mx: 1234.8158950054685%; --my: -479.06250000000006%;">
+          <div class="cal-day  " data-date="Sat Jun 13 2026" data-day="13" style="--mx: 535.2706138757719%; --my: 70.81585081585081%;">
             <span class="day-number">13</span>
-            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div><div class="task-dot done" style="animation-delay:0.05s"></div></div>
+            <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Thu May 14 2026" data-day="14" style="--mx: 1035.723951285521%; --my: -479.06250000000006%;">
+          <div class="cal-day  " data-date="Sun Jun 14 2026" data-day="14" style="--mx: 1309.7560975609756%; --my: -41.11888111888112%;">
             <span class="day-number">14</span>
-            <div class="day-tasks-preview"><div class="task-dot medium" style="animation-delay:0s"></div><div class="task-dot medium" style="animation-delay:0.05s"></div><div class="task-dot done" style="animation-delay:0.1s"></div></div>
+            <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Fri May 15 2026" data-day="15" style="--mx: 929.7260273972603%; --my: -479.06250000000006%;">
+          <div class="cal-day  " data-date="Mon Jun 15 2026" data-day="15" style="--mx: 1117.0243204577969%; --my: -41.11888111888112%;">
             <span class="day-number">15</span>
-            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div></div>
+            <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Sat May 16 2026" data-day="16" style="--mx: 864.9161196207148%; --my: -479.06250000000006%;">
+          <div class="cal-day  " data-date="Tue Jun 16 2026" data-day="16" style="--mx: 1046.6266866566716%; --my: -41.11888111888112%;">
             <span class="day-number">16</span>
-            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div></div>
+            <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Sun May 17 2026" data-day="17" style="--mx: 1612.4675324675322%; --my: -592.3958333333334%;">
+          <div class="cal-day  " data-date="Wed Jun 17 2026" data-day="17" style="--mx: 884.9785407725323%; --my: -41.11888111888112%;">
             <span class="day-number">17</span>
-            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div></div>
+            <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day today selected" data-date="Mon May 18 2026" data-day="18" style="--mx: 1464.132411786104%; --my: -592.3958333333334%;">
+          <div class="cal-day  " data-date="Thu Jun 18 2026" data-day="18" style="--mx: 744.0472058313086%; --my: -41.11888111888112%;">
             <span class="day-number">18</span>
-            <div class="day-tasks-preview"><div class="task-dot done" style="animation-delay:0s"></div><div class="task-dot medium" style="animation-delay:0.05s"></div></div>
+            <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Tue May 19 2026" data-day="19" style="--mx: 1419.8848368522074%; --my: -592.3958333333334%;">
+          <div class="cal-day  " data-date="Fri Jun 19 2026" data-day="19" style="--mx: 645.5456171735242%; --my: -41.11888111888112%;">
             <span class="day-number">19</span>
-            <div class="day-tasks-preview"><div class="task-dot medium" style="animation-delay:0s"></div></div>
+            <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Wed May 20 2026" data-day="20" style="--mx: 1234.8158950054685%; --my: -592.3958333333334%;">
+          <div class="cal-day  " data-date="Sat Jun 20 2026" data-day="20" style="--mx: 535.2706138757719%; --my: -41.11888111888112%;">
             <span class="day-number">20</span>
             <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Thu May 21 2026" data-day="21" style="--mx: 1035.723951285521%; --my: -592.3958333333334%;">
+          <div class="cal-day  " data-date="Sun Jun 21 2026" data-day="21" style="--mx: 1309.7560975609756%; --my: -153.05361305361305%;">
             <span class="day-number">21</span>
             <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Fri May 22 2026" data-day="22" style="--mx: 929.7260273972603%; --my: -592.3958333333334%;">
+          <div class="cal-day  " data-date="Mon Jun 22 2026" data-day="22" style="--mx: 1117.0243204577969%; --my: -153.05361305361305%;">
             <span class="day-number">22</span>
-            <div class="day-tasks-preview"><div class="task-dot medium" style="animation-delay:0s"></div></div>
+            <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Sat May 23 2026" data-day="23" style="--mx: 864.9161196207148%; --my: -592.3958333333334%;">
+          <div class="cal-day  " data-date="Tue Jun 23 2026" data-day="23" style="--mx: 1046.6266866566716%; --my: -153.05361305361305%;">
             <span class="day-number">23</span>
             <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Sun May 24 2026" data-day="24" style="--mx: 1612.4675324675322%; --my: -705.7291666666667%;">
+          <div class="cal-day  " data-date="Wed Jun 24 2026" data-day="24" style="--mx: 884.9785407725323%; --my: -153.05361305361305%;">
             <span class="day-number">24</span>
             <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Mon May 25 2026" data-day="25" style="--mx: 1464.132411786104%; --my: -705.7291666666667%;">
+          <div class="cal-day  " data-date="Thu Jun 25 2026" data-day="25" style="--mx: 744.0472058313086%; --my: -153.05361305361305%;">
             <span class="day-number">25</span>
             <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Tue May 26 2026" data-day="26" style="--mx: 1419.8848368522074%; --my: -705.7291666666667%;">
+          <div class="cal-day  " data-date="Fri Jun 26 2026" data-day="26" style="--mx: 645.5456171735242%; --my: -153.05361305361305%;">
             <span class="day-number">26</span>
             <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Wed May 27 2026" data-day="27" style="--mx: 1234.8158950054685%; --my: -705.7291666666667%;">
+          <div class="cal-day  " data-date="Sat Jun 27 2026" data-day="27" style="--mx: 535.2706138757719%; --my: -153.05361305361305%;">
             <span class="day-number">27</span>
             <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Thu May 28 2026" data-day="28" style="--mx: 1035.723951285521%; --my: -705.7291666666667%;">
+          <div class="cal-day  " data-date="Sun Jun 28 2026" data-day="28" style="--mx: 1309.7560975609756%; --my: -264.92659053833603%;">
             <span class="day-number">28</span>
             <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Fri May 29 2026" data-day="29" style="--mx: 929.7260273972603%; --my: -705.7291666666667%;">
+          <div class="cal-day  " data-date="Mon Jun 29 2026" data-day="29" style="--mx: 1117.0243204577969%; --my: -264.92659053833603%;">
             <span class="day-number">29</span>
             <div class="day-tasks-preview"></div>
           </div>
         
-          <div class="cal-day  " data-date="Sat May 30 2026" data-day="30" style="--mx: 864.9161196207148%; --my: -705.7291666666667%;">
+          <div class="cal-day  " data-date="Tue Jun 30 2026" data-day="30" style="--mx: 1046.6266866566716%; --my: -264.92659053833603%;">
             <span class="day-number">30</span>
             <div class="day-tasks-preview"></div>
           </div>
-        
-          <div class="cal-day  " data-date="Sun May 31 2026" data-day="31" style="--mx: 1612.4675324675322%; --my: -819.0625000000001%;">
-            <span class="day-number">31</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        <div class="cal-day other-month" style="--mx: 1464.132411786104%; --my: -819.0625000000001%;"><span class="day-number">1</span></div><div class="cal-day other-month" style="--mx: 1419.8848368522074%; --my: -819.0625000000001%;"><span class="day-number">2</span></div><div class="cal-day other-month" style="--mx: 1234.8158950054685%; --my: -819.0625000000001%;"><span class="day-number">3</span></div><div class="cal-day other-month" style="--mx: 1035.723951285521%; --my: -819.0625000000001%;"><span class="day-number">4</span></div><div class="cal-day other-month" style="--mx: 929.7260273972603%; --my: -819.0625000000001%;"><span class="day-number">5</span></div><div class="cal-day other-month" style="--mx: 864.9161196207148%; --my: -819.0625000000001%;"><span class="day-number">6</span></div></div>
+        <div class="cal-day other-month" style="--mx: 884.9785407725323%; --my: -264.92659053833603%;"><span class="day-number">1</span></div><div class="cal-day other-month" style="--mx: 744.0472058313086%; --my: -264.92659053833603%;"><span class="day-number">2</span></div><div class="cal-day other-month" style="--mx: 645.5456171735242%; --my: -264.92659053833603%;"><span class="day-number">3</span></div><div class="cal-day other-month" style="--mx: 535.2706138757719%; --my: -264.92659053833603%;"><span class="day-number">4</span></div></div>
         </div>
         <div class="day-detail-panel show" id="dayDetailPanel">
           <div class="day-detail-header">
-            <div class="day-detail-title" id="dayDetailTitle">📅 Senin, 18 Mei 2026</div>
+            <div class="day-detail-title" id="dayDetailTitle">📅 Jumat, 5 Juni 2026</div>
             <button class="day-detail-close" id="dayDetailClose">×</button>
           </div>
-          <div id="dayDetailContent">
-          <div class="day-task-item medium done" style="animation-delay:0s">
-            <input type="checkbox" class="task-check" checked="" onchange="toggleTaskFromCalendar(&#39;1779090763064&#39;)">
-            <div>
-              <div style="font-weight:600; text-decoration:line-through;opacity:0.6">Cek TB molen blok G</div>
-              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
-                
-                <span class="priority-tag p-medium">⚡ medium</span>
-                <span class="category-tag" style="margin-left:3px;">📁 Sunbiz</span>
-              </div>
-            </div>
-          </div>
-        
-          <div class="day-task-item medium " style="animation-delay:0.1s">
-            <input type="checkbox" class="task-check" onchange="toggleTaskFromCalendar(&#39;1778835288010&#39;)">
-            <div>
-              <div style="font-weight:600; ">cek ulang BQ dari dapur sukorejo</div>
-              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
-                
-                <span class="priority-tag p-medium">⚡ medium</span>
-                <span class="category-tag" style="margin-left:3px;">📁 MBG</span>
-              </div>
-            </div>
-          </div>
-        </div>
+          <div id="dayDetailContent"><div class="empty-state">✨ Tidak ada tugas di hari ini</div></div>
         </div>
       </div>
     </div>
@@ -1146,845 +1673,49 @@
           <div class="sort-chip" data-sort="priority">🔥 Prioritas</div>
           <div class="sort-chip" data-sort="status">✅ Status</div>
         </div>
+        <div class="data-actions" style="margin-bottom:0.4rem;">
+          <button class="data-action-btn" id="exportJsonBtn" title="Export JSON">📦 Export JSON</button>
+          <button class="data-action-btn" id="exportCsvBtn" title="Export CSV">📊 Export CSV</button>
+          <button class="data-action-btn" id="importJsonBtn" title="Import JSON">📥 Import JSON</button>
+          <input type="file" id="importFileInput" accept=".json,.csv" style="display:none;">
+          <button class="data-action-btn" id="multiSelectBtn" title="Multi Select">☑️ Multi Select</button>
+        </div>
+        <div class="batch-bar" id="batchBar">
+          <span class="batch-bar-text" id="batchCount">0 tugas terpilih</span>
+          <button class="batch-btn batch-done" id="batchDone">✅ Selesaikan</button>
+          <button class="batch-btn batch-delete" id="batchDelete">🗑️ Hapus</button>
+          <button class="batch-btn" id="batchCancel">Batal</button>
+        </div>
+        <div class="view-toggle-wrap">
+          <button class="view-toggle-btn active" id="listViewBtn" title="List View">📋 List</button>
+          <button class="view-toggle-btn" id="kanbanViewBtn" title="Kanban View">🎯 Kanban</button>
+        </div>
       </div>
-      <div class="glass task-list" id="taskList"><div class="task-item " draggable="true" data-id="1779098787158" style="animation-delay: 0s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">Tambah masukkan harga NPA dan aziz baja blok G</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 19 Mei, 08.52</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              <span class="category-tag">📁 Sunbiz</span>
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
+      <div class="glass task-list" id="taskList"><div class="empty-state">📭 Tidak ada tugas</div></div>
+      <!-- KANBAN BOARD -->
+      <div class="glass kanban-board" id="kanbanBoard" style="padding:1rem;">
+        <div class="kanban-column pending" data-status="pending">
+          <div class="kanban-column-header">
+            <span class="kanban-column-title">⏳ Pending</span>
+            <span class="kanban-column-count" id="kanbanPendingCount">0</span>
           </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1779090763064" style="animation-delay: 0.05s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">Cek TB molen blok G</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 18 Mei, 15.36</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              <span class="category-tag">📁 Sunbiz</span>
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
+          <div class="kanban-dropzone" id="kanbanPending"></div>
+        </div>
+        <div class="kanban-column ongoing" data-status="ongoing">
+          <div class="kanban-column-header">
+            <span class="kanban-column-title">🔥 On Going</span>
+            <span class="kanban-column-count" id="kanbanOngoingCount">0</span>
           </div>
-        </div><div class="task-item " draggable="true" data-id="1779089781195" style="animation-delay: 0.1s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">Follow2 up BQ di hana</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 22 Mei, 21.16</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              <span class="category-tag">📁 Sunbiz</span>
-              <span style="font-size:0.72rem; color:var(--text-dim)">📝 baja, sutar K15K23</span>
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
+          <div class="kanban-dropzone" id="kanbanOngoing"></div>
+        </div>
+        <div class="kanban-column done" data-status="done">
+          <div class="kanban-column-header">
+            <span class="kanban-column-title">✅ Selesai</span>
+            <span class="kanban-column-count" id="kanbanDoneCount">0</span>
           </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778909276200" style="animation-delay: 0.15s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">Buat ba ac + kerja tambah nya</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 17 Mei, 12.26</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              
-              <span style="font-size:0.72rem; color:var(--text-dim)">📝 MBG</span>
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778897760939" style="animation-delay: 0.2s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">INput harga sutar di blok K15K23</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 16 Mei, 21.15</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              <span class="category-tag">📁 Sunbiz</span>
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item " draggable="true" data-id="1778835288010" style="animation-delay: 0.25s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">cek ulang BQ dari dapur sukorejo</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 18 Mei, 09.32</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              <span class="category-tag">📁 MBG</span>
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778812339227" style="animation-delay: 0.3s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">opnaman susulan</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 15 Mei, 09.31</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              <span class="category-tag">📁 Sunbiz</span>
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item " draggable="true" data-id="1778717641368" style="animation-delay: 0.35s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">Edit gambar pos dan toilet</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 14 Mei, 07.13</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              <span class="category-tag">📁 BMP</span>
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item " draggable="true" data-id="1778717586926" style="animation-delay: 0.4s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">PO PO narotama</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 14 Mei, 06.51</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              <span class="category-tag">📁 BMP</span>
-              
-            </div>
-            <ul class="subtasks"><li class="subtask "><input type="checkbox" class="subtask-check" data-idx="0"><span>saiful</span></li><li class="subtask "><input type="checkbox" class="subtask-check" data-idx="1"><span>Pak reksa</span></li></ul>
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778666281689" style="animation-delay: 0.45s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">spm spm</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 13 Mei, 13.57</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778666231275" style="animation-delay: 0.5s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">opanman mandor full</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 13 Mei, 07.55</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778555076681" style="animation-delay: 0.55s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">cek kerja tambah mandor2 mbg</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 12 Mei, 08.57</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              <span class="category-tag">📁 MBG</span>
-              <span style="font-size:0.72rem; color:var(--text-dim)">📝 kerja</span>
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778512724023" style="animation-delay: 0.6s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">undang pak viki 12 mei super</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 12 Mei, 22.17 → 08:00</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              <span class="category-tag">📁 Sunbiz</span>
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778461542321" style="animation-delay: 0.65s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">SPB dan SPM</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 10 Mei, 06.32</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778302754436" style="animation-delay: 0.7s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">clear kan rab dll untuk blok K15K23 dengan hana 14 mei</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 14 Mei, 11.22</span>
-              <span class="priority-tag p-high">🔥 high</span>
-              
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778300546123" style="animation-delay: 0.75s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">ajukan harian</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 11 Mei, 11.21</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              
-              <span style="font-size:0.72rem; color:var(--text-dim)">📝 2 orang 2 minggu untuk mep b8 dan blok G</span>
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778293729269" style="animation-delay: 0.8s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">as build blok G buat MD</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 11 Mei, 09.24</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778293451184" style="animation-delay: 0.85s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">SPM sunbiz</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 9 Mei, 08.34</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              
-              <span style="font-size:0.72rem; color:var(--text-dim)">📝 Lokasi / Alamat,Nama Material,Spesifikas…</span>
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778290463481" style="animation-delay: 0.9s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">opnam pintu besi sunbiz b8</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 9 Mei, 06.12</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778139947948" style="animation-delay: 0.95s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">meeting pajak</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 7 Mei, 10.45</span>
-              <span class="priority-tag p-low">🌿 low</span>
-              
-              <span style="font-size:0.72rem; color:var(--text-dim)">📝 meeting</span>
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778139913737" style="animation-delay: 1s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">rab untuk infra bekasi purwosari dan gunungsari med</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 7 Mei, 18.47</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778059321373" style="animation-delay: 1.05s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">opnaman seluruh mandor</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 6 Mei, 16.21 → 17:00</span>
-              <span class="priority-tag p-high">🔥 high</span>
-              
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item " draggable="true" data-id="1778061006829" style="animation-delay: 1.1s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">surat untuk bumigas tgl 7</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 6 Mei, 16.36 → 08:00</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778060183518" style="animation-delay: 1.15s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">rekap harian penjaga purwosari med</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 6 Mei, 16.22</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778059298158" style="animation-delay: 1.2s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">kerja tambah tohir</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 6 Mei, 16.19 → 17:00</span>
-              <span class="priority-tag p-high">🔥 high</span>
-              
-              <span style="font-size:0.72rem; color:var(--text-dim)">📝 kerja</span>
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778059146950" style="animation-delay: 1.25s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">KPI besok</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 8 Mei, 15.57</span>
-              <span class="priority-tag p-high">🔥 high</span>
-              
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778057830401" style="animation-delay: 1.3s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">hitung kebut besi gunungsari dan pagar dsv</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 6 Mei, 15.49</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              
-              
-            </div>
-            <ul class="subtasks"><li class="subtask done"><input type="checkbox" class="subtask-check" checked="" data-idx="0"><span>besi besi</span></li></ul>
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778057368083" style="animation-delay: 1.35s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">opnaman pak eko</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 6 Mei, 15.20 → 18:00</span>
-              <span class="priority-tag p-high">🔥 high</span>
-              
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778055639207" style="animation-delay: 1.4s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">SPM DONE</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 6 Mei, 14.41</span>
-              <span class="priority-tag p-low">🌿 low</span>
-              
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778053283314" style="animation-delay: 1.45s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">meeting mandor</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 6 Mei, 14.40 → 10:00</span>
-              <span class="priority-tag p-medium">⚡ medium</span>
-              
-              <span style="font-size:0.72rem; color:var(--text-dim)">📝 meeting</span>
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div><div class="task-item task-done" draggable="true" data-id="1778053249273" style="animation-delay: 1.5s;">
-          <div class="grip" title="Drag to reorder">⋮⋮</div>
-          <input type="checkbox" class="task-check" checked="">
-          <div class="task-content">
-            <div class="task-header">
-              <span class="task-title">ambil uang</span>
-              <div class="task-actions">
-                <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-                <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-                <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-                <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-              </div>
-            </div>
-            <div class="task-meta">
-              <span class="task-time">🕒 6 Mei, 14.39 → 19:00</span>
-              <span class="priority-tag p-low">🌿 low</span>
-              
-              
-            </div>
-            
-            <div class="pomodoro-wrap" style="display:flex">
-              <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="0"></path></svg>
-              <span class="pomo-time">25:00</span>
-              <button class="pomo-btn">▶</button>
-              
-            </div>
-          </div>
-        </div></div>
+          <div class="kanban-dropzone" id="kanbanDone"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2016,6 +1747,11 @@
       <div class="github-status" id="githubStatus"></div>
     </div>
 
+    <div style="margin-top:0.8rem; padding-top:0.8rem; border-top:1px solid var(--border);">
+      <button class="btn" id="openParsingEditor" style="width:100%; font-size:0.8rem; padding:0.5rem; background:rgba(176,38,255,0.1); color:var(--neon-purple); border:1px solid rgba(176,38,255,0.3);">
+        ⚙️ Edit Kata Kunci Parsing
+      </button>
+    </div>
     <div style="margin-top:0.8rem; font-size:0.75rem; color:var(--text-dim);">Data tersimpan di LocalStorage</div>
     <button class="btn" style="width:100%; margin-top:0.5rem; background:rgba(255,77,109,0.2); color:var(--neon-coral);" id="clearData">Hapus Semua Data</button>
   </div>
@@ -2027,8 +1763,29 @@
       sound: true, haptic: true, dayMode: false,
       githubToken: '', githubGistId: '', githubAutoSync: false
     };
+    const CATEGORY_COLORS = {
+      'Kerja': { bg: 'rgba(79,172,254,0.15)', color: '#4facfe', border: 'rgba(79,172,254,0.3)' },
+      'Meeting': { bg: 'rgba(176,38,255,0.15)', color: '#b026ff', border: 'rgba(176,38,255,0.3)' },
+      'Laporan': { bg: 'rgba(0,245,160,0.12)', color: '#00f5a0', border: 'rgba(0,245,160,0.3)' },
+      'Personal': { bg: 'rgba(255,209,102,0.15)', color: '#ffd166', border: 'rgba(255,209,102,0.3)' },
+      'Admin': { bg: 'rgba(255,77,109,0.12)', color: '#ff4d6d', border: 'rgba(255,77,109,0.3)' },
+      'Keuangan': { bg: 'rgba(0,245,160,0.15)', color: '#00f5a0', border: 'rgba(0,245,160,0.4)' },
+      'Proyek': { bg: 'rgba(176,38,255,0.12)', color: '#c7d2fe', border: 'rgba(199,210,254,0.3)' },
+      'Urgent': { bg: 'rgba(255,120,0,0.2)', color: '#ff7800', border: 'rgba(255,120,0,0.4)' },
+      'Follow-up': { bg: 'rgba(79,172,254,0.1)', color: '#4facfe', border: 'rgba(79,172,254,0.2)' },
+      'Review': { bg: 'rgba(255,77,109,0.1)', color: '#ff8fa3', border: 'rgba(255,143,163,0.3)' }
+    };
+    const QUICK_TEMPLATES = [
+      { icon: '📅', label: 'Meeting', title: 'Meeting ', category: 'Meeting', priority: 'medium' },
+      { icon: '📋', label: 'Review', title: 'Review ', category: 'Review', priority: 'medium' },
+      { icon: '🔥', label: 'Urgent', title: '', category: 'Urgent', priority: 'high' },
+      { icon: '📊', label: 'Laporan', title: 'Laporan ', category: 'Laporan', priority: 'medium' },
+      { icon: '💰', label: 'Keuangan', title: '', category: 'Keuangan', priority: 'medium' },
+      { icon: '📞', label: 'Follow-up', title: 'Follow up ', category: 'Follow-up', priority: 'medium' }
+    ];
     let currentFilter = 'all';
     let currentPriorityFilter = 'all';
+    let currentView = 'list'; // 'list' | 'kanban'
     let currentSortFields = [];
     let searchQuery = '';
     let audioCtx = null;
@@ -2040,6 +1797,7 @@
     let focusTimeLeft = 1500;
     let currentPriority = 'medium';
     let tempSubtasks = [];
+    let userSetDateTime = false;
     let isInitialized = false;
 
 // Close all popup elements to prevent stacking
@@ -2073,7 +1831,13 @@ function closeAllPopups() {
         'editDateTime','editPriority','editStatus','editSave','editCancel','cursorDot','cursorOutline',
         'githubToken','githubGistId','githubAutoSync','syncToGithub','loadFromGithub',
         'githubStatus','categoryInput','editCategory',
-        'priorityFilterSelect','sortControls','githubMiniSync'
+        'priorityFilterSelect','sortControls','githubMiniSync',
+        'kanbanBoard','listViewBtn','kanbanViewBtn',
+        'kanbanPending','kanbanOngoing','kanbanDone',
+        'kanbanPendingCount','kanbanOngoingCount','kanbanDoneCount',
+        'quickTemplates','exportJsonBtn','exportCsvBtn','importJsonBtn','importFileInput',
+        'batchBar','batchCount','batchDone','batchDelete','batchCancel','multiSelectBtn',
+        'openParsingEditor','parsingEditorModal','parsingEditorClose','parsingSave','parsingCancel','parsingResetDefault'
       ];
       ids.forEach(id => els[id] = getEl(id));
     }
@@ -2099,6 +1863,8 @@ function closeAllPopups() {
         checkStreak();
         initKeyboard();
         initButtonListeners();
+        renderQuickTemplates();
+        initParsingEditor();
         isInitialized = true;
         console.log('TaskFlow initialized successfully');
       } catch (err) {
@@ -2126,6 +1892,9 @@ function closeAllPopups() {
       const now = new Date();
       now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
       els.dateTimeInput.value = now.toISOString().slice(0, 16);
+      userSetDateTime = false;
+      els.dateTimeInput.addEventListener('change', () => { userSetDateTime = true; });
+      els.dateTimeInput.addEventListener('input', () => { userSetDateTime = true; });
     }
 
     // Custom Cursor - Fixed
@@ -2495,71 +2264,244 @@ function closeAllPopups() {
       const t = tasks.find(x => x.id === id);
       if (t) {
         t.done = !t.done;
-        if (t.done) { t.ongoing = false; playSound('complete'); vibrate(); checkStreak(); }
+        if (t.done) { t.ongoing = false; playSound('complete'); vibrate(); checkStreak(); setTimeout(checkAllDoneCelebration, 300); }
         else { t.ongoing = false; }
-        save(); renderTasks(); updateStats(); renderCalendar();
+        save(); if (currentView === 'kanban') renderKanban(); else renderTasks(); updateStats(); renderCalendar();
         if (selectedDate) showDayDetail(selectedDate, new Date(selectedDate).getDate());
       }
     }
 
-    // Smart Parser
+        // Smart Parser — FIXED v2
     function smartParse(text) {
       let priority = currentPriority;
       let desc = els.descInput ? els.descInput.value : '';
       let timeHint = '';
       let cleanedText = text;
+      let parsedDateTime = null;
+      const config = loadParsingConfig();
 
-      const priorityPatterns = [
-        { regex: /\b(tinggi|high|penting|urgent)\b/gi, val: 'high' },
-        { regex: /\b(sedang|medium|biasa)\b/gi, val: 'medium' },
-        { regex: /\b(rendah|low|nanti)\b/gi, val: 'low' }
-      ];
-
-      for (const p of priorityPatterns) {
-        if (p.regex.test(cleanedText)) {
-          priority = p.val;
-          cleanedText = cleanedText.replace(p.regex, '').trim();
-          updatePrioritySelect(p.val);
+      // ── Priority ──
+      for (const item of config.priority) {
+        const regex = new RegExp('\\b(' + item.keywords.map(escapeRegex).join('|') + ')\\b', 'gi');
+        if (regex.test(cleanedText)) {
+          priority = item.val;
+          cleanedText = cleanedText.replace(regex, '').trim();
+          updatePrioritySelect(item.val);
           break;
         }
       }
 
-      // Status keywords: done, OGG (ongoing), PND (pending)
+      // ── Status keywords ──
       let statusDone = false;
       let statusOngoing = false;
-      if (/done/gi.test(cleanedText)) {
-        statusDone = true;
-        cleanedText = cleanedText.replace(/done/gi, '').trim();
-      }
-      if (/OGG/g.test(cleanedText)) {
-        statusOngoing = true;
-        cleanedText = cleanedText.replace(/OGG/g, '').trim();
-      }
-      if (/PND/g.test(cleanedText)) {
-        // explicitly pending (no-op, default)
-        cleanedText = cleanedText.replace(/PND/g, '').trim();
+      for (const item of config.status) {
+        const regex = new RegExp('\\b(' + item.keywords.map(escapeRegex).join('|') + ')\\b', 'gi');
+        if (regex.test(cleanedText)) {
+          if (item.val === 'done') statusDone = true;
+          if (item.val === 'ongoing') statusOngoing = true;
+          cleanedText = cleanedText.replace(regex, '').trim();
+        }
       }
       cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
 
-      const timeMatch = cleanedText.match(/(jam|pukul)\s*(\d{1,2})(?::(\d{2}))?\s*(pagi|siang|sore|malam)?/i);
+      // ── Time parsing (jam/pukul) ──
+      const timeMatch = cleanedText.match(/(jam|pukul)\s+(\d{1,2})(?:[.:](\d{2}))?\s*(pagi|siang|sore|malam)?/i);
       if (timeMatch) {
         let h = parseInt(timeMatch[2]);
         const period = timeMatch[4]?.toLowerCase();
-        if (period === 'sore' || period === 'malam') h += 12;
-        if (h >= 24) h -= 24;
         const m = timeMatch[3] || '00';
+        if (period === 'sore' || period === 'malam') {
+          if (h < 12) h += 12;
+        } else if (period === 'pagi' || period === 'siang') {
+          if (h === 12) h = 0;
+        }
+        if (h >= 24) h -= 24;
         timeHint = `${String(h).padStart(2,'0')}:${m}`;
         cleanedText = cleanedText.replace(timeMatch[0], '').trim();
       }
+      const standaloneTime = cleanedText.match(/\b(\d{1,2})[.:](\d{2})\b/);
+      if (standaloneTime && !timeHint) {
+        const h = parseInt(standaloneTime[1]);
+        const m = standaloneTime[2];
+        if (h >= 0 && h <= 23 && m >= 0 && m <= 59) {
+          timeHint = `${String(h).padStart(2,'0')}:${m}`;
+          cleanedText = cleanedText.replace(standaloneTime[0], '').trim();
+        }
+      }
 
+      // ── Date parsing ──
+      const now = new Date();
+      let hasDateKeyword = false;
+      let todHint = null;
+
+      // Relative dates
+      for (const item of config.dates) {
+        const regex = new RegExp('\\b(' + item.keywords.map(escapeRegex).join('|') + ')\\b', 'gi');
+        if (regex.test(cleanedText)) {
+          const d = new Date(now);
+          d.setDate(d.getDate() + item.days);
+          d.setHours(timeHint ? parseInt(timeHint.split(':')[0]) : 8,
+                     timeHint ? parseInt(timeHint.split(':')[1]) : 0, 0, 0);
+          parsedDateTime = d.toISOString();
+          cleanedText = cleanedText.replace(regex, '').trim();
+          hasDateKeyword = true;
+          break;
+        }
+      }
+
+      // Absolute date: DD/MM or DD/MM/YYYY
+      if (!parsedDateTime) {
+        const absDateMatch = cleanedText.match(/\b(\d{1,2})[\/.](\d{1,2})(?:[\/.](\d{4}))?\b/);
+        if (absDateMatch) {
+          const dd = parseInt(absDateMatch[1]);
+          const mm = parseInt(absDateMatch[2]) - 1;
+          const yyyy = absDateMatch[3] ? parseInt(absDateMatch[3]) : now.getFullYear();
+          const d = new Date(yyyy, mm, dd,
+                            timeHint ? parseInt(timeHint.split(':')[0]) : 8,
+                            timeHint ? parseInt(timeHint.split(':')[1]) : 0, 0);
+          if (!isNaN(d.getTime())) {
+            parsedDateTime = d.toISOString();
+            cleanedText = cleanedText.replace(absDateMatch[0], '').trim();
+            hasDateKeyword = true;
+          }
+        }
+      }
+
+      // Day-of-week parsing
+      if (!parsedDateTime) {
+        const dayNames = ['minggu','senin','selasa','rabu','kamis','jumat','sabtu'];
+        const dowRegex = new RegExp('\\b(' + dayNames.join('|') + ')(?:\\s+depan|\\s+minggu\\s+depan)?\\b', 'i');
+        const dowMatch = cleanedText.match(dowRegex);
+        if (dowMatch) {
+          const targetDay = dayNames.indexOf(dowMatch[1].toLowerCase());
+          const isNextWeek = /\b(depan|minggu\s+depan)\b/i.test(dowMatch[0]);
+          const d = new Date(now);
+          let daysDiff = targetDay - d.getDay();
+          if (daysDiff <= 0 || isNextWeek) daysDiff += 7;
+          d.setDate(d.getDate() + daysDiff);
+          d.setHours(timeHint ? parseInt(timeHint.split(':')[0]) : 8,
+                     timeHint ? parseInt(timeHint.split(':')[1]) : 0, 0, 0);
+          parsedDateTime = d.toISOString();
+          cleanedText = cleanedText.replace(dowMatch[0], '').trim();
+          hasDateKeyword = true;
+        }
+      }
+
+      // Time-of-day hints (only when date keyword present)
+      if (hasDateKeyword) {
+        for (const item of config.timeOfDay) {
+          const regex = new RegExp('\\b(' + item.keywords.map(escapeRegex).join('|') + ')\\b', 'gi');
+          if (regex.test(cleanedText)) {
+            todHint = { h: item.h, m: item.m };
+            if (!cleanedText.match(/(jam|pukul)\s*\d/)) {
+              cleanedText = cleanedText.replace(regex, '').trim();
+            }
+            break;
+          }
+        }
+      }
+
+      // Apply todHint to parsedDateTime
+      if (parsedDateTime && todHint && !timeHint) {
+        const d = new Date(parsedDateTime);
+        d.setHours(todHint.h, todHint.m, 0, 0);
+        parsedDateTime = d.toISOString();
+      }
+
+      // If still no date but there's a timeHint, default to today
+      if (!parsedDateTime && timeHint) {
+        const d = new Date(now);
+        const [th, tm] = timeHint.split(':');
+        d.setHours(parseInt(th), parseInt(tm), 0, 0);
+        parsedDateTime = d.toISOString();
+      }
+
+      // ── Final cleanup ──
       cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
+      // Remove pipe-separated leftover keywords
+      cleanedText = cleanedText.replace(/\s*[|\/]\s*(super|superh|shigh|sh|sup|high|medium|low|done|selesai|ogg|pnd)\b/gi, '').trim();
+      cleanedText = cleanedText.replace(/\b(super|superh|shigh|sh|sup|high|medium|low|done|selesai|ogg|pnd)\b/gi, '').trim();
+      cleanedText = cleanedText.replace(/^[|\s—-]+|[|\s—-]+$/g, '').trim();
+      cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
+      cleanedText = cleanedText.replace(/\b\d{1,2}\.\d{2}\b/g, '').trim();
+      cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
+      cleanedText = cleanedText.replace(/\s*\|\s*/g, ' ').trim();
+      cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
+
+      // Auto-desc from keywords
       if (!desc && /(beli|bayar|rapat|meeting|olahraga|belajar|kerja)/i.test(cleanedText)) {
         const match = cleanedText.match(/(beli|bayar|rapat|meeting|olahraga|belajar|kerja)/i);
         if (match) desc = match[0];
       }
 
-      return { title: cleanedText || text, priority, desc, timeHint, statusDone, statusOngoing };
+      return { title: cleanedText || text, priority, desc, timeHint, statusDone, statusOngoing, dateTime: parsedDateTime };
     }
+
+    function escapeRegex(str) {
+      return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+    // ===== PARSING CONFIG MANAGEMENT =====
+    const DEFAULT_PARSING_CONFIG = {
+      priority: [
+        { keywords: ['super','superh','shigh','sh','sup','super_high','super high'], val: 'super_high', label: '💥 Super High' },
+        { keywords: ['tinggi','high','penting','urgent'], val: 'high', label: '🔥 High' },
+        { keywords: ['sedang','medium','biasa'], val: 'medium', label: '⚡ Medium' },
+        { keywords: ['rendah','low','nanti'], val: 'low', label: '🌿 Low' }
+      ],
+      status: [
+        { keywords: ['selesai','done','sudah'], val: 'done', label: '✅ Selesai' },
+        { keywords: ['OGG'], val: 'ongoing', label: '🔥 On Going' },
+        { keywords: ['PND'], val: 'pending', label: '⏳ Pending' }
+      ],
+      dates: [
+        { keywords: ['hari ini','hariini'], days: 0, label: 'Hari Ini' },
+        { keywords: ['besok','bsk'], days: 1, label: 'Besok' },
+        { keywords: ['lusa'], days: 2, label: 'Lusa' },
+        { keywords: ['3 hari lagi','tiga hari lagi'], days: 3, label: '3 Hari Lagi' },
+        { keywords: ['4 hari lagi'], days: 4, label: '4 Hari Lagi' },
+        { keywords: ['5 hari lagi'], days: 5, label: '5 Hari Lagi' },
+        { keywords: ['6 hari lagi'], days: 6, label: '6 Hari Lagi' },
+        { keywords: ['seminggu','1 minggu'], days: 7, label: 'Seminggu' },
+        { keywords: ['2 minggu'], days: 14, label: '2 Minggu' },
+        { keywords: ['3 minggu'], days: 21, label: '3 Minggu' },
+        { keywords: ['sebulan','1 bulan'], days: 30, label: 'Sebulan' },
+        { keywords: ['2 bulan'], days: 60, label: '2 Bulan' },
+        { keywords: ['3 bulan'], days: 90, label: '3 Bulan' }
+      ],
+      timeOfDay: [
+        { keywords: ['pagi'], h: 8, m: 0, label: '🌅 Pagi (08:00)' },
+        { keywords: ['siang'], h: 12, m: 0, label: '☀️ Siang (12:00)' },
+        { keywords: ['sore'], h: 15, m: 0, label: '🌇 Sore (15:00)' },
+        { keywords: ['malam'], h: 19, m: 0, label: '🌙 Malam (19:00)' },
+        { keywords: ['nanti'], h: 14, m: 0, label: '⏰ Nanti (14:00)' }
+      ]
+    };
+
+    let parsingConfig = null;
+    function loadParsingConfig() {
+      if (parsingConfig) return parsingConfig;
+      try {
+        const saved = localStorage.getItem('tf_parsingConfig');
+        if (saved) {
+          parsingConfig = JSON.parse(saved);
+          return parsingConfig;
+        }
+      } catch(e) { console.error('loadParsingConfig error:', e); }
+      parsingConfig = JSON.parse(JSON.stringify(DEFAULT_PARSING_CONFIG));
+      return parsingConfig;
+    }
+    function saveParsingConfig(config) {
+      parsingConfig = config;
+      try {
+        localStorage.setItem('tf_parsingConfig', JSON.stringify(config));
+      } catch(e) { console.error('saveParsingConfig error:', e); }
+    }
+    function resetParsingConfig() {
+      parsingConfig = JSON.parse(JSON.stringify(DEFAULT_PARSING_CONFIG));
+      saveParsingConfig(parsingConfig);
+      return parsingConfig;
+    }
+
 
     // Add Task
     function addTask() {
@@ -2578,14 +2520,14 @@ function closeAllPopups() {
         done: parsed.statusDone || false,
         ongoing: (!parsed.statusDone && parsed.statusOngoing) || false,
         createdAt: new Date().toISOString(),
-        dateTime: parsed.dateTime,
+        dateTime: parsed.dateTime || (userSetDateTime && els.dateTimeInput && els.dateTimeInput.value ? new Date(els.dateTimeInput.value).toISOString() : null),
         subtasks: [...tempSubtasks],
         pomodoro: { active: false, timeLeft: 1500 }
       };
 
       tasks.unshift(newTask);
       save();
-      renderTasks();
+      if (currentView === 'kanban') renderKanban(); else renderTasks();
       updateStats();
       updateSuggestions();
       renderCalendar();
@@ -2599,6 +2541,7 @@ function closeAllPopups() {
       tempSubtasks = [];
       renderSubtaskChips();
       updatePrioritySelect(parsed.priority || 'medium');
+      userSetDateTime = false;
       setDefaultDateTime();
       
       if (settings.githubAutoSync && settings.githubToken) {
@@ -2650,7 +2593,7 @@ function closeAllPopups() {
 
       filtered.forEach((t, index) => {
         const el = document.createElement('div');
-        el.className = `task-item ${t.done ? 'task-done' : ''} ${t.ongoing ? 'ongoing-active' : ''}`;
+        el.className = `task-item ${t.done ? 'task-done' : ''} ${t.ongoing ? 'ongoing-active' : ''} ${getGlowClass(t.priority)} ${multiSelectMode && selectedTaskIds.includes(t.id) ? 'selecting' : ''}`;
         el.draggable = true;
         el.dataset.id = t.id;
         el.style.animationDelay = (index * 0.05) + 's';
@@ -2659,9 +2602,10 @@ function closeAllPopups() {
         const timeStr = created.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
         const dateStr = created.toLocaleDateString('id-ID', { day:'numeric', month:'short' });
         const taskDateTime = t.dateTime ? new Date(t.dateTime) : null;
-        const scheduledStr = taskDateTime ? taskDateTime.toLocaleDateString('id-ID',{day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) : '';
+        const scheduledStr = taskDateTime ? smartDateDisplay(t.dateTime) : '';
 
         el.innerHTML = `
+          ${multiSelectMode ? `<input type="checkbox" class="task-select" ${selectedTaskIds.includes(t.id) ? 'checked' : ''}>` : ''}
           <div class="grip" title="Drag to reorder">⋮⋮</div>
           <input type="checkbox" class="task-check" ${t.done ? 'checked' : ''}>
           <div class="task-content">
@@ -2696,6 +2640,10 @@ function closeAllPopups() {
 
         const check = el.querySelector('.task-check');
         if (check) check.addEventListener('change', () => toggleTask(t.id, check));
+
+        // Multi-select click handler
+        const selectBox = el.querySelector('.task-select');
+        if (selectBox) selectBox.addEventListener('change', () => toggleTaskSelection(t.id));
 
         const delBtn = el.querySelector('.delete-btn');
         if (delBtn) delBtn.addEventListener('click', function() {
@@ -2745,8 +2693,196 @@ function closeAllPopups() {
       });
 
       if (filtered.length === 0) {
-        els.taskList.innerHTML = '<div class="empty-state">📭 Tidak ada tugas</div>';
+        els.taskList.innerHTML = '<div class="empty-state"><div class="empty-illustration"><svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="40" stroke="rgba(176,38,255,0.3)" stroke-width="2" stroke-dasharray="6 4"/><circle cx="60" cy="60" r="28" fill="rgba(176,38,255,0.08)" stroke="rgba(176,38,255,0.4)" stroke-width="1.5"/><path d="M48 58L56 66L72 50" stroke="#00f5a0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/><circle cx="60" cy="60" r="4" fill="#b026ff" opacity="0.6"/><circle cx="35" cy="35" r="3" fill="#ff4d6d" opacity="0.5"><animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/></circle><circle cx="85" cy="30" r="2" fill="#ffd166" opacity="0.5"><animate attributeName="opacity" values="0.5;1;0.5" dur="2.5s" repeatCount="indefinite"/></circle><circle cx="90" cy="80" r="2.5" fill="#4facfe" opacity="0.5"><animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/></circle></svg></div>Tidak ada tugas</div>';
       }
+    }
+
+
+    // ===== KANBAN BOARD FUNCTIONS =====
+    let draggedTaskId = null;
+    let undoStack = [];
+    const MAX_UNDO = 20;
+
+    function toggleView(view) {
+      currentView = view || (currentView === 'list' ? 'kanban' : 'list');
+      const isKanban = currentView === 'kanban';
+
+      if (els.taskList) els.taskList.classList.toggle('hidden', isKanban);
+      if (els.kanbanBoard) els.kanbanBoard.classList.toggle('active', isKanban);
+      if (els.listViewBtn) els.listViewBtn.classList.toggle('active', !isKanban);
+      if (els.kanbanViewBtn) els.kanbanViewBtn.classList.toggle('active', isKanban);
+
+      if (isKanban) {
+        renderKanban();
+      } else {
+        renderTasks();
+      }
+    }
+
+    function renderKanban() {
+      if (!els.kanbanPending || !els.kanbanOngoing || !els.kanbanDone) return;
+
+      // Clear columns
+      els.kanbanPending.innerHTML = '';
+      els.kanbanOngoing.innerHTML = '';
+      els.kanbanDone.innerHTML = '';
+
+      // Apply filters (search + priority only, status is column-based)
+      let filtered = [...tasks];
+      if (currentPriorityFilter && currentPriorityFilter !== 'all') {
+        filtered = filtered.filter(t => t.priority === currentPriorityFilter);
+      }
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        filtered = filtered.filter(t =>
+          t.title.toLowerCase().includes(q) ||
+          (t.desc && t.desc.toLowerCase().includes(q)) ||
+          (t.category && t.category.toLowerCase().includes(q))
+        );
+      }
+
+      // Sort if applicable
+      if (currentSortFields.length > 0) {
+        filtered.sort((a, b) => {
+          for (const field of currentSortFields) {
+            let diff = 0;
+            if (field === 'date') {
+              diff = new Date(b.dateTime || b.createdAt) - new Date(a.dateTime || a.createdAt);
+            } else if (field === 'priority') {
+              diff = (PRIORITY_ORDER[b.priority] || 2) - (PRIORITY_ORDER[a.priority] || 2);
+            } else if (field === 'status') {
+              diff = (a.done ? 1 : 0) - (b.done ? 1 : 0);
+            }
+            if (diff !== 0) return diff;
+          }
+          return 0;
+        });
+      }
+
+      let pendingCount = 0, ongoingCount = 0, doneCount = 0;
+
+      filtered.forEach((t, index) => {
+        const card = document.createElement('div');
+        card.className = `kanban-card priority-${t.priority} ${t.done ? 'done-card' : ''}`;
+        card.draggable = true;
+        card.dataset.id = t.id;
+        card.style.animationDelay = (index * 0.03) + 's';
+
+        const taskDateTime = t.dateTime ? new Date(t.dateTime) : null;
+        const scheduledStr = taskDateTime ? taskDateTime.toLocaleDateString('id-ID',{day:'numeric', month:'short'}) : '';
+        const timeStr = taskDateTime ? taskDateTime.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}) : '';
+
+        card.innerHTML = `
+          <div class="kanban-card-title">${escapeHtml(t.title)}</div>
+          <div class="kanban-card-meta">
+            ${t.timeHint || timeStr ? `<span class="kanban-card-time">🕒 ${t.timeHint || timeStr}</span>` : ''}
+            <span class="kanban-card-tag" style="background:${getPriorityBg(t.priority)};color:${getPriorityColor(t.priority)};">${getPriorityIcon(t.priority)} ${t.priority === 'super_high' ? 'S-High' : t.priority}</span>
+            ${t.category ? `<span class="kanban-card-tag" style="background:rgba(79,172,254,0.15);color:var(--neon-blue);">📁 ${escapeHtml(t.category)}</span>` : ''}
+          </div>
+          <div class="kanban-card-actions">
+            <button class="action-btn edit-btn" title="Edit">✏️</button>
+            <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+          </div>
+        `;
+
+        // Drag events
+        card.addEventListener('dragstart', (e) => {
+          draggedTaskId = t.id;
+          card.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', t.id);
+        });
+        card.addEventListener('dragend', () => {
+          card.classList.remove('dragging');
+          draggedTaskId = null;
+          document.querySelectorAll('.kanban-column').forEach(c => c.classList.remove('drag-over'));
+        });
+
+        // Action buttons
+        const editBtn = card.querySelector('.edit-btn');
+        if (editBtn) editBtn.addEventListener('click', (e) => { e.stopPropagation(); openEditModal(t.id); });
+
+        const delBtn = card.querySelector('.delete-btn');
+        if (delBtn) delBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          delBtn.classList.add('poof');
+          setTimeout(() => deleteTask(t.id), 300);
+        });
+
+        // Place in correct column
+        if (t.done) {
+          els.kanbanDone.appendChild(card);
+          doneCount++;
+        } else if (t.ongoing) {
+          els.kanbanOngoing.appendChild(card);
+          ongoingCount++;
+        } else {
+          els.kanbanPending.appendChild(card);
+          pendingCount++;
+        }
+      });
+
+      // Update counts
+      if (els.kanbanPendingCount) els.kanbanPendingCount.textContent = pendingCount;
+      if (els.kanbanOngoingCount) els.kanbanOngoingCount.textContent = ongoingCount;
+      if (els.kanbanDoneCount) els.kanbanDoneCount.textContent = doneCount;
+
+      // Empty states
+      if (pendingCount === 0) els.kanbanPending.innerHTML = '<div class="empty-state" style="padding:1rem;font-size:0.75rem;">📭 Kosong</div>';
+      if (ongoingCount === 0) els.kanbanOngoing.innerHTML = '<div class="empty-state" style="padding:1rem;font-size:0.75rem;">📭 Kosong</div>';
+      if (doneCount === 0) els.kanbanDone.innerHTML = '<div class="empty-state" style="padding:1rem;font-size:0.75rem;">📭 Kosong</div>';
+    }
+
+    function getPriorityBg(p) {
+      const bgs = { super_high: 'rgba(255,120,0,0.2)', high: 'rgba(255,77,109,0.2)', medium: 'rgba(255,209,102,0.2)', low: 'rgba(0,245,160,0.2)' };
+      return bgs[p] || 'rgba(255,255,255,0.08)';
+    }
+    function getPriorityColor(p) {
+      const colors = { super_high: '#ff7800', high: 'var(--neon-coral)', medium: 'var(--neon-yellow)', low: 'var(--neon-green)' };
+      return colors[p] || 'var(--text-dim)';
+    }
+
+    function initKanbanDragDrop() {
+      document.querySelectorAll('.kanban-column').forEach(col => {
+        col.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          col.classList.add('drag-over');
+        });
+        col.addEventListener('dragleave', (e) => {
+          if (!col.contains(e.relatedTarget)) {
+            col.classList.remove('drag-over');
+          }
+        });
+        col.addEventListener('drop', (e) => {
+          e.preventDefault();
+          col.classList.remove('drag-over');
+          const taskId = e.dataTransfer.getData('text/plain') || draggedTaskId;
+          if (!taskId) return;
+
+          const newStatus = col.dataset.status;
+          const t = tasks.find(x => x.id === taskId);
+          if (!t) return;
+
+          // Update task status based on column
+          if (newStatus === 'done') {
+            if (!t.done) { t.done = true; t.ongoing = false; playSound('complete'); vibrate(); checkStreak(); }
+          } else if (newStatus === 'ongoing') {
+            if (!t.ongoing || t.done) { t.ongoing = true; t.done = false; }
+          } else {
+            // pending
+            if (t.done || t.ongoing) { t.done = false; t.ongoing = false; }
+          }
+
+          save();
+          renderKanban();
+          updateStats();
+          renderCalendar();
+          playSound('add');
+
+          if (settings.githubAutoSync && settings.githubToken) syncToGitHub();
+        });
+      });
     }
 
     function getPriorityIcon(p) {
@@ -2760,7 +2896,7 @@ function closeAllPopups() {
       if (!t || t.done) return;
       t.ongoing = !t.ongoing;
       save();
-      renderTasks();
+      if (currentView === 'kanban') renderKanban(); else renderTasks();
       playSound('add');
     }
 
@@ -2768,10 +2904,10 @@ function closeAllPopups() {
       const t = tasks.find(x => x.id === id);
       if (!t) return;
       t.done = checkbox.checked;
-      if (t.done) { t.ongoing = false; playSound('complete'); vibrate(); checkStreak(); }
+      if (t.done) { t.ongoing = false; playSound('complete'); vibrate(); checkStreak(); setTimeout(checkAllDoneCelebration, 300); }
       else { t.ongoing = false; }
       save();
-      setTimeout(() => { renderTasks(); updateStats(); renderCalendar(); }, 50);
+      setTimeout(() => { if (currentView === 'kanban') renderKanban(); else renderTasks(); updateStats(); renderCalendar(); }, 50);
       
       if (settings.githubAutoSync && settings.githubToken) {
         syncToGitHub();
@@ -2779,8 +2915,10 @@ function closeAllPopups() {
     }
 
     function deleteTask(id) {
+      const taskToDelete = tasks.find(x => x.id === id);
+      if (taskToDelete) pushUndo({ type: 'delete', task: Object.assign({}, taskToDelete) });
       tasks = tasks.filter(x => x.id !== id);
-      save(); renderTasks(); updateStats(); updateSuggestions(); renderCalendar();
+      save(); if (currentView === 'kanban') renderKanban(); else renderTasks(); updateStats(); updateSuggestions(); renderCalendar();
       playSound('delete'); vibrate();
       if (settings.githubAutoSync && settings.githubToken) syncToGitHub();
     }
@@ -2800,7 +2938,7 @@ function closeAllPopups() {
       const t = tasks.find(x => x.id === id);
       if (!t || !t.subtasks[idx]) return;
       t.subtasks[idx].done = done;
-      save(); renderTasks();
+      save(); if (currentView === 'kanban') renderKanban(); else renderTasks();
       if (done) { playSound('complete'); vibrate(); }
     }
 
@@ -2854,7 +2992,7 @@ function closeAllPopups() {
         } else {
           clearInterval(focusInterval);
           playSound('complete');
-          alert('⏰ Fokus selesai!');
+          showToast('⏰ Fokus selesai!', 'success');
           exitFocusMode();
         }
       }, 1000);
@@ -2898,7 +3036,7 @@ function closeAllPopups() {
             t.pomodoro.active = false;
             if (btn) btn.textContent = '▶';
             playSound('complete');
-            alert(`⏰ Fokus selesai untuk: ${t.title}`);
+            showToast(`⏰ Fokus selesai untuk: ${t.title}`, 'success');
           }
         }, 1000);
       } else if (!t.pomodoro.active && pomoIntervals[id]) {
@@ -2980,6 +3118,323 @@ function closeAllPopups() {
     // Search & Filter
     
 
+
+    // ===== QUICK ADD TEMPLATES =====
+    function renderQuickTemplates() {
+      if (!els.quickTemplates) return;
+      els.quickTemplates.innerHTML = QUICK_TEMPLATES.map((tmpl, i) => 
+        '<button class="template-chip" data-idx="' + i + '">' + tmpl.icon + ' ' + tmpl.label + '</button>'
+      ).join('');
+      els.quickTemplates.querySelectorAll('.template-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tmpl = QUICK_TEMPLATES[parseInt(btn.dataset.idx)];
+          if (els.taskInput) els.taskInput.value = tmpl.title;
+          if (els.categoryInput) els.categoryInput.value = tmpl.category;
+          updatePrioritySelect(tmpl.priority);
+          currentPriority = tmpl.priority;
+          if (els.taskInput) els.taskInput.focus();
+          playSound('add');
+        });
+      });
+    }
+
+    // ===== EXPORT / IMPORT =====
+    function exportToJson() {
+      const data = { tasks: tasks, settings: Object.assign({}, settings, {githubToken: undefined}), exportDate: new Date().toISOString() };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'taskflow-backup-' + new Date().toISOString().slice(0,10) + '.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast(tasks.length + ' tugas diekspor ke JSON', 'success');
+    }
+    function exportToCsv() {
+      const headers = ['ID','Title','Description','Category','Priority','Status','DateTime','CreatedAt','Subtasks'];
+      const rows = tasks.map(t => [
+        t.id, '"' + (t.title || '').replace(/"/g, '""') + '"',
+        '"' + (t.desc || '').replace(/"/g, '""') + '"',
+        t.category || '', t.priority || '',
+        t.done ? 'done' : (t.ongoing ? 'ongoing' : 'pending'),
+        t.dateTime || '', t.createdAt || '',
+        (t.subtasks || []).map(s => s.text).join('; ')
+      ]);
+      const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'taskflow-export-' + new Date().toISOString().slice(0,10) + '.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast(tasks.length + ' tugas diekspor ke CSV', 'success');
+    }
+    function importFromJson(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (data.tasks && Array.isArray(data.tasks)) {
+            const prevCount = tasks.length;
+            tasks = data.tasks;
+            save();
+            if (currentView === 'kanban') renderKanban(); else renderTasks();
+            updateStats(); renderCalendar(); updateSuggestions();
+            showToast('Import berhasil: ' + tasks.length + ' tugas', 'success');
+          } else {
+            showToast('Format JSON tidak valid', 'error');
+          }
+        } catch (err) {
+          showToast('Error import: ' + err.message, 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+
+    // ===== MULTI-SELECT =====
+    let multiSelectMode = false;
+    let selectedTaskIds = [];
+
+    function toggleMultiSelectMode() {
+      multiSelectMode = !multiSelectMode;
+      selectedTaskIds = [];
+      if (els.batchBar) els.batchBar.classList.toggle('active', multiSelectMode);
+      if (multiSelectMode) {
+        showToast('Mode Multi-Select aktif. Klik task untuk memilih.', 'info');
+      }
+      if (currentView === 'kanban') renderKanban(); else renderTasks();
+    }
+    function toggleTaskSelection(id) {
+      if (!multiSelectMode) return;
+      if (selectedTaskIds.includes(id)) {
+        selectedTaskIds = selectedTaskIds.filter(x => x !== id);
+      } else {
+        selectedTaskIds.push(id);
+      }
+      updateBatchBar();
+      // Re-render to show selection
+      if (currentView === 'kanban') renderKanban(); else renderTasks();
+    }
+    function updateBatchBar() {
+      if (els.batchCount) els.batchCount.textContent = selectedTaskIds.length + ' tugas terpilih';
+    }
+    function batchMarkDone() {
+      if (selectedTaskIds.length === 0) return;
+      pushUndo({ type: 'batch-update', ids: selectedTaskIds.slice(), oldStates: selectedTaskIds.map(id => {
+        const t = tasks.find(x => x.id === id);
+        return t ? { done: t.done, ongoing: t.ongoing } : {};
+      })});
+      selectedTaskIds.forEach(id => {
+        const t = tasks.find(x => x.id === id);
+        if (t) { t.done = true; t.ongoing = false; }
+      });
+      save();
+      selectedTaskIds = [];
+      updateBatchBar();
+      if (currentView === 'kanban') renderKanban(); else renderTasks();
+      updateStats(); renderCalendar();
+      playSound('complete');
+      showToast('Tugas ditandai selesai', 'success');
+      setTimeout(checkAllDoneCelebration, 300);
+    }
+    function batchDelete() {
+      if (selectedTaskIds.length === 0) return;
+      const toDelete = tasks.filter(t => selectedTaskIds.includes(t.id));
+      pushUndo({ type: 'batch-delete', tasks: JSON.parse(JSON.stringify(toDelete)) });
+      tasks = tasks.filter(t => !selectedTaskIds.includes(t.id));
+      save();
+      selectedTaskIds = [];
+      updateBatchBar();
+      if (currentView === 'kanban') renderKanban(); else renderTasks();
+      updateStats(); updateSuggestions(); renderCalendar();
+      playSound('delete');
+      showToast('Tugas dihapus', 'info');
+    }
+    function exitMultiSelect() {
+      multiSelectMode = false;
+      selectedTaskIds = [];
+      if (els.batchBar) els.batchBar.classList.remove('active');
+      if (currentView === 'kanban') renderKanban(); else renderTasks();
+    }
+
+    // ===== UNDO =====
+    function pushUndo(action) {
+      undoStack.push(Object.assign({ timestamp: Date.now() }, action));
+      if (undoStack.length > MAX_UNDO) undoStack.shift();
+    }
+    function undo() {
+      if (undoStack.length === 0) { showToast('Tidak ada yang bisa di-undo', 'warn'); return; }
+      const action = undoStack.pop();
+      if (action.type === 'delete' && action.task) {
+        tasks.push(action.task);
+        showToast('Undo: Task dikembalikan', 'success');
+      } else if (action.type === 'batch-delete' && action.tasks) {
+        tasks = tasks.concat(action.tasks);
+        showToast('Undo: ' + action.tasks.length + ' task dikembalikan', 'success');
+      } else if (action.type === 'batch-update' && action.ids && action.oldStates) {
+        action.ids.forEach((id, i) => {
+          const t = tasks.find(x => x.id === id);
+          if (t && action.oldStates[i]) { t.done = action.oldStates[i].done; t.ongoing = action.oldStates[i].ongoing; }
+        });
+        showToast('Undo: Status dikembalikan', 'success');
+      } else if (action.type === 'clear') {
+        tasks = action.tasks ? JSON.parse(JSON.stringify(action.tasks)) : [];
+        showToast('Undo: Data dikembalikan', 'success');
+      }
+      save();
+      if (currentView === 'kanban') renderKanban(); else renderTasks();
+      updateStats(); updateSuggestions(); renderCalendar();
+    }
+
+
+    // ===== PARSING EDITOR UI =====
+    let peCurrentTab = 'priority';
+    let peTempConfig = null;
+
+    function initParsingEditor() {
+      // Open button in settings
+      const openBtn = document.getElementById('openParsingEditor');
+      if (openBtn) openBtn.addEventListener('click', openParsingEditor);
+
+      // Close buttons
+      const closeBtn = document.getElementById('parsingEditorClose');
+      const cancelBtn = document.getElementById('parsingCancel');
+      const modal = document.getElementById('parsingEditorModal');
+      if (closeBtn) closeBtn.addEventListener('click', closeParsingEditor);
+      if (cancelBtn) cancelBtn.addEventListener('click', closeParsingEditor);
+      if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeParsingEditor(); });
+
+      // Save
+      const saveBtn = document.getElementById('parsingSave');
+      if (saveBtn) saveBtn.addEventListener('click', saveParsingEditor);
+
+      // Reset
+      const resetBtn = document.getElementById('parsingResetDefault');
+      if (resetBtn) resetBtn.addEventListener('click', () => {
+        if (confirm('Reset semua kata kunci ke default? Perubahan yang belum disimpan akan hilang.')) {
+          peTempConfig = JSON.parse(JSON.stringify(DEFAULT_PARSING_CONFIG));
+          renderParsingEditorTable(peCurrentTab);
+          showToast('Kata kunci direset ke default', 'info');
+        }
+      });
+
+      // Tabs
+      document.querySelectorAll('.pe-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.pe-tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.pe-panel').forEach(p => p.classList.remove('active'));
+          tab.classList.add('active');
+          peCurrentTab = tab.dataset.tab;
+          document.getElementById('pe-panel-' + peCurrentTab).classList.add('active');
+          renderParsingEditorTable(peCurrentTab);
+        });
+      });
+
+      // Add buttons
+      document.querySelectorAll('.pe-add-btn').forEach(btn => {
+        btn.addEventListener('click', () => addParsingRow(btn.dataset.type));
+      });
+    }
+
+    function openParsingEditor() {
+      peTempConfig = JSON.parse(JSON.stringify(loadParsingConfig()));
+      renderParsingEditorTable(peCurrentTab);
+      const modal = document.getElementById('parsingEditorModal');
+      if (modal) modal.classList.add('show');
+    }
+
+    function closeParsingEditor() {
+      const modal = document.getElementById('parsingEditorModal');
+      if (modal) modal.classList.remove('show');
+      peTempConfig = null;
+    }
+
+    function renderParsingEditorTable(type) {
+      const body = document.getElementById('pe-body-' + type);
+      if (!body || !peTempConfig) return;
+
+      const items = peTempConfig[type];
+      if (!items || items.length === 0) {
+        body.innerHTML = '<div style="text-align:center; padding:1rem; color:var(--text-dim); font-size:0.8rem;">Kosong — klik + Tambah</div>';
+        return;
+      }
+
+      body.innerHTML = items.map((item, idx) => {
+        const keywords = Array.isArray(item.keywords) ? item.keywords.join(', ') : item.keywords;
+        if (type === 'priority') {
+          return '<div class="pe-row" data-idx="' + idx + '"><input class="pe-input" value="' + escapeHtml(keywords) + '" placeholder="super, superh, shigh"><select class="pe-select">' + 
+            ['super_high','high','medium','low'].map(v => '<option value="' + v + '"' + (item.val === v ? ' selected' : '') + '>' + v + '</option>').join('') + 
+            '</select><button class="pe-delete" title="Hapus">🗑️</button></div>';
+        } else if (type === 'status') {
+          return '<div class="pe-row" data-idx="' + idx + '"><input class="pe-input" value="' + escapeHtml(keywords) + '" placeholder="selesai, done"><select class="pe-select">' + 
+            [['done','done'],['ongoing','ongoing'],['pending','pending']].map(([v,l]) => '<option value="' + v + '"' + (item.val === v ? ' selected' : '') + '>' + l + '</option>').join('') + 
+            '</select><button class="pe-delete" title="Hapus">🗑️</button></div>';
+        } else if (type === 'dates') {
+          return '<div class="pe-row" data-idx="' + idx + '"><input class="pe-input" value="' + escapeHtml(keywords) + '" placeholder="besok, bsk"><input type="number" class="pe-number" value="' + item.days + '"><button class="pe-delete" title="Hapus">🗑️</button></div>';
+        } else if (type === 'timeOfDay') {
+          const h = String(item.h).padStart(2,'0');
+          const m = String(item.m).padStart(2,'0');
+          return '<div class="pe-row" data-idx="' + idx + '"><input class="pe-input" value="' + escapeHtml(keywords) + '" placeholder="pagi, sore"><input type="time" class="pe-number" value="' + h + ':' + m + '"><button class="pe-delete" title="Hapus">🗑️</button></div>';
+        }
+      }).join('');
+
+      // Attach delete handlers
+      body.querySelectorAll('.pe-delete').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const row = btn.closest('.pe-row');
+          const idx = parseInt(row.dataset.idx);
+          peTempConfig[type].splice(idx, 1);
+          renderParsingEditorTable(type);
+        });
+      });
+    }
+
+    function addParsingRow(type) {
+      if (!peTempConfig) return;
+      const defaults = {
+        priority: { keywords: [''], val: 'medium' },
+        status: { keywords: [''], val: 'pending' },
+        dates: { keywords: [''], days: 1 },
+        timeOfDay: { keywords: [''], h: 8, m: 0 }
+      };
+      peTempConfig[type].push(JSON.parse(JSON.stringify(defaults[type])));
+      renderParsingEditorTable(type);
+    }
+
+    function saveParsingEditor() {
+      if (!peTempConfig) return;
+
+      // Collect data from all visible and hidden tabs
+      ['priority', 'status', 'dates', 'timeOfDay'].forEach(type => {
+        const body = document.getElementById('pe-body-' + type);
+        if (!body) return;
+        const rows = body.querySelectorAll('.pe-row');
+        peTempConfig[type] = [];
+        rows.forEach(row => {
+          const inputs = row.querySelectorAll('input, select');
+          const keywords = inputs[0].value.split(',').map(k => k.trim()).filter(Boolean);
+          if (keywords.length === 0) return;
+
+          if (type === 'priority') {
+            peTempConfig[type].push({ keywords, val: inputs[1].value });
+          } else if (type === 'status') {
+            peTempConfig[type].push({ keywords, val: inputs[1].value });
+          } else if (type === 'dates') {
+            peTempConfig[type].push({ keywords, val: keywords[0], days: parseInt(inputs[1].value) || 0, label: keywords[0] });
+          } else if (type === 'timeOfDay') {
+            const [h, m] = inputs[1].value.split(':');
+            peTempConfig[type].push({ keywords, h: parseInt(h) || 0, m: parseInt(m) || 0, label: keywords[0] });
+          }
+        });
+      });
+
+      saveParsingConfig(peTempConfig);
+      closeParsingEditor();
+      showToast('Kata kunci parsing tersimpan', 'success');
+    }
+
     function initButtonListeners() {
       // Status filters
       document.querySelectorAll('#statusFilters .filter-chip').forEach(f => {
@@ -2987,7 +3442,7 @@ function closeAllPopups() {
           document.querySelectorAll('#statusFilters .filter-chip').forEach(x => x.classList.remove('active'));
           f.classList.add('active');
           currentFilter = f.dataset.filter;
-          renderTasks();
+          if (currentView === 'kanban') renderKanban(); else renderTasks();
         });
       });
 
@@ -2995,7 +3450,7 @@ function closeAllPopups() {
       if (els.priorityFilterSelect) {
         els.priorityFilterSelect.addEventListener('change', () => {
           currentPriorityFilter = els.priorityFilterSelect.value;
-          renderTasks();
+          if (currentView === 'kanban') renderKanban(); else renderTasks();
         });
       }
 
@@ -3011,7 +3466,7 @@ function closeAllPopups() {
               currentSortFields.push(field);
               chip.classList.add('active');
             }
-            renderTasks();
+            if (currentView === 'kanban') renderKanban(); else renderTasks();
           });
         });
       }
@@ -3073,8 +3528,10 @@ function closeAllPopups() {
 
       if (els.clearData) els.clearData.addEventListener('click', () => { 
         if(confirm('Hapus semua data?')) { 
-          tasks=[]; save(); renderTasks(); updateStats(); renderCalendar();
+          pushUndo({ type: 'clear', tasks: JSON.parse(JSON.stringify(tasks)) });
+          tasks=[]; save(); if (currentView === 'kanban') renderKanban(); else renderTasks(); updateStats(); renderCalendar();
           localStorage.removeItem('tf_streak'); localStorage.removeItem('tf_lastComplete'); 
+          showToast('Semua data dihapus. Ctrl+Z untuk undo.', 'info');
         } 
       });
 
@@ -3086,7 +3543,7 @@ function closeAllPopups() {
       if (els.githubMiniSync) els.githubMiniSync.addEventListener('click', githubMiniHandler);
 
       // Search input
-      if (els.searchInput) els.searchInput.addEventListener('input', e => { searchQuery = e.target.value; renderTasks(); });
+      if (els.searchInput) els.searchInput.addEventListener('input', e => { searchQuery = e.target.value; if (currentView === 'kanban') renderKanban(); else renderTasks(); });
 
       // Focus mode controls
       if (els.focusPause) els.focusPause.addEventListener('click', () => {
@@ -3123,7 +3580,7 @@ function closeAllPopups() {
         if (els.editDateTime.value) {
           t.dateTime = new Date(els.editDateTime.value).toISOString();
         }
-        save(); renderTasks(); updateStats(); renderCalendar();
+        save(); if (currentView === 'kanban') renderKanban(); else renderTasks(); updateStats(); renderCalendar();
         if (els.editModal) els.editModal.classList.remove('show');
         editingId = null;
         playSound('add');
@@ -3141,6 +3598,34 @@ function closeAllPopups() {
           editingId = null;
         }
       });
+
+      // View toggle buttons
+      if (els.listViewBtn) els.listViewBtn.addEventListener('click', () => toggleView('list'));
+      if (els.kanbanViewBtn) els.kanbanViewBtn.addEventListener('click', () => toggleView('kanban'));
+
+      // Init kanban drag & drop
+      initKanbanDragDrop();
+
+      // Quick templates
+      renderQuickTemplates();
+
+      // Export / Import
+      if (els.exportJsonBtn) els.exportJsonBtn.addEventListener('click', exportToJson);
+      if (els.exportCsvBtn) els.exportCsvBtn.addEventListener('click', exportToCsv);
+      if (els.importJsonBtn && els.importFileInput) {
+        els.importJsonBtn.addEventListener('click', () => els.importFileInput.click());
+        els.importFileInput.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (file) importFromJson(file);
+          e.target.value = '';
+        });
+      }
+
+      // Multi-select
+      if (els.multiSelectBtn) els.multiSelectBtn.addEventListener('click', toggleMultiSelectMode);
+      if (els.batchDone) els.batchDone.addEventListener('click', batchMarkDone);
+      if (els.batchDelete) els.batchDelete.addEventListener('click', batchDelete);
+      if (els.batchCancel) els.batchCancel.addEventListener('click', exitMultiSelect);
     }
 
     // Autocomplete Suggestions
@@ -3189,6 +3674,79 @@ function closeAllPopups() {
     function vibrate() { 
       if (settings.haptic && navigator.vibrate) navigator.vibrate(40); 
     }
+    
+    // ===== CONFETTI CELEBRATION =====
+    function launchConfetti() {
+      const container = document.getElementById('confettiContainer');
+      if (!container) return;
+      container.innerHTML = '';
+      const colors = ['#b026ff', '#ff4d6d', '#00f5a0', '#ffd166', '#4facfe', '#ff7800', '#c7d2fe'];
+      const shapes = ['circle', 'square', 'triangle'];
+      for (let i = 0; i < 60; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const left = Math.random() * 100;
+        const duration = 2 + Math.random() * 3;
+        const delay = Math.random() * 1.5;
+        const size = 6 + Math.random() * 8;
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        piece.style.cssText = `left:${left}vw;animation-duration:${duration}s;animation-delay:${delay}s;width:${size}px;height:${size}px;background:${color};border-radius:${shape==='circle'?'50%':shape==='square'?'2px':'0'};clip-path:${shape==='triangle'?'polygon(50% 0%,0% 100%,100% 100%)':'none'};`;
+        container.appendChild(piece);
+      }
+      setTimeout(() => { if(container) container.innerHTML = ''; }, 6000);
+    }
+
+    function checkAllDoneCelebration() {
+      const todayStr = new Date().toDateString();
+      const todayTasks = tasks.filter(t => {
+        if (t.dateTime) return new Date(t.dateTime).toDateString() === todayStr;
+        return new Date(t.createdAt).toDateString() === todayStr;
+      });
+      if (todayTasks.length > 0 && todayTasks.every(t => t.done)) {
+        launchConfetti();
+        showToast('🎉 Semua tugas hari ini selesai! Kerja bagus!', 'success');
+      }
+    }
+
+    // ===== BETTER DATETIME DISPLAY =====
+    function smartDateDisplay(dateStr, timeStr) {
+      if (!dateStr) return timeStr || '';
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return dateStr;
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const target = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      const diffMs = target - today;
+      const diffDays = Math.round(diffMs / 86400000);
+      const timePart = timeStr || d.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+      if (diffDays === 0) return `Hari ini, ${timePart}`;
+      if (diffDays === 1) return `Besok, ${timePart}`;
+      if (diffDays === 2) return `Lusa, ${timePart}`;
+      if (diffDays === -1) return `Kemarin, ${timePart}`;
+      if (diffDays > 2 && diffDays <= 6) return `${diffDays} hari lagi, ${timePart}`;
+      return d.toLocaleDateString('id-ID', { day:'numeric', month:'short' }) + (timePart ? `, ${timePart}` : '');
+    }
+
+    // ===== PRIORITY GLOW =====
+    function getGlowClass(priority) {
+      if (priority === 'super_high') return 'glow-super_high';
+      if (priority === 'high') return 'glow-high';
+      return '';
+    }
+
+    // Toast Notifications
+    function showToast(message, type) {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const icons = { success: '✅', error: '❌', info: 'ℹ️', warn: '⚠️' };
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type || 'info'}`;
+      toast.innerHTML = `<span class="toast-icon">${icons[type] || icons.info}</span><span>${escapeHtml(message)}</span>`;
+      container.appendChild(toast);
+      toast.addEventListener('click', () => toast.remove());
+      setTimeout(() => { if(toast.parentNode) toast.remove(); }, 3000);
+    }
 
     // GitHub Gist Sync
     function showGithubStatus(msg, type) {
@@ -3232,7 +3790,7 @@ function closeAllPopups() {
             })
           });
           if (!res.ok) throw new Error('Gagal update Gist: ' + res.status);
-          showGithubStatus('✅ Tersimpan ke GitHub', 'success');
+          showGithubStatus('✅ Tersimpan ke GitHub', 'success'); showToast('Data tersimpan ke GitHub', 'success');
         } else {
           const res = await fetch('https://api.github.com/gists', {
             method: 'POST',
@@ -3252,10 +3810,10 @@ function closeAllPopups() {
           if (els.githubGistId) els.githubGistId.value = json.id;
           settings.githubGistId = json.id;
           saveSettings();
-          showGithubStatus(`✅ Gist dibuat: ${json.id}`, 'success');
+          showGithubStatus(`✅ Gist dibuat: ${json.id}`, 'success'); showToast('Gist baru berhasil dibuat', 'success');
         }
       } catch (err) {
-        showGithubStatus('❌ Error: ' + err.message, 'error');
+        showGithubStatus('❌ Error: ' + err.message, 'error'); showToast('Error: ' + err.message, 'error');
       }
     }
 
@@ -3286,10 +3844,10 @@ function closeAllPopups() {
           renderTasks();
           updateStats();
           renderCalendar();
-          showGithubStatus(`✅ Data dimuat (${tasks.length} tugas)`, 'success');
+          showGithubStatus(`✅ Data dimuat (${tasks.length} tugas)`, 'success'); showToast(`${tasks.length} tugas dimuat dari GitHub`, 'success');
         }
       } catch (err) {
-        showGithubStatus('❌ Error: ' + err.message, 'error');
+        showGithubStatus('❌ Error: ' + err.message, 'error'); showToast('Error: ' + err.message, 'error');
       }
     }
 
@@ -3326,6 +3884,11 @@ function closeAllPopups() {
     // Keyboard
     function initKeyboard() {
       document.addEventListener('keydown', (e) => {
+        if (e.key === 'z' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          undo();
+          return;
+        }
         if (e.key === 'Escape') {
           if (els.taskInput) els.taskInput.value = '';
           if (els.descInput) els.descInput.value = '';
@@ -3345,7 +3908,7 @@ function closeAllPopups() {
       const token = settings.githubToken;
       const gistId = settings.githubGistId;
       if (!token) {
-        alert('⚠️ Masukkan GitHub Token di Settings (⚙️) terlebih dulu.');
+        showToast('⚠️ Masukkan GitHub Token di Settings (⚙️) terlebih dulu.', 'warn');
         if (els.settingsPanel) els.settingsPanel.classList.add('show');
         return;
       }
@@ -3366,4 +3929,9 @@ function closeAllPopups() {
     }
   </script>
 
-<div class="cursor-trail" style="background: var(--neon-purple); left: 1021.47px; top: 483.262px;"></div></body></html>
+<div class="cursor-trail" style="background: var(--neon-purple); left: 1021.47px; top: 483.262px;"></div>
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+  <!-- Confetti Container -->
+  <div class="confetti-container" id="confettiContainer"></div>
+</body></html>
