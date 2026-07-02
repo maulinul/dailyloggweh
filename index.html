@@ -1935,11 +1935,14 @@ function closeAllPopups() {
     function initCustomSelect() {
       if (!els.priorityTrigger || !els.priorityOptions || !els.priorityCustomSelect) return;
 
-      // Klik/tap: toggle dropdown (hover tidak tersedia di layar sentuh)
+      const hasHover = window.matchMedia && window.matchMedia('(hover: hover)').matches;
+
+      // Klik/tap: buka dropdown; toggle-tutup hanya di perangkat tanpa hover
+      // (di desktop hover sudah membuka, klik tidak boleh menutupnya lagi)
       els.priorityTrigger.addEventListener('click', (e) => {
         e.stopPropagation();
         if (els.priorityOptions.classList.contains('open')) {
-          closePrioritySelect();
+          if (!hasHover) closePrioritySelect();
         } else {
           closeAllPopups();
           openPrioritySelect();
@@ -1949,7 +1952,6 @@ function closeAllPopups() {
       // Hover: hanya di perangkat yang benar-benar punya hover.
       // Di layar sentuh tap memicu mouseenter simulasi yang akan
       // bertabrakan dengan handler klik di atas.
-      const hasHover = window.matchMedia && window.matchMedia('(hover: hover)').matches;
       if (hasHover) {
         els.priorityCustomSelect.addEventListener('mouseenter', () => {
           closeAllPopups();
@@ -4169,6 +4171,14 @@ function closeAllPopups() {
       } else {
         syncToGitHub();
       }
+    }
+
+    // PWA — daftarkan service worker (butuh HTTPS atau localhost)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .catch(err => console.warn('Service worker tidak terdaftar:', err));
+      });
     }
 
     // Start
