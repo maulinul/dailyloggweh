@@ -1528,7 +1528,7 @@
         <div class="data-actions" style="margin-bottom:0.4rem;">
           <button class="data-action-btn" id="exportJsonBtn" title="Export JSON">📦 Export JSON</button>
           <button class="data-action-btn" id="exportCsvBtn" title="Export CSV">📊 Export CSV</button>
-          <button class="data-action-btn" id="importJsonBtn" title="Import JSON">📥 Import JSON</button>
+          <button class="data-action-btn" id="importJsonBtn" title="Import JSON / CSV">📥 Import</button>
           <input type="file" id="importFileInput" accept=".json,.csv" style="display:none;">
           <button class="data-action-btn" id="multiSelectBtn" title="Multi Select">☑️ Multi Select</button>
         </div>
@@ -1860,23 +1860,39 @@ function closeAllPopups() {
     function initCustomSelect() {
       if (!els.priorityTrigger || !els.priorityOptions || !els.priorityCustomSelect) return;
 
-      // Hover: show dropdown
-      els.priorityCustomSelect.addEventListener('mouseenter', () => {
-        closeAllPopups();
-        openPrioritySelect();
-      });
-      // Leave select wrapper -> close if not entering options
-      els.priorityCustomSelect.addEventListener('mouseleave', (e) => {
-        if (!els.priorityOptions.contains(e.relatedTarget)) {
+      // Klik/tap: toggle dropdown (hover tidak tersedia di layar sentuh)
+      els.priorityTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (els.priorityOptions.classList.contains('open')) {
           closePrioritySelect();
+        } else {
+          closeAllPopups();
+          openPrioritySelect();
         }
       });
-      // Leave options -> close if not entering select wrapper
-      els.priorityOptions.addEventListener('mouseleave', (e) => {
-        if (!els.priorityCustomSelect.contains(e.relatedTarget)) {
-          closePrioritySelect();
-        }
-      });
+
+      // Hover: hanya di perangkat yang benar-benar punya hover.
+      // Di layar sentuh tap memicu mouseenter simulasi yang akan
+      // bertabrakan dengan handler klik di atas.
+      const hasHover = window.matchMedia && window.matchMedia('(hover: hover)').matches;
+      if (hasHover) {
+        els.priorityCustomSelect.addEventListener('mouseenter', () => {
+          closeAllPopups();
+          openPrioritySelect();
+        });
+        // Leave select wrapper -> close if not entering options
+        els.priorityCustomSelect.addEventListener('mouseleave', (e) => {
+          if (!els.priorityOptions.contains(e.relatedTarget)) {
+            closePrioritySelect();
+          }
+        });
+        // Leave options -> close if not entering select wrapper
+        els.priorityOptions.addEventListener('mouseleave', (e) => {
+          if (!els.priorityCustomSelect.contains(e.relatedTarget)) {
+            closePrioritySelect();
+          }
+        });
+      }
 
       document.querySelectorAll('.select-option').forEach(opt => {
         opt.addEventListener('click', (e) => {
@@ -2118,7 +2134,7 @@ function closeAllPopups() {
         t.done = !t.done;
         if (t.done) { t.ongoing = false; playSound('complete'); vibrate(); checkStreak(); setTimeout(checkAllDoneCelebration, 300); }
         else { t.ongoing = false; }
-        save(); if (currentView === 'kanban') renderKanban(); else renderTasks(); updateStats(); renderCalendar();
+        save(); renderCurrentView(); updateStats(); renderCalendar();
         if (selectedDate) showDayDetail(selectedDate, new Date(selectedDate).getDate());
       }
     }
@@ -2379,7 +2395,7 @@ function closeAllPopups() {
 
       tasks.unshift(newTask);
       save();
-      if (currentView === 'kanban') renderKanban(); else renderTasks();
+      renderCurrentView();
       updateStats();
       updateSuggestions();
       renderCalendar();
@@ -2517,10 +2533,10 @@ function closeAllPopups() {
         if (focusBtn) focusBtn.addEventListener('click', () => enterFocusMode(t.id));
 
         const pomoBtn = el.querySelector('.pomo-btn');
-        if (pomoBtn) pomoBtn.addEventListener('click', () => togglePomodoro(t.id, el));
+        if (pomoBtn) pomoBtn.addEventListener('click', () => togglePomodoro(t.id));
 
         const clearBtn = el.querySelector('.pomo-clear-btn');
-        if (clearBtn) clearBtn.addEventListener('click', () => clearPomodoro(t.id, el));
+        if (clearBtn) clearBtn.addEventListener('click', () => clearPomodoro(t.id));
 
         const statusToggleBtn = el.querySelector('.status-toggle-btn');
         if (statusToggleBtn) statusToggleBtn.addEventListener('click', () => toggleStatus(t.id));
@@ -2554,6 +2570,11 @@ function closeAllPopups() {
     let draggedTaskId = null;
     let undoStack = [];
     const MAX_UNDO = 20;
+
+    function renderCurrentView() {
+      if (currentView === 'kanban') renderKanban();
+      else renderTasks();
+    }
 
     function toggleView(view) {
       currentView = view || (currentView === 'list' ? 'kanban' : 'list');
@@ -2748,7 +2769,7 @@ function closeAllPopups() {
       if (!t || t.done) return;
       t.ongoing = !t.ongoing;
       save();
-      if (currentView === 'kanban') renderKanban(); else renderTasks();
+      renderCurrentView();
       playSound('add');
     }
 
@@ -2759,7 +2780,7 @@ function closeAllPopups() {
       if (t.done) { t.ongoing = false; playSound('complete'); vibrate(); checkStreak(); setTimeout(checkAllDoneCelebration, 300); }
       else { t.ongoing = false; }
       save();
-      setTimeout(() => { if (currentView === 'kanban') renderKanban(); else renderTasks(); updateStats(); renderCalendar(); }, 50);
+      setTimeout(() => { renderCurrentView(); updateStats(); renderCalendar(); }, 50);
       
       if (settings.githubAutoSync && settings.githubToken) {
         syncToGitHub();
@@ -2767,10 +2788,11 @@ function closeAllPopups() {
     }
 
     function deleteTask(id) {
-      const taskToDelete = tasks.find(x => x.id === id);
-      if (taskToDelete) pushUndo({ type: 'delete', task: Object.assign({}, taskToDelete) });
+      const idx = tasks.findIndex(x => x.id === id);
+      if (idx >= 0) pushUndo({ type: 'delete', task: Object.assign({}, tasks[idx]), index: idx });
+      stopPomodoro(id);
       tasks = tasks.filter(x => x.id !== id);
-      save(); if (currentView === 'kanban') renderKanban(); else renderTasks(); updateStats(); updateSuggestions(); renderCalendar();
+      save(); renderCurrentView(); updateStats(); updateSuggestions(); renderCalendar();
       playSound('delete'); vibrate();
       if (settings.githubAutoSync && settings.githubToken) syncToGitHub();
     }
@@ -2790,7 +2812,7 @@ function closeAllPopups() {
       const t = tasks.find(x => x.id === id);
       if (!t || !t.subtasks[idx]) return;
       t.subtasks[idx].done = done;
-      save(); if (currentView === 'kanban') renderKanban(); else renderTasks();
+      save(); renderCurrentView();
       if (done) { playSound('complete'); vibrate(); }
     }
 
@@ -2865,47 +2887,55 @@ function closeAllPopups() {
 
     // Pomodoro
     const pomoIntervals = {};
-    function togglePomodoro(id, el) {
+    function stopPomodoro(id) {
+      if (pomoIntervals[id]) {
+        clearInterval(pomoIntervals[id]);
+        delete pomoIntervals[id];
+      }
+    }
+    function stopAllPomodoros() {
+      Object.keys(pomoIntervals).forEach(stopPomodoro);
+    }
+    function togglePomodoro(id) {
       const t = tasks.find(x => x.id === id);
       if (!t) return;
       t.pomodoro.active = !t.pomodoro.active;
-      const wrap = el.querySelector('.pomodoro-wrap');
-      if (wrap) wrap.style.display = 'flex';
-      const btn = el.querySelector('.pomo-btn');
-      if (btn) btn.textContent = t.pomodoro.active ? '⏸' : '▶';
 
       if (t.pomodoro.active && !pomoIntervals[id]) {
         pomoIntervals[id] = setInterval(() => {
-          if (t.pomodoro.timeLeft > 0) {
-            t.pomodoro.timeLeft--;
-            const circle = el.querySelector('.pomo-progress');
-            const timeSpan = el.querySelector('.pomo-time');
-            if(circle) circle.style.strokeDashoffset = 100 - (t.pomodoro.timeLeft/1500)*100;
-            if(timeSpan) timeSpan.textContent = formatTime(t.pomodoro.timeLeft);
+          // Cari ulang task & elemen DOM tiap tick — referensi lama bisa basi
+          // setelah re-render, import, atau load dari Gist
+          const task = tasks.find(x => x.id === id);
+          if (!task) { stopPomodoro(id); return; }
+          if (task.pomodoro.timeLeft > 0) {
+            task.pomodoro.timeLeft--;
+            const row = els.taskList ? els.taskList.querySelector(`.task-item[data-id="${id}"]`) : null;
+            if (row) {
+              const circle = row.querySelector('.pomo-progress');
+              const timeSpan = row.querySelector('.pomo-time');
+              if (circle) circle.style.strokeDashoffset = 100 - (task.pomodoro.timeLeft/1500)*100;
+              if (timeSpan) timeSpan.textContent = formatTime(task.pomodoro.timeLeft);
+            }
           } else {
-            clearInterval(pomoIntervals[id]);
-            delete pomoIntervals[id];
-            t.pomodoro.active = false;
-            if (btn) btn.textContent = '▶';
+            stopPomodoro(id);
+            task.pomodoro.active = false;
+            save();
+            renderCurrentView();
             playSound('complete');
-            showToast(`⏰ Fokus selesai untuk: ${t.title}`, 'success');
+            showToast(`⏰ Fokus selesai untuk: ${task.title}`, 'success');
           }
         }, 1000);
-      } else if (!t.pomodoro.active && pomoIntervals[id]) {
-        clearInterval(pomoIntervals[id]);
-        delete pomoIntervals[id];
+      } else if (!t.pomodoro.active) {
+        stopPomodoro(id);
       }
       save();
       renderTasks();
     }
 
-    function clearPomodoro(id, el) {
+    function clearPomodoro(id) {
       const t = tasks.find(x => x.id === id);
       if (!t) return;
-      if (pomoIntervals[id]) {
-        clearInterval(pomoIntervals[id]);
-        delete pomoIntervals[id];
-      }
+      stopPomodoro(id);
       t.pomodoro.active = false;
       t.pomodoro.timeLeft = 1500;
       save(); renderTasks();
@@ -2947,21 +2977,23 @@ function closeAllPopups() {
       if (els.progressFill) els.progressFill.style.background = `linear-gradient(90deg, ${color1}, ${color2})`;
     }
 
-    // Streak Logic
+    // Streak Logic — streak dihitung dari tugas HARI INI saja,
+    // konsisten dengan checkAllDoneCelebration
     function checkStreak() {
       const today = new Date().toDateString();
       const last = localStorage.getItem('tf_lastComplete');
       let streak = parseInt(localStorage.getItem('tf_streak') || '0');
 
-      const allDone = tasks.length > 0 && tasks.every(t => t.done);
-      if (allDone) {
-        if (last !== today) {
-          const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
-          if (last === yesterday.toDateString()) streak++;
-          else if (last !== today) streak = 1;
-          localStorage.setItem('tf_streak', streak);
-          localStorage.setItem('tf_lastComplete', today);
-        }
+      const todayTasks = tasks.filter(t => {
+        if (t.dateTime) return new Date(t.dateTime).toDateString() === today;
+        return new Date(t.createdAt).toDateString() === today;
+      });
+      const allDoneToday = todayTasks.length > 0 && todayTasks.every(t => t.done);
+      if (allDoneToday && last !== today) {
+        const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+        streak = (last === yesterday.toDateString()) ? streak + 1 : 1;
+        localStorage.setItem('tf_streak', streak);
+        localStorage.setItem('tf_lastComplete', today);
       }
       if (els.streakCount) els.streakCount.textContent = streak;
       if (els.streakFire) els.streakFire.classList.toggle('active', streak >= 3);
@@ -3022,21 +3054,104 @@ function closeAllPopups() {
       URL.revokeObjectURL(url);
       showToast(tasks.length + ' tugas diekspor ke CSV', 'success');
     }
-    function importFromJson(file) {
+    // Pastikan task dari import/sync punya semua field yang dibutuhkan renderer
+    function normalizeTask(t) {
+      const priorities = ['super_high', 'high', 'medium', 'low'];
+      return {
+        id: String(t.id || (Date.now().toString() + Math.random().toString(36).slice(2, 7))),
+        title: String(t.title || ''),
+        desc: t.desc ? String(t.desc) : '',
+        category: t.category ? String(t.category) : '',
+        priority: priorities.includes(t.priority) ? t.priority : 'medium',
+        done: !!t.done,
+        ongoing: !t.done && !!t.ongoing,
+        createdAt: t.createdAt || new Date().toISOString(),
+        dateTime: t.dateTime || null,
+        timeHint: t.timeHint ? String(t.timeHint) : '',
+        repeat: ['daily', 'weekly', 'monthly'].includes(t.repeat) ? t.repeat : 'none',
+        notified: !!t.notified,
+        subtasks: Array.isArray(t.subtasks)
+          ? t.subtasks.map(s => ({ text: String(s.text || ''), done: !!s.done })).filter(s => s.text)
+          : [],
+        pomodoro: {
+          active: false,
+          timeLeft: (t.pomodoro && Number.isFinite(t.pomodoro.timeLeft)) ? t.pomodoro.timeLeft : 1500
+        }
+      };
+    }
+
+    function parseCsvRows(text) {
+      const rows = [];
+      let row = [], cur = '', inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (inQuotes) {
+          if (c === '"') {
+            if (text[i + 1] === '"') { cur += '"'; i++; }
+            else inQuotes = false;
+          } else cur += c;
+        } else if (c === '"') {
+          inQuotes = true;
+        } else if (c === ',') {
+          row.push(cur); cur = '';
+        } else if (c === '\n' || c === '\r') {
+          if (c === '\r' && text[i + 1] === '\n') i++;
+          row.push(cur); cur = '';
+          if (row.some(v => v !== '')) rows.push(row);
+          row = [];
+        } else cur += c;
+      }
+      if (cur !== '' || row.length) {
+        row.push(cur);
+        if (row.some(v => v !== '')) rows.push(row);
+      }
+      return rows;
+    }
+
+    function parseCsvTasks(text) {
+      const rows = parseCsvRows(text);
+      if (rows.length < 2) throw new Error('CSV kosong atau tidak valid');
+      const header = rows[0].map(h => h.trim().toLowerCase());
+      const col = name => header.indexOf(name);
+      if (col('title') === -1) throw new Error('Kolom "Title" tidak ditemukan di CSV');
+      return rows.slice(1).map(r => {
+        const get = name => { const i = col(name); return i >= 0 ? (r[i] || '').trim() : ''; };
+        const status = get('status').toLowerCase();
+        return {
+          id: get('id'),
+          title: get('title'),
+          desc: get('description'),
+          category: get('category'),
+          priority: get('priority'),
+          done: status === 'done',
+          ongoing: status === 'ongoing',
+          dateTime: get('datetime') || null,
+          createdAt: get('createdat') || null,
+          subtasks: get('subtasks')
+            ? get('subtasks').split(';').map(s => ({ text: s.trim(), done: false })).filter(s => s.text)
+            : []
+        };
+      }).filter(t => t.title);
+    }
+
+    function importFile(file) {
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
-          const data = JSON.parse(e.target.result);
-          if (data.tasks && Array.isArray(data.tasks)) {
-            const prevCount = tasks.length;
-            tasks = data.tasks;
-            save();
-            if (currentView === 'kanban') renderKanban(); else renderTasks();
-            updateStats(); renderCalendar(); updateSuggestions();
-            showToast('Import berhasil: ' + tasks.length + ' tugas', 'success');
+          let imported;
+          if (/\.csv$/i.test(file.name)) {
+            imported = parseCsvTasks(e.target.result);
           } else {
-            showToast('Format JSON tidak valid', 'error');
+            const data = JSON.parse(e.target.result);
+            if (!data.tasks || !Array.isArray(data.tasks)) throw new Error('Format JSON tidak valid');
+            imported = data.tasks;
           }
+          stopAllPomodoros();
+          tasks = imported.map(normalizeTask);
+          save();
+          renderCurrentView();
+          updateStats(); renderCalendar(); updateSuggestions();
+          showToast('Import berhasil: ' + tasks.length + ' tugas', 'success');
         } catch (err) {
           showToast('Error import: ' + err.message, 'error');
         }
@@ -3056,7 +3171,7 @@ function closeAllPopups() {
       if (multiSelectMode) {
         showToast('Mode Multi-Select aktif. Klik task untuk memilih.', 'info');
       }
-      if (currentView === 'kanban') renderKanban(); else renderTasks();
+      renderCurrentView();
     }
     function toggleTaskSelection(id) {
       if (!multiSelectMode) return;
@@ -3067,7 +3182,7 @@ function closeAllPopups() {
       }
       updateBatchBar();
       // Re-render to show selection
-      if (currentView === 'kanban') renderKanban(); else renderTasks();
+      renderCurrentView();
     }
     function updateBatchBar() {
       if (els.batchCount) els.batchCount.textContent = selectedTaskIds.length + ' tugas terpilih';
@@ -3085,7 +3200,7 @@ function closeAllPopups() {
       save();
       selectedTaskIds = [];
       updateBatchBar();
-      if (currentView === 'kanban') renderKanban(); else renderTasks();
+      renderCurrentView();
       updateStats(); renderCalendar();
       playSound('complete');
       showToast('Tugas ditandai selesai', 'success');
@@ -3095,11 +3210,12 @@ function closeAllPopups() {
       if (selectedTaskIds.length === 0) return;
       const toDelete = tasks.filter(t => selectedTaskIds.includes(t.id));
       pushUndo({ type: 'batch-delete', tasks: JSON.parse(JSON.stringify(toDelete)) });
+      toDelete.forEach(t => stopPomodoro(t.id));
       tasks = tasks.filter(t => !selectedTaskIds.includes(t.id));
       save();
       selectedTaskIds = [];
       updateBatchBar();
-      if (currentView === 'kanban') renderKanban(); else renderTasks();
+      renderCurrentView();
       updateStats(); updateSuggestions(); renderCalendar();
       playSound('delete');
       showToast('Tugas dihapus', 'info');
@@ -3108,7 +3224,7 @@ function closeAllPopups() {
       multiSelectMode = false;
       selectedTaskIds = [];
       if (els.batchBar) els.batchBar.classList.remove('active');
-      if (currentView === 'kanban') renderKanban(); else renderTasks();
+      renderCurrentView();
     }
 
     // ===== UNDO =====
@@ -3120,7 +3236,8 @@ function closeAllPopups() {
       if (undoStack.length === 0) { showToast('Tidak ada yang bisa di-undo', 'warn'); return; }
       const action = undoStack.pop();
       if (action.type === 'delete' && action.task) {
-        tasks.push(action.task);
+        const idx = Math.min(action.index ?? tasks.length, tasks.length);
+        tasks.splice(idx, 0, action.task);
         showToast('Undo: Task dikembalikan', 'success');
       } else if (action.type === 'batch-delete' && action.tasks) {
         tasks = tasks.concat(action.tasks);
@@ -3136,7 +3253,7 @@ function closeAllPopups() {
         showToast('Undo: Data dikembalikan', 'success');
       }
       save();
-      if (currentView === 'kanban') renderKanban(); else renderTasks();
+      renderCurrentView();
       updateStats(); updateSuggestions(); renderCalendar();
     }
 
@@ -3294,7 +3411,7 @@ function closeAllPopups() {
           document.querySelectorAll('#statusFilters .filter-chip').forEach(x => x.classList.remove('active'));
           f.classList.add('active');
           currentFilter = f.dataset.filter;
-          if (currentView === 'kanban') renderKanban(); else renderTasks();
+          renderCurrentView();
         });
       });
 
@@ -3302,7 +3419,7 @@ function closeAllPopups() {
       if (els.priorityFilterSelect) {
         els.priorityFilterSelect.addEventListener('change', () => {
           currentPriorityFilter = els.priorityFilterSelect.value;
-          if (currentView === 'kanban') renderKanban(); else renderTasks();
+          renderCurrentView();
         });
       }
 
@@ -3318,7 +3435,7 @@ function closeAllPopups() {
               currentSortFields.push(field);
               chip.classList.add('active');
             }
-            if (currentView === 'kanban') renderKanban(); else renderTasks();
+            renderCurrentView();
           });
         });
       }
@@ -3381,7 +3498,7 @@ function closeAllPopups() {
       if (els.clearData) els.clearData.addEventListener('click', () => { 
         if(confirm('Hapus semua data?')) { 
           pushUndo({ type: 'clear', tasks: JSON.parse(JSON.stringify(tasks)) });
-          tasks=[]; save(); if (currentView === 'kanban') renderKanban(); else renderTasks(); updateStats(); renderCalendar();
+          tasks=[]; save(); renderCurrentView(); updateStats(); renderCalendar();
           localStorage.removeItem('tf_streak'); localStorage.removeItem('tf_lastComplete'); 
           showToast('Semua data dihapus. Ctrl+Z untuk undo.', 'info');
         } 
@@ -3395,7 +3512,7 @@ function closeAllPopups() {
       if (els.githubMiniSync) els.githubMiniSync.addEventListener('click', githubMiniHandler);
 
       // Search input
-      if (els.searchInput) els.searchInput.addEventListener('input', e => { searchQuery = e.target.value; if (currentView === 'kanban') renderKanban(); else renderTasks(); });
+      if (els.searchInput) els.searchInput.addEventListener('input', e => { searchQuery = e.target.value; renderCurrentView(); });
 
       // Focus mode controls
       if (els.focusPause) els.focusPause.addEventListener('click', () => {
@@ -3432,7 +3549,7 @@ function closeAllPopups() {
         if (els.editDateTime.value) {
           t.dateTime = new Date(els.editDateTime.value).toISOString();
         }
-        save(); if (currentView === 'kanban') renderKanban(); else renderTasks(); updateStats(); renderCalendar();
+        save(); renderCurrentView(); updateStats(); renderCalendar();
         if (els.editModal) els.editModal.classList.remove('show');
         editingId = null;
         playSound('add');
@@ -3468,7 +3585,7 @@ function closeAllPopups() {
         els.importJsonBtn.addEventListener('click', () => els.importFileInput.click());
         els.importFileInput.addEventListener('change', (e) => {
           const file = e.target.files[0];
-          if (file) importFromJson(file);
+          if (file) importFile(file);
           e.target.value = '';
         });
       }
@@ -3691,11 +3808,13 @@ function closeAllPopups() {
         
         const data = JSON.parse(file.content);
         if (data.tasks) {
-          tasks = data.tasks;
+          stopAllPomodoros();
+          tasks = data.tasks.map(normalizeTask);
           save();
-          renderTasks();
+          renderCurrentView();
           updateStats();
           renderCalendar();
+          updateSuggestions();
           showGithubStatus(`✅ Data dimuat (${tasks.length} tugas)`, 'success'); showToast(`${tasks.length} tugas dimuat dari GitHub`, 'success');
         }
       } catch (err) {
