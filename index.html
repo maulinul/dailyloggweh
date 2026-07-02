@@ -1,12 +1,16 @@
 <!DOCTYPE html>
-<!-- saved from url=(0040)https://maulinul.github.io/dailyloggweh/ -->
-<html lang="id"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+<html lang="id"><head><meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TaskFlow | Daily Tracker</title>
+  <meta name="description" content="TaskFlow Pro — daily task tracker dengan smart parser, kalender interaktif, kanban board, pomodoro timer, dan sinkronisasi GitHub Gist.">
+  <meta name="theme-color" content="#0a0a12">
+  <meta property="og:title" content="TaskFlow | Daily Tracker">
+  <meta property="og:description" content="Daily task tracker premium dengan smart parser, kalender, kanban board, dan cloud sync.">
+  <meta property="og:type" content="website">
+  <link rel="manifest" href="./manifest.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com/">
   <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
-  <link href="./TaskFlow _ Daily Tracker_files/css2" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=&#39;http://www.w3.org/2000/svg&#39; viewBox=&#39;0 0 100 100&#39;%3E%3Crect width=&#39;100&#39; height=&#39;100&#39; rx=&#39;22&#39; fill=&#39;%230a0a12&#39;/%3E%3Cpath d=&#39;M28 52 L42 66 L72 34&#39; stroke=&#39;%23b026ff&#39; stroke-width=&#39;10&#39; fill=&#39;none&#39; stroke-linecap=&#39;round&#39; stroke-linejoin=&#39;round&#39;/%3E%3Ccircle cx=&#39;50&#39; cy=&#39;50&#39; r=&#39;36&#39; stroke=&#39;%23ff4d6d&#39; stroke-width=&#39;5&#39; fill=&#39;none&#39; opacity=&#39;0.4&#39;/%3E%3Ccircle cx=&#39;50&#39; cy=&#39;50&#39; r=&#39;8&#39; fill=&#39;%2300f5a0&#39;/%3E%3C/svg%3E">
   <style>
     :root {
@@ -1239,13 +1243,11 @@
     }
 
   </style>
-<!--<base target="_blank">--><!--<base href="." target="_blank">--><base href="." target="_blank">
-<base target="_blank">
 </head>
-<body class="hovering">
+<body>
   <!-- Custom Cursor -->
-  <div class="cursor-dot" id="cursorDot" style="display: block; left: 886px; top: 807px;"></div>
-  <div class="cursor-outline" id="cursorOutline" style="display: block; left: 886px; top: 807px;"></div>
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-outline" id="cursorOutline"></div>
 
   <!-- Focus Mode Overlay -->
   <div class="focus-overlay" id="focusOverlay">
@@ -1367,8 +1369,8 @@
     <!-- KOLOM 1: Clock & Bento Stats -->
     <div class="column col-left">
       <div class="glass">
-        <div class="clock kinetic" id="clock" style="font-variation-settings: &quot;wght&quot; 406;">10:41<span class="seconds">:02</span></div>
-        <div style="margin-top:0.5rem; color:var(--text-dim); font-size:0.9rem;" id="dateDisplay">Sabtu, 6 Jun 2026</div>
+        <div class="clock kinetic" id="clock">00:00<span class="seconds">:00</span></div>
+        <div style="margin-top:0.5rem; color:var(--text-dim); font-size:0.9rem;" id="dateDisplay"></div>
       </div>
       <div class="bento">
         <div class="bento-card bento-progress">
@@ -1411,16 +1413,16 @@
     <div class="column col-center">
       <div class="glass">
         <div class="progress-container">
-          <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 0%; background: linear-gradient(90deg, rgb(255, 77, 109), rgb(255, 143, 163));"></div></div>
+          <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 0%;"></div></div>
           <div class="progress-text"><span id="progressLabel">0% Selesai Hari Ini</span><span id="progressRatio">0/0</span></div>
         </div>
         <div class="input-group">
           <div class="input-header-row">
-            <div id="inputClock">10:41:02</div>
-            <div id="inputDate">Sabtu, 6 Juni 2026</div>
+            <div id="inputClock"></div>
+            <div id="inputDate"></div>
           </div>
           <input type="text" class="task-input" id="taskInput" placeholder="Tugas | tanggal | status | waktu | prioritas" autocomplete="off" list="taskSuggestions">
-          <datalist id="taskSuggestions"><option value="PO baru"></option><option value="rekap cat pak reksa BMP"></option><option value="opnam2 mandor dapur"></option><option value="meetni blok g"></option><option value="spm, ba retensi saiin"></option><option value="rab rab dapur sehat selesaikan"></option><option value="cicil cicil gambar blok G"></option><option value="cek potongan pajak bumi srikandi"></option><option value="cek hitungan baja bongkar pasar dari jayamahe"></option><option value="BA retensi jayamaeh atap baja talang K12K22"></option><option value="kontrak kontrak ttd dan kasih materai"></option><option value="buat perbandingan harga baja pamungkas dari blok g ke blok K"></option><option value="Rekap harian"></option><option value="Ba ac bekasi kirim hana"></option><option value="BA hw jaya kali urang"></option><option value="opnam sutar DSV"></option><option value="Tambah masukkan harga NPA dan aziz baja blok G"></option><option value="Cek TB molen blok G"></option><option value="Follow2 up BQ di hana"></option><option value="Buat ba ac + kerja tambah nya"></option><option value="INput harga sutar di blok K15K23"></option><option value="cek ulang BQ dari dapur sukorejo"></option><option value="opnaman susulan"></option><option value="Edit gambar pos dan toilet"></option><option value="PO PO narotama"></option><option value="spm spm"></option><option value="opanman mandor full"></option><option value="cek kerja tambah mandor2 mbg"></option><option value="undang pak viki 12 mei super"></option><option value="SPB dan SPM"></option><option value="clear kan rab dll untuk blok K15K23 dengan hana 14 mei"></option><option value="ajukan harian"></option><option value="as build blok G buat MD"></option><option value="SPM sunbiz"></option><option value="opnam pintu besi sunbiz b8"></option><option value="meeting pajak"></option><option value="rab untuk infra bekasi purwosari dan gunungsari med"></option><option value="opnaman seluruh mandor"></option><option value="surat untuk bumigas tgl 7"></option><option value="rekap harian penjaga purwosari med"></option><option value="kerja tambah tohir"></option><option value="KPI besok"></option><option value="hitung kebut besi gunungsari dan pagar dsv"></option><option value="opnaman pak eko"></option><option value="SPM DONE"></option><option value="meeting mandor"></option><option value="ambil uang"></option></datalist>
+          <datalist id="taskSuggestions"></datalist>
           <input type="text" class="task-input" id="descInput" placeholder="Deskripsi (opsional)">
           <input type="text" class="task-input" id="categoryInput" placeholder="📁 Kategori (cth: Kerja, Meeting, Personal, Admin)" list="categorySuggestions" autocomplete="off">
           <datalist id="categorySuggestions">
@@ -1482,161 +1484,11 @@
               <button class="cal-nav-btn" id="nextYear">»</button>
             </div>
           </div>
-          <div class="calendar-grid" id="calendarGrid"><div class="cal-day-header">Min</div><div class="cal-day-header">Sen</div><div class="cal-day-header">Sel</div><div class="cal-day-header">Rab</div><div class="cal-day-header">Kam</div><div class="cal-day-header">Jum</div><div class="cal-day-header">Sab</div><div class="cal-day other-month" style="--mx: 1309.7560975609756%; --my: 182.75058275058277%;"><span class="day-number">31</span></div>
-          <div class="cal-day  " data-date="Mon Jun 01 2026" data-day="1" style="--mx: 1117.0243204577969%; --my: 182.75058275058277%;">
-            <span class="day-number">1</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Tue Jun 02 2026" data-day="2" style="--mx: 1046.6266866566716%; --my: 182.75058275058277%;">
-            <span class="day-number">2</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Wed Jun 03 2026" data-day="3" style="--mx: 884.9785407725323%; --my: 182.75058275058277%;">
-            <span class="day-number">3</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Thu Jun 04 2026" data-day="4" style="--mx: 744.0472058313086%; --my: 182.75058275058277%;">
-            <span class="day-number">4</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  selected" data-date="Fri Jun 05 2026" data-day="5" style="--mx: 645.5456171735242%; --my: 182.75058275058277%;">
-            <span class="day-number">5</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day today " data-date="Sat Jun 06 2026" data-day="6" style="--mx: 535.2706138757719%; --my: 182.75058275058277%;">
-            <span class="day-number">6</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Sun Jun 07 2026" data-day="7" style="--mx: 1309.7560975609756%; --my: 70.81585081585081%;">
-            <span class="day-number">7</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Mon Jun 08 2026" data-day="8" style="--mx: 1117.0243204577969%; --my: 70.81585081585081%;">
-            <span class="day-number">8</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Tue Jun 09 2026" data-day="9" style="--mx: 1046.6266866566716%; --my: 70.81585081585081%;">
-            <span class="day-number">9</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Wed Jun 10 2026" data-day="10" style="--mx: 884.9785407725323%; --my: 70.81585081585081%;">
-            <span class="day-number">10</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Thu Jun 11 2026" data-day="11" style="--mx: 744.0472058313086%; --my: 70.81585081585081%;">
-            <span class="day-number">11</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Fri Jun 12 2026" data-day="12" style="--mx: 645.5456171735242%; --my: 70.81585081585081%;">
-            <span class="day-number">12</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Sat Jun 13 2026" data-day="13" style="--mx: 535.2706138757719%; --my: 70.81585081585081%;">
-            <span class="day-number">13</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Sun Jun 14 2026" data-day="14" style="--mx: 1309.7560975609756%; --my: -41.11888111888112%;">
-            <span class="day-number">14</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Mon Jun 15 2026" data-day="15" style="--mx: 1117.0243204577969%; --my: -41.11888111888112%;">
-            <span class="day-number">15</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Tue Jun 16 2026" data-day="16" style="--mx: 1046.6266866566716%; --my: -41.11888111888112%;">
-            <span class="day-number">16</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Wed Jun 17 2026" data-day="17" style="--mx: 884.9785407725323%; --my: -41.11888111888112%;">
-            <span class="day-number">17</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Thu Jun 18 2026" data-day="18" style="--mx: 744.0472058313086%; --my: -41.11888111888112%;">
-            <span class="day-number">18</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Fri Jun 19 2026" data-day="19" style="--mx: 645.5456171735242%; --my: -41.11888111888112%;">
-            <span class="day-number">19</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Sat Jun 20 2026" data-day="20" style="--mx: 535.2706138757719%; --my: -41.11888111888112%;">
-            <span class="day-number">20</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Sun Jun 21 2026" data-day="21" style="--mx: 1309.7560975609756%; --my: -153.05361305361305%;">
-            <span class="day-number">21</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Mon Jun 22 2026" data-day="22" style="--mx: 1117.0243204577969%; --my: -153.05361305361305%;">
-            <span class="day-number">22</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Tue Jun 23 2026" data-day="23" style="--mx: 1046.6266866566716%; --my: -153.05361305361305%;">
-            <span class="day-number">23</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Wed Jun 24 2026" data-day="24" style="--mx: 884.9785407725323%; --my: -153.05361305361305%;">
-            <span class="day-number">24</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Thu Jun 25 2026" data-day="25" style="--mx: 744.0472058313086%; --my: -153.05361305361305%;">
-            <span class="day-number">25</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Fri Jun 26 2026" data-day="26" style="--mx: 645.5456171735242%; --my: -153.05361305361305%;">
-            <span class="day-number">26</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Sat Jun 27 2026" data-day="27" style="--mx: 535.2706138757719%; --my: -153.05361305361305%;">
-            <span class="day-number">27</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Sun Jun 28 2026" data-day="28" style="--mx: 1309.7560975609756%; --my: -264.92659053833603%;">
-            <span class="day-number">28</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Mon Jun 29 2026" data-day="29" style="--mx: 1117.0243204577969%; --my: -264.92659053833603%;">
-            <span class="day-number">29</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        
-          <div class="cal-day  " data-date="Tue Jun 30 2026" data-day="30" style="--mx: 1046.6266866566716%; --my: -264.92659053833603%;">
-            <span class="day-number">30</span>
-            <div class="day-tasks-preview"></div>
-          </div>
-        <div class="cal-day other-month" style="--mx: 884.9785407725323%; --my: -264.92659053833603%;"><span class="day-number">1</span></div><div class="cal-day other-month" style="--mx: 744.0472058313086%; --my: -264.92659053833603%;"><span class="day-number">2</span></div><div class="cal-day other-month" style="--mx: 645.5456171735242%; --my: -264.92659053833603%;"><span class="day-number">3</span></div><div class="cal-day other-month" style="--mx: 535.2706138757719%; --my: -264.92659053833603%;"><span class="day-number">4</span></div></div>
+          <div class="calendar-grid" id="calendarGrid"></div>
         </div>
-        <div class="day-detail-panel show" id="dayDetailPanel">
+        <div class="day-detail-panel" id="dayDetailPanel">
           <div class="day-detail-header">
-            <div class="day-detail-title" id="dayDetailTitle">📅 Jumat, 5 Juni 2026</div>
+            <div class="day-detail-title" id="dayDetailTitle">📅 Pilih tanggal</div>
             <button class="day-detail-close" id="dayDetailClose">×</button>
           </div>
           <div id="dayDetailContent"><div class="empty-state">✨ Tidak ada tugas di hari ini</div></div>
@@ -3929,7 +3781,6 @@ function closeAllPopups() {
     }
   </script>
 
-<div class="cursor-trail" style="background: var(--neon-purple); left: 1021.47px; top: 483.262px;"></div>
   <!-- Toast Container -->
   <div class="toast-container" id="toastContainer"></div>
   <!-- Confetti Container -->
