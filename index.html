@@ -31,6 +31,16 @@
       --radius: 16px;
       --shadow: 0 8px 32px rgba(0,0,0,0.4);
       --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      /* Surface & control colors — di-override oleh .day-mode */
+      --surface-1: rgba(255,255,255,0.02);
+      --surface-2: rgba(255,255,255,0.04);
+      --surface-3: rgba(255,255,255,0.05);
+      --surface-4: rgba(255,255,255,0.08);
+      --surface-5: rgba(255,255,255,0.1);
+      --surface-6: rgba(255,255,255,0.2);
+      --input-bg: rgba(0,0,0,0.3);
+      --scroll-thumb: rgba(255,255,255,0.15);
+      --scroll-thumb-hover: rgba(255,255,255,0.25);
     }
 
     .day-mode {
@@ -38,9 +48,19 @@
       --glass: rgba(255, 255, 255, 0.6);
       --glass-hover: rgba(255, 255, 255, 0.8);
       --glass-strong: rgba(255, 255, 255, 0.7);
-      --border: rgba(0, 0, 0, 0.1);
+      --border: rgba(0, 0, 0, 0.12);
       --text: #1a1a2e;
       --text-dim: #666680;
+      --shadow: 0 8px 32px rgba(0,0,0,0.12);
+      --surface-1: rgba(0,0,0,0.02);
+      --surface-2: rgba(0,0,0,0.035);
+      --surface-3: rgba(0,0,0,0.05);
+      --surface-4: rgba(0,0,0,0.08);
+      --surface-5: rgba(0,0,0,0.1);
+      --surface-6: rgba(0,0,0,0.18);
+      --input-bg: rgba(0,0,0,0.06);
+      --scroll-thumb: rgba(0,0,0,0.2);
+      --scroll-thumb-hover: rgba(0,0,0,0.3);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -165,7 +185,7 @@
       gap: 0.8rem;
     }
     .bento-card {
-      background: rgba(255,255,255,0.03);
+      background: var(--surface-2);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 1rem;
@@ -186,7 +206,7 @@
     /* Morphing Progress Bar */
     .progress-container { margin-bottom: 1rem; }
     .progress-bar {
-      height: 10px; background: rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; position: relative;
+      height: 10px; background: var(--surface-5); border-radius: 6px; overflow: hidden; position: relative;
     }
     .progress-fill {
       height: 100%; background: linear-gradient(90deg, var(--neon-purple), var(--neon-coral));
@@ -203,7 +223,7 @@
     /* Input Section */
     .input-group { display: flex; flex-direction: column; gap: 0.8rem; }
     .task-input {
-      background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px;
+      background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px;
       padding: 0.9rem 1rem; color: var(--text); font-size: 1rem; font-family: var(--font);
       transition: all 0.3s;
     }
@@ -230,14 +250,14 @@
     .btn:hover::before { left: 100%; }
     .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(176,38,255,0.4); }
     .btn:active { transform: scale(0.96); }
-    .btn-icon { background: rgba(255,255,255,0.1); padding: 0.6rem; border-radius: 8px; border: none; color: var(--text); cursor: pointer; transition: all 0.2s; }
-    .btn-icon:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
+    .btn-icon { background: var(--surface-5); padding: 0.6rem; border-radius: 8px; border: none; color: var(--text); cursor: pointer; transition: all 0.2s; }
+    .btn-icon:hover { background: var(--surface-6); transform: scale(1.1); }
 
     /* Custom Priority Select */
     .custom-select { position: relative; width: 140px; user-select: none; z-index: 1; }
     .custom-select.is-open { z-index: 9998; }
     .select-trigger {
-      background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px;
+      background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px;
       padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.5rem;
       cursor: pointer; transition: all 0.3s;
     }
@@ -263,7 +283,7 @@
       padding: 0.6rem 0.8rem; border-radius: 8px; display: flex; align-items: center; gap: 0.5rem;
       cursor: pointer; transition: all 0.2s; font-size: 0.9rem; text-transform: capitalize;
     }
-    .select-option:hover { background: rgba(255,255,255,0.08); transform: translateX(4px); }
+    .select-option:hover { background: var(--surface-4); transform: translateX(4px); }
     .day-mode .select-option:hover { background: rgba(0,0,0,0.05); }
     .select-option.active { background: rgba(176,38,255,0.15); border: 1px solid rgba(176,38,255,0.3); }
     .select-option .opt-icon { font-size: 1.1rem; transition: transform 0.3s; display: inline-block; }
@@ -311,7 +331,7 @@
       display: flex; gap: 0.5rem; align-items: center;
     }
     .cal-nav-btn {
-      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      background: var(--surface-3); border: 1px solid var(--border);
       color: var(--text); width: 36px; height: 36px; border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
       cursor: pointer; transition: all 0.3s; font-size: 1.1rem;
@@ -335,7 +355,7 @@
       text-transform: uppercase; letter-spacing: 1px; padding: 0.5rem;
     }
     .cal-day {
-      background: rgba(255,255,255,0.02);
+      background: var(--surface-1);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 0.6rem;
@@ -408,7 +428,7 @@
     /* Day Detail Panel */
     .day-detail-panel {
       flex: 1;
-      background: rgba(255,255,255,0.03);
+      background: var(--surface-2);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 1.2rem;
@@ -433,16 +453,16 @@
       width: 32px; height: 32px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
     }
-    .day-detail-close:hover { background: rgba(255,255,255,0.1); color: var(--text); transform: rotate(90deg); }
+    .day-detail-close:hover { background: var(--surface-5); color: var(--text); transform: rotate(90deg); }
     .day-task-item {
       display: flex; align-items: center; gap: 0.6rem;
-      padding: 0.6rem; background: rgba(255,255,255,0.03);
+      padding: 0.6rem; background: var(--surface-2);
       border-radius: 8px; margin-bottom: 0.4rem;
       border-left: 3px solid var(--neon-purple);
       animation: slideInRight 0.3s both;
       transition: all 0.2s;
     }
-    .day-task-item:hover { background: rgba(255,255,255,0.06); transform: translateX(4px); }
+    .day-task-item:hover { background: var(--surface-3); transform: translateX(4px); }
     @keyframes slideInRight { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
     .day-task-item.done { border-left-color: var(--neon-green); opacity: 0.6; }
     .day-task-item.high { border-left-color: var(--neon-coral); }
@@ -452,16 +472,16 @@
     /* Task List & Items */
     .task-list { flex: 1; overflow-y: auto; padding-right: 0.5rem; display: flex; flex-direction: column; gap: 0.6rem; }
     .task-list::-webkit-scrollbar { width: 6px; }
-    .task-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+    .task-list::-webkit-scrollbar-thumb { background: var(--surface-6); border-radius: 3px; }
 
     .task-item {
       display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.9rem;
-      background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px;
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px;
       position: relative; animation: springIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .task-item:hover { 
-      background: rgba(255,255,255,0.06); 
+      background: var(--surface-3); 
       transform: translateY(-2px);
       box-shadow: 0 8px 24px rgba(0,0,0,0.2);
     }
@@ -470,7 +490,7 @@
     .task-item.ongoing-active:hover { border-color: rgba(176,38,255,0.6); box-shadow: 0 0 30px rgba(176,38,255,0.2), 0 8px 24px rgba(0,0,0,0.3); }
     .status-toggle-btn {
       font-size: 0.72rem; padding: 3px 10px; border-radius: 20px; border: 1px solid var(--border);
-      background: rgba(255,255,255,0.05); color: var(--text-dim); cursor: pointer;
+      background: var(--surface-3); color: var(--text-dim); cursor: pointer;
       transition: all 0.3s; font-family: var(--font); font-weight: 600; letter-spacing: 0.3px;
       display: inline-flex; align-items: center; gap: 4px;
       user-select: none;
@@ -478,7 +498,7 @@
     .status-toggle-btn:hover { transform: scale(1.05); border-color: var(--neon-purple); color: var(--text); }
     .status-toggle-btn.s-ongoing { background: rgba(176,38,255,0.15); color: var(--neon-purple); border-color: rgba(176,38,255,0.3); }
     .status-toggle-btn.s-ongoing:hover { background: rgba(176,38,255,0.25); box-shadow: 0 0 12px rgba(176,38,255,0.3); }
-    .status-toggle-btn.s-pending:hover { background: rgba(255,255,255,0.08); }
+    .status-toggle-btn.s-pending:hover { background: var(--surface-4); }
 
     @keyframes springIn { from { transform: translateY(20px) scale(0.9); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
 
@@ -518,7 +538,7 @@
       font-size: 0.7rem; padding: 2px 7px; border-radius: 6px; font-weight: 600; text-transform: uppercase;
       display: inline-flex; align-items: center; gap: 3px;
     }
-    .s-pending { background: rgba(255,255,255,0.05); color: var(--text-dim); border: 1px solid var(--border); }
+    .s-pending { background: var(--surface-3); color: var(--text-dim); border: 1px solid var(--border); }
     .s-ongoing { background: rgba(176,38,255,0.15); color: var(--neon-purple); border: 1px solid rgba(176,38,255,0.3); animation: pulseOngoing 2s infinite; }
     @keyframes pulseOngoing { 0%,100% { box-shadow: 0 0 0 0 rgba(176,38,255,0.2); } 50% { box-shadow: 0 0 8px rgba(176,38,255,0.4); } }
 
@@ -529,7 +549,7 @@
     }
     .sort-controls { display:flex; flex-wrap:wrap; gap:0.35rem; margin-top:0.4rem; }
     .sort-chip {
-      background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:20px;
+      background:var(--surface-3); border:1px solid var(--border); border-radius:20px;
       padding:0.25rem 0.7rem; font-size:0.7rem; cursor:pointer; transition:all 0.3s;
       display:inline-flex; align-items:center; gap:3px;
     }
@@ -583,7 +603,7 @@
       opacity: 1; transform: translateX(0);
     }
     .action-btn {
-      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+      background: var(--surface-2); border: 1px solid var(--surface-3);
       color: var(--text-dim); cursor: pointer;
       font-size: 0.95rem; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       width: 30px; height: 30px; border-radius: 8px;
@@ -606,17 +626,17 @@
       margin-bottom: 0.2rem; padding: 0.2rem 0;
       transition: all 0.2s; border-radius: 4px;
     }
-    .subtask:hover { background: rgba(255,255,255,0.03); padding-left: 0.3rem; }
+    .subtask:hover { background: var(--surface-2); padding-left: 0.3rem; }
     .subtask-check { width: 14px; height: 14px; accent-color: var(--neon-purple); cursor: pointer; }
     .subtask.done { text-decoration: line-through; opacity: 0.5; }
 
     /* Pomodoro */
     .pomodoro-wrap { display: flex; align-items: center; gap: 0.4rem; margin-top: 0.4rem; }
     .pomo-circle { width: 20px; height: 20px; transform: rotate(-90deg); }
-    .pomo-bg { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 3; }
+    .pomo-bg { fill: none; stroke: var(--surface-5); stroke-width: 3; }
     .pomo-progress { fill: none; stroke: var(--neon-purple); stroke-width: 3; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
     .pomo-time { font-size: 0.72rem; color: var(--neon-silver); font-variant-numeric: tabular-nums; min-width: 34px; }
-    .pomo-btn { font-size: 0.7rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: var(--text-dim); padding: 2px 8px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+    .pomo-btn { font-size: 0.7rem; background: var(--surface-4); border: 1px solid var(--surface-5); color: var(--text-dim); padding: 2px 8px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
     .pomo-btn:hover { background: var(--neon-purple); color: white; border-color: var(--neon-purple); }
     .pomo-clear-btn {
       font-size: 0.7rem; background: rgba(255,77,109,0.1); border: 1px solid rgba(255,77,109,0.3);
@@ -644,7 +664,7 @@
     .focus-controls { display: flex; gap: 1rem; margin-top: 2rem; }
     .focus-btn-large {
       padding: 1rem 2rem; border-radius: 12px; border: 1px solid var(--border);
-      background: rgba(255,255,255,0.05); color: var(--text); font-size: 1rem;
+      background: var(--surface-3); color: var(--text); font-size: 1rem;
       cursor: pointer; transition: all 0.3s;
     }
     .focus-btn-large:hover { background: var(--neon-purple); border-color: var(--neon-purple); transform: scale(1.05); }
@@ -655,12 +675,12 @@
 
     /* Search & Filter */
     .search-bar { position: relative; margin-bottom: 0.8rem; }
-    .search-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; padding: 0.7rem 1rem 0.7rem 2.2rem; color: var(--text); transition: all 0.3s; }
+    .search-input { width: 100%; background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px; padding: 0.7rem 1rem 0.7rem 2.2rem; color: var(--text); transition: all 0.3s; }
     .search-input:focus { outline: none; border-color: var(--neon-purple); }
     .search-icon { position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%); color: var(--text-dim); }
     .filters { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; }
     .filter-chip {
-      background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 20px;
+      background: var(--surface-3); border: 1px solid var(--border); border-radius: 20px;
       padding: 0.3rem 0.8rem; font-size: 0.75rem; cursor: pointer; transition: all 0.3s;
     }
     .filter-chip:hover { transform: translateY(-2px); }
@@ -676,7 +696,7 @@
     }
     .settings-panel.show { display: block; animation: fadeUp 0.3s; }
     .toggle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; font-size: 0.85rem; }
-    .switch { position: relative; width: 40px; height: 22px; background: rgba(255,255,255,0.2); border-radius: 11px; cursor: pointer; transition: all 0.3s; }
+    .switch { position: relative; width: 40px; height: 22px; background: var(--surface-6); border-radius: 11px; cursor: pointer; transition: all 0.3s; }
     .switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; background: white; border-radius: 50%; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
     .switch.on { background: var(--neon-purple); }
     .switch.on::after { left: 20px; }
@@ -692,7 +712,7 @@
       display: flex; align-items: center; gap: 0.4rem;
     }
     .github-input {
-      width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+      width: 100%; background: var(--input-bg); border: 1px solid var(--border);
       border-radius: 8px; padding: 0.5rem 0.7rem; color: var(--text);
       font-family: var(--font); font-size: 0.8rem; margin-bottom: 0.4rem;
       transition: all 0.3s;
@@ -750,8 +770,8 @@
     /* Scrollbar styling */
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+    ::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); }
 
     /* Empty State Animation */
     .empty-state {
@@ -768,7 +788,7 @@
       gap: 0.4rem;
     }
     .view-toggle-btn {
-      background: rgba(255,255,255,0.05);
+      background: var(--surface-3);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 0.4rem 0.8rem;
@@ -781,7 +801,7 @@
       gap: 0.4rem;
     }
     .view-toggle-btn:hover {
-      background: rgba(255,255,255,0.1);
+      background: var(--surface-5);
       border-color: var(--neon-purple);
       color: var(--text);
     }
@@ -804,10 +824,10 @@
       display: grid;
     }
     .kanban-board::-webkit-scrollbar { width: 6px; }
-    .kanban-board::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+    .kanban-board::-webkit-scrollbar-thumb { background: var(--surface-6); border-radius: 3px; }
 
     .kanban-column {
-      background: rgba(255,255,255,0.02);
+      background: var(--surface-1);
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 0.8rem;
@@ -817,7 +837,7 @@
       transition: all 0.3s;
     }
     .kanban-column:hover {
-      background: rgba(255,255,255,0.035);
+      background: var(--surface-2);
     }
     .kanban-column.drag-over {
       border-color: var(--neon-purple);
@@ -843,7 +863,7 @@
       letter-spacing: 0.5px;
     }
     .kanban-column-count {
-      background: rgba(255,255,255,0.08);
+      background: var(--surface-4);
       border-radius: 8px;
       padding: 0.15rem 0.5rem;
       font-size: 0.72rem;
@@ -868,8 +888,8 @@
     }
 
     .kanban-card {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: var(--surface-2);
+      border: 1px solid var(--surface-4);
       border-radius: 12px;
       padding: 0.75rem;
       cursor: grab;
@@ -878,7 +898,7 @@
       animation: springIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .kanban-card:hover {
-      background: rgba(255,255,255,0.08);
+      background: var(--surface-4);
       transform: translateY(-3px);
       box-shadow: 0 8px 24px rgba(0,0,0,0.25);
       border-color: rgba(176,38,255,0.25);
@@ -1042,7 +1062,7 @@
       display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.3rem;
     }
     .template-chip {
-      background: rgba(255,255,255,0.04);
+      background: var(--surface-2);
       border: 1px solid var(--border);
       border-radius: 20px;
       padding: 0.35rem 0.7rem;
@@ -1067,7 +1087,7 @@
     }
     .data-action-btn {
       flex: 1;
-      background: rgba(255,255,255,0.04);
+      background: var(--surface-2);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 0.4rem 0.6rem;
@@ -1101,7 +1121,7 @@
     .batch-bar-text { font-size: 0.8rem; color: var(--neon-purple); font-weight: 600; flex: 1; }
     .batch-btn {
       font-size: 0.72rem; padding: 0.3rem 0.6rem; border-radius: 8px;
-      border: 1px solid var(--border); background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border); background: var(--surface-3);
       color: var(--text); cursor: pointer; transition: all 0.2s;
       font-family: var(--font);
     }
@@ -1121,7 +1141,7 @@
       padding-bottom: 0.5rem;
     }
     .pe-tab {
-      background: rgba(255,255,255,0.04);
+      background: var(--surface-2);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 0.4rem 0.8rem;
@@ -1133,7 +1153,7 @@
       white-space: nowrap;
     }
     .pe-tab:hover {
-      background: rgba(255,255,255,0.08);
+      background: var(--surface-4);
       color: var(--text);
     }
     .pe-tab.active {
@@ -1168,7 +1188,7 @@
     }
     .pe-input {
       flex: 1;
-      background: rgba(0,0,0,0.2);
+      background: var(--input-bg);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 0.4rem 0.6rem;
@@ -1184,7 +1204,7 @@
     }
     .pe-select {
       width: 120px;
-      background: rgba(0,0,0,0.2);
+      background: var(--input-bg);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 0.4rem 0.5rem;
@@ -1195,7 +1215,7 @@
     .pe-select:focus { outline: none; border-color: var(--neon-purple); }
     .pe-number {
       width: 100px;
-      background: rgba(0,0,0,0.2);
+      background: var(--input-bg);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 0.4rem 0.5rem;
@@ -1237,9 +1257,6 @@
     .pe-add-btn:hover {
       background: rgba(0,245,160,0.15);
       border-style: solid;
-    }
-    .day-mode .pe-input, .day-mode .pe-select, .day-mode .pe-number {
-      background: rgba(0,0,0,0.08);
     }
 
   </style>
@@ -2422,7 +2439,7 @@ function closeAllPopups() {
     // Render Tasks
     function renderTasks() {
       if (!els.taskList) return;
-      els.taskList.innerHTML = '';
+      const frag = document.createDocumentFragment();
       let filtered = tasks.filter(t => {
         if (currentFilter === 'pending') return !t.done && !t.ongoing;
         if (currentFilter === 'done') return t.done;
@@ -2557,8 +2574,11 @@ function closeAllPopups() {
           }
         });
 
-        els.taskList.appendChild(el);
+        frag.appendChild(el);
       });
+
+      els.taskList.innerHTML = '';
+      els.taskList.appendChild(frag);
 
       if (filtered.length === 0) {
         els.taskList.innerHTML = '<div class="empty-state"><div class="empty-illustration"><svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="40" stroke="rgba(176,38,255,0.3)" stroke-width="2" stroke-dasharray="6 4"/><circle cx="60" cy="60" r="28" fill="rgba(176,38,255,0.08)" stroke="rgba(176,38,255,0.4)" stroke-width="1.5"/><path d="M48 58L56 66L72 50" stroke="#00f5a0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/><circle cx="60" cy="60" r="4" fill="#b026ff" opacity="0.6"/><circle cx="35" cy="35" r="3" fill="#ff4d6d" opacity="0.5"><animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/></circle><circle cx="85" cy="30" r="2" fill="#ffd166" opacity="0.5"><animate attributeName="opacity" values="0.5;1;0.5" dur="2.5s" repeatCount="indefinite"/></circle><circle cx="90" cy="80" r="2.5" fill="#4facfe" opacity="0.5"><animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/></circle></svg></div>Tidak ada tugas</div>';
@@ -2595,10 +2615,10 @@ function closeAllPopups() {
     function renderKanban() {
       if (!els.kanbanPending || !els.kanbanOngoing || !els.kanbanDone) return;
 
-      // Clear columns
-      els.kanbanPending.innerHTML = '';
-      els.kanbanOngoing.innerHTML = '';
-      els.kanbanDone.innerHTML = '';
+      // Build off-DOM first, satu kali append per kolom
+      const fragPending = document.createDocumentFragment();
+      const fragOngoing = document.createDocumentFragment();
+      const fragDone = document.createDocumentFragment();
 
       // Apply filters (search + priority only, status is column-based)
       let filtered = [...tasks];
@@ -2684,16 +2704,23 @@ function closeAllPopups() {
 
         // Place in correct column
         if (t.done) {
-          els.kanbanDone.appendChild(card);
+          fragDone.appendChild(card);
           doneCount++;
         } else if (t.ongoing) {
-          els.kanbanOngoing.appendChild(card);
+          fragOngoing.appendChild(card);
           ongoingCount++;
         } else {
-          els.kanbanPending.appendChild(card);
+          fragPending.appendChild(card);
           pendingCount++;
         }
       });
+
+      els.kanbanPending.innerHTML = '';
+      els.kanbanOngoing.innerHTML = '';
+      els.kanbanDone.innerHTML = '';
+      els.kanbanPending.appendChild(fragPending);
+      els.kanbanOngoing.appendChild(fragOngoing);
+      els.kanbanDone.appendChild(fragDone);
 
       // Update counts
       if (els.kanbanPendingCount) els.kanbanPendingCount.textContent = pendingCount;
