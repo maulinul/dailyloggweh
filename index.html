@@ -209,59 +209,67 @@
             <div id="inputClock"></div>
             <div id="inputDate"></div>
           </div>
-          <input type="text" class="task-input" id="taskInput" placeholder="Tugas | tanggal | status | waktu | prioritas" autocomplete="off" list="taskSuggestions">
-          <datalist id="taskSuggestions"></datalist>
-          <input type="text" class="task-input" id="descInput" placeholder="Deskripsi (opsional)">
-          <input type="text" class="task-input" id="categoryInput" placeholder="📁 Kategori (cth: Kerja, Meeting, Personal, Admin)" list="categorySuggestions" autocomplete="off">
-          <datalist id="categorySuggestions">
-            <option value="Kerja"></option><option value="Meeting"></option>
-            <option value="Laporan"></option><option value="Personal"></option>
-            <option value="Admin"></option><option value="Keuangan"></option>
-            <option value="Proyek"></option><option value="Urgent"></option>
-            <option value="Follow-up"></option><option value="Review"></option>
-          </datalist>
-          
-          <!-- Subtask Input -->
-          <div class="subtask-input-wrap">
-            <input type="text" class="task-input" id="subtaskInput" placeholder="➕ Subtask (tekan Enter untuk tambah, bisa banyak)">
-          </div>
-          <div class="subtask-chips" id="subtaskChips"></div>
-
-          <div class="input-row">
-            <input type="datetime-local" class="task-input" id="dateTimeInput" style="flex:1">
-            
-            <!-- Custom Priority Select -->
-            <div class="custom-select" id="priorityCustomSelect">
-              <div class="select-trigger" id="priorityTrigger">
-                <span class="select-icon" id="priorityTriggerIcon">⚡</span>
-                <span class="select-text" id="priorityTriggerText">Medium</span>
-                <span class="select-arrow">▼</span>
-              </div>
-              <div class="select-options" id="priorityOptions">
-                <div class="select-option" data-value="high"><span class="opt-icon">🔥</span> High</div>
-                <div class="select-option active" data-value="medium"><span class="opt-icon">⚡</span> Medium</div>
-                <div class="select-option" data-value="low"><span class="opt-icon">🌿</span> Low</div>
-                <div class="select-option" data-value="super_high"><span class="opt-icon">💥</span> Super High</div>
-              </div>
-            </div>
-
-            <select class="task-input" id="repeatSelect" title="Pengulangan tugas" style="width:120px;">
-              <option value="none">🔁 Tidak</option>
-              <option value="daily">🔁 Harian</option>
-              <option value="weekly">🔁 Mingguan</option>
-              <option value="monthly">🔁 Bulanan</option>
-            </select>
-
+          <!-- Command bar: satu input besar, detail menyusul bertahap -->
+          <div class="command-bar-row">
+            <input type="text" class="task-input command-bar" id="taskInput" placeholder="Tulis tugas… (cth: Beli susu besok jam 8 high)" autocomplete="off" list="taskSuggestions">
+            <datalist id="taskSuggestions"></datalist>
+            <button class="detail-toggle" id="detailToggle" title="Detail: deskripsi, kategori, subtask, tanggal, pengulangan">⚙️</button>
             <button class="btn" id="addBtn">Tambah</button>
-            <button class="github-mini-btn" id="githubMiniSync" title="Load &amp; Sync GitHub Gist">☁️ Sync</button>
           </div>
-          <div class="quick-templates" id="quickTemplates"></div>
-          <div style="font-size:0.7rem; color:var(--text-dim); margin-top:0.3rem; line-height:1.5;">
-          💡 <strong>Format:</strong> <code style="background:rgba(176,38,255,0.15); padding:1px 6px; border-radius:4px; color:var(--neon-purple);">Tugas | tanggal | status | waktu | prioritas</code><br>
-          <span style="margin-left:1.2rem;">📅 <em>hari ini, besok, lusa, 2 hari lagi, seminggu, sebulan, 2 bulan…</em> | 🏷️ <em>DNE, OGG, PND</em> | 🕐 <em>jam 19, 19.00, 12am, 12pm</em> | ⚡ <em>high, med, low, superh</em></span><br>
-          <span style="margin-left:1.2rem;">📝 Contoh: <code style="background:rgba(255,255,255,0.05); padding:1px 5px; border-radius:3px;">Beli susu | besok | OGG | jam 8 | high</code> atau cukup: <code style="background:rgba(255,255,255,0.05); padding:1px 5px; border-radius:3px;">Beli susu</code> (default hari ini)</span>
-        </div>
-        </div>
+          <!-- Chip hasil smart parser — klik untuk koreksi sebelum simpan -->
+          <div class="parse-chips" id="parseChips"></div>
+
+          <div class="form-details" id="formDetails">
+            <input type="text" class="task-input" id="descInput" placeholder="Deskripsi (opsional)">
+            <input type="text" class="task-input" id="categoryInput" placeholder="📁 Kategori (cth: Kerja, Meeting, Personal, Admin)" list="categorySuggestions" autocomplete="off">
+            <datalist id="categorySuggestions">
+              <option value="Kerja"></option><option value="Meeting"></option>
+              <option value="Laporan"></option><option value="Personal"></option>
+              <option value="Admin"></option><option value="Keuangan"></option>
+              <option value="Proyek"></option><option value="Urgent"></option>
+              <option value="Follow-up"></option><option value="Review"></option>
+            </datalist>
+
+            <!-- Subtask Input -->
+            <div class="subtask-input-wrap">
+              <input type="text" class="task-input" id="subtaskInput" placeholder="➕ Subtask (tekan Enter untuk tambah, bisa banyak)">
+            </div>
+            <div class="subtask-chips" id="subtaskChips"></div>
+
+            <div class="input-row">
+              <input type="datetime-local" class="task-input" id="dateTimeInput" style="flex:1">
+
+              <!-- Custom Priority Select -->
+              <div class="custom-select" id="priorityCustomSelect">
+                <div class="select-trigger" id="priorityTrigger">
+                  <span class="select-icon" id="priorityTriggerIcon">⚡</span>
+                  <span class="select-text" id="priorityTriggerText">Medium</span>
+                  <span class="select-arrow">▼</span>
+                </div>
+                <div class="select-options" id="priorityOptions">
+                  <div class="select-option" data-value="high"><span class="opt-icon">🔥</span> High</div>
+                  <div class="select-option active" data-value="medium"><span class="opt-icon">⚡</span> Medium</div>
+                  <div class="select-option" data-value="low"><span class="opt-icon">🌿</span> Low</div>
+                  <div class="select-option" data-value="super_high"><span class="opt-icon">💥</span> Super High</div>
+                </div>
+              </div>
+
+              <select class="task-input" id="repeatSelect" title="Pengulangan tugas" style="width:120px;">
+                <option value="none">🔁 Tidak</option>
+                <option value="daily">🔁 Harian</option>
+                <option value="weekly">🔁 Mingguan</option>
+                <option value="monthly">🔁 Bulanan</option>
+              </select>
+
+              <button class="github-mini-btn" id="githubMiniSync" title="Load &amp; Sync GitHub Gist">☁️ Sync</button>
+            </div>
+            <div class="quick-templates" id="quickTemplates"></div>
+            <div style="font-size:0.7rem; color:var(--text-dim); margin-top:0.3rem; line-height:1.5;">
+            💡 <strong>Format:</strong> <code style="background:rgba(176,38,255,0.15); padding:1px 6px; border-radius:4px; color:var(--neon-purple);">Tugas | tanggal | status | waktu | prioritas</code><br>
+            <span style="margin-left:1.2rem;">📅 <em>hari ini, besok, lusa, 2 hari lagi, seminggu, sebulan, 2 bulan…</em> | 🏷️ <em>DNE, OGG, PND</em> | 🕐 <em>jam 19, 19.00, 12am, 12pm</em> | ⚡ <em>high, med, low, superh</em></span><br>
+            <span style="margin-left:1.2rem;">📝 Contoh: <code style="background:rgba(255,255,255,0.05); padding:1px 5px; border-radius:3px;">Beli susu | besok | OGG | jam 8 | high</code> atau cukup: <code style="background:rgba(255,255,255,0.05); padding:1px 5px; border-radius:3px;">Beli susu</code> (default hari ini)</span>
+            </div>
+          </div>
       </div>
 
       <!-- CALENDAR BOX -->

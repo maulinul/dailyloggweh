@@ -107,6 +107,7 @@ function cacheElements() {
     'batchBar','batchCount','batchDone','batchDelete','batchCancel','multiSelectBtn',
     'openParsingEditor','parsingEditorModal','parsingEditorClose','parsingSave','parsingCancel','parsingResetDefault',
     'repeatSelect','editRepeat','reminderToggle',
+    'formDetails','detailToggle','parseChips',
     'appDialog','appDialogTitle','appDialogMessage','appDialogInput','appDialogActions'
   ];
   ids.forEach(id => els[id] = getEl(id));
@@ -125,6 +126,7 @@ function safeInit() {
     initCustomSelect();
     initSubtaskInput();
     initEnterKey();
+    initCommandBar();
     setDefaultDateTime();
     renderTasks();
     updateStats();
@@ -379,6 +381,95 @@ function updatePrioritySelectUI(val) {
 function updatePrioritySelect(val) {
   currentPriority = val;
   updatePrioritySelectUI(val);
+}
+
+// ===== Command Bar: chip hasil smart parser + panel detail bertahap =====
+let chipOverrides = { priority: null, status: null, clearDate: false };
+let chipDebounce = null;
+
+function resetChipOverrides() {
+  chipOverrides = { priority: null, status: null, clearDate: false };
+}
+
+// smartParse + koreksi user via chip — dipakai preview chip DAN addTask
+function effectiveParse(raw) {
+  const parsed = smartParse(raw);
+  const status = chipOverrides.status ||
+    (parsed.statusDone ? 'done' : parsed.statusOngoing ? 'ongoing' : 'pending');
+  return {
+    ...parsed,
+    priority: chipOverrides.priority || parsed.priority,
+    statusDone: status === 'done',
+    statusOngoing: status === 'ongoing',
+    dateTime: chipOverrides.clearDate ? null : parsed.dateTime,
+    timeHint: chipOverrides.clearDate ? '' : parsed.timeHint
+  };
+}
+
+function renderParseChips() {
+  if (!els.parseChips || !els.taskInput) return;
+  const raw = els.taskInput.value.trim();
+  if (!raw) { els.parseChips.innerHTML = ''; resetChipOverrides(); return; }
+  const p = effectiveParse(raw);
+  const labels = { super_high: 'Super High', high: 'High', medium: 'Medium', low: 'Low' };
+  const statusKey = p.statusDone ? 'done' : p.statusOngoing ? 'ongoing' : 'pending';
+  const statusLabel = { done: '✅ Selesai', ongoing: '🔥 On Going', pending: '⏳ Pending' }[statusKey];
+  let html = '';
+  if (p.title && p.title !== raw) {
+    html += `<span class="parse-chip chip-title" title="Judul setelah parsing">✏️ ${escapeHtml(p.title)}</span>`;
+  }
+  if (p.dateTime) {
+    html += `<span class="parse-chip chip-date" data-chip="date" title="Klik untuk ubah manual, × untuk hapus">📅 ${escapeHtml(smartDateDisplay(p.dateTime, p.timeHint))}<span class="chip-x" data-x="date">×</span></span>`;
+  }
+  html += `<span class="parse-chip chip-priority" data-chip="priority" title="Klik untuk ganti prioritas">${getPriorityIcon(p.priority)} ${labels[p.priority] || p.priority}</span>`;
+  html += `<span class="parse-chip chip-status chip-status-${statusKey}" data-chip="status" title="Klik untuk ganti status">${statusLabel}</span>`;
+  els.parseChips.innerHTML = html;
+}
+
+function initCommandBar() {
+  if (els.detailToggle && els.formDetails) {
+    els.detailToggle.addEventListener('click', () => {
+      const open = els.formDetails.classList.toggle('open');
+      els.detailToggle.classList.toggle('active', open);
+    });
+  }
+  if (!els.taskInput || !els.parseChips) return;
+  els.taskInput.addEventListener('input', () => {
+    clearTimeout(chipDebounce);
+    chipDebounce = setTimeout(renderParseChips, 120);
+  });
+  els.parseChips.addEventListener('click', (e) => {
+    const x = e.target.closest('[data-x]');
+    if (x) {
+      if (x.dataset.x === 'date') chipOverrides.clearDate = true;
+      renderParseChips();
+      return;
+    }
+    const chip = e.target.closest('[data-chip]');
+    if (!chip) return;
+    const raw = els.taskInput.value.trim();
+    if (chip.dataset.chip === 'priority') {
+      const order = ['low', 'medium', 'high', 'super_high'];
+      const cur = effectiveParse(raw).priority;
+      const next = order[(order.indexOf(cur) + 1) % order.length];
+      chipOverrides.priority = next;
+      updatePrioritySelect(next); // sinkron dengan select di panel detail
+    } else if (chip.dataset.chip === 'status') {
+      const cycle = ['pending', 'ongoing', 'done'];
+      const p = effectiveParse(raw);
+      const cur = p.statusDone ? 'done' : p.statusOngoing ? 'ongoing' : 'pending';
+      chipOverrides.status = cycle[(cycle.indexOf(cur) + 1) % cycle.length];
+    } else if (chip.dataset.chip === 'date') {
+      // koreksi tanggal/jam manual lewat panel detail
+      if (els.formDetails && !els.formDetails.classList.contains('open')) {
+        els.formDetails.classList.add('open');
+        if (els.detailToggle) els.detailToggle.classList.add('active');
+      }
+      if (els.dateTimeInput) els.dateTimeInput.focus();
+      return;
+    }
+    renderParseChips();
+  });
 }
 
 // Subtask Input
@@ -818,7 +909,7 @@ function addTask() {
   const raw = els.taskInput.value.trim();
   if (!raw) return;
 
-  const parsed = smartParse(raw);
+  const parsed = effectiveParse(raw);
 
   const newTask = {
     id: Date.now().toString(),
@@ -848,6 +939,7 @@ function addTask() {
   
   // Reset inputs & update UI
   els.taskInput.value = '';
+  renderParseChips(); // input kosong → chip bersih + override reset
   if (els.descInput) els.descInput.value = '';
   if (els.categoryInput) els.categoryInput.value = '';
   tempSubtasks = [];

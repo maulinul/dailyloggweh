@@ -1284,3 +1284,39 @@ html.no-custom-cursor .cursor-trail { display: none !important; }
   border-style: solid;
 }
 
+
+/* ===== Form ringkas: command bar + chip parser + detail bertahap ===== */
+.command-bar-row { display: flex; gap: 0.5rem; align-items: stretch; }
+.command-bar-row .command-bar { flex: 1; font-size: 0.95rem; padding: 0.85rem 1rem; }
+.detail-toggle {
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-dim);
+  font-size: 1rem;
+  padding: 0 0.7rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.detail-toggle:hover { background: var(--surface-4); color: var(--text); }
+.detail-toggle.active { background: var(--accent-soft); border-color: var(--accent); color: var(--text); }
+.parse-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.parse-chips:not(:empty) { margin-top: 0.55rem; }
+.parse-chip {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.28rem 0.65rem; border-radius: 999px;
+  font-size: 0.74rem; line-height: 1;
+  background: var(--surface-3); border: 1px solid var(--border);
+  cursor: pointer; user-select: none;
+  animation: chipIn 0.25s ease;
+}
+.parse-chip:hover { background: var(--surface-5); }
+.parse-chip.chip-title { cursor: default; background: transparent; border-style: dashed; color: var(--text-dim); }
+.parse-chip.chip-priority { background: var(--accent-soft); border-color: var(--accent); }
+.parse-chip.chip-status-done { border-color: var(--status-done); color: var(--status-done); }
+.parse-chip.chip-status-ongoing { border-color: var(--status-ongoing); }
+.parse-chip.chip-status-pending { border-color: var(--status-pending); color: var(--status-pending); }
+.parse-chip .chip-x { padding: 0 0.1rem; opacity: 0.6; font-weight: 700; }
+.parse-chip .chip-x:hover { opacity: 1; color: var(--status-danger); }
+.form-details { display: none; margin-top: 0.6rem; }
+.form-details.open { display: block; animation: fadeUp 0.3s ease; }
