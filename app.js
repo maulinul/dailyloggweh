@@ -4,8 +4,33 @@ const prefersLight = () =>
   window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
 let settings = {
   sound: true, haptic: true, dayMode: false, reminders: false,
+  // reducedMotion null = ikuti preferensi sistem (prefers-reduced-motion)
+  reducedMotion: null, customCursor: true,
   githubToken: '', githubGistId: '', githubAutoSync: false
 };
+
+const systemReducedMotion = () =>
+  window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function isReducedMotion() {
+  return settings.reducedMotion === null ? systemReducedMotion() : !!settings.reducedMotion;
+}
+function applyMotionSettings() {
+  document.documentElement.classList.toggle('reduced-motion', isReducedMotion());
+  const coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+  const cursorOn = settings.customCursor && !coarse && !isReducedMotion();
+  document.documentElement.classList.toggle('no-custom-cursor', !cursorOn);
+  if (cursorOn) startCursor(); else stopCursor();
+}
+
+// Transisi status selesai satu pintu — completedAt jadi sumber data Weekly Insight
+function markDone(t, done) {
+  if (done) {
+    if (!t.done || !t.completedAt) t.completedAt = new Date().toISOString();
+    t.done = true; t.ongoing = false;
+  } else {
+    t.done = false; t.completedAt = null;
+  }
+}
 const CATEGORY_COLORS = {
   'Kerja': { bg: 'rgba(79,172,254,0.15)', color: '#4facfe', border: 'rgba(79,172,254,0.3)' },
   'Meeting': { bg: 'rgba(176,38,255,0.15)', color: '#b026ff', border: 'rgba(176,38,255,0.3)' },
@@ -67,7 +92,7 @@ function cacheElements() {
     'subtaskChips','priorityCustomSelect','priorityTrigger','priorityTriggerIcon',
     'priorityTriggerText','priorityOptions','dateTimeInput','addBtn','taskSuggestions',
     'searchInput','taskList','settingsToggle','settingsPanel','soundToggle','hapticToggle',
-    'themeToggle','themeIcon','themeLabel','clearData','calendarGrid','calendarTitle',
+    'themeToggle','themeIcon','themeLabel','reducedMotionToggle','cursorToggle','clearData','calendarGrid','calendarTitle',
     'prevMonth','nextMonth','prevYear','nextYear','backToToday','dayDetailPanel',
     'dayDetailTitle','dayDetailContent','dayDetailClose','focusOverlay','focusTitle',
     'focusTimer','focusPause','focusClear','editModal','editTitle','editDesc',
@@ -147,64 +172,80 @@ function setDefaultDateTime() {
   els.dateTimeInput.addEventListener('input', () => { userSetDateTime = true; });
 }
 
-// Custom Cursor - Fixed
-function initCursor() {
-  if (!els.cursorDot || !els.cursorOutline) return;
-  
-  // Show cursors
+// Custom Cursor — opsional (settings), auto-off di layar sentuh & saat reduced motion
+let cursorRunning = false;
+let cursorListenersReady = false;
+let cursorMouseX = 0, cursorMouseY = 0;
+
+function startCursor() {
+  if (cursorRunning || !els.cursorDot || !els.cursorOutline) return;
+  cursorRunning = true;
   els.cursorDot.style.display = 'block';
   els.cursorOutline.style.display = 'block';
-  
-  let mouseX = 0, mouseY = 0;
-  let dotX = 0, dotY = 0;
-  let outlineX = 0, outlineY = 0;
-  
-  document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    
-    // Update CSS variables for calendar hover glow
-    const calDays = document.querySelectorAll('.cal-day');
-    calDays.forEach(day => {
-      const rect = day.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width) * 100;
-      const y = ((e.clientY - rect.top) / rect.height) * 100;
-      day.style.setProperty('--mx', x + '%');
-      day.style.setProperty('--my', y + '%');
+
+  if (!cursorListenersReady) {
+    cursorListenersReady = true;
+    document.addEventListener('mousemove', (e) => {
+      cursorMouseX = e.clientX;
+      cursorMouseY = e.clientY;
+      if (!cursorRunning) return;
+
+      // Update CSS variables for calendar hover glow
+      const calDays = document.querySelectorAll('.cal-day');
+      calDays.forEach(day => {
+        const rect = day.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        day.style.setProperty('--mx', x + '%');
+        day.style.setProperty('--my', y + '%');
+      });
+
+      // Trail effect
+      if (Math.random() > 0.85) {
+        createTrail(e.clientX, e.clientY);
+      }
     });
 
-    // Trail effect
-    if (Math.random() > 0.85) {
-      createTrail(e.clientX, e.clientY);
-    }
-  });
+    // Hover effects
+    const addHoverListeners = () => {
+      const interactiveElements = document.querySelectorAll('button, .cal-day, .filter-chip, .task-item, .action-btn, .switch, .grip, .select-trigger, .select-option, .chip-remove, .sort-chip, .github-mini-btn');
+      interactiveElements.forEach(el => {
+        el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+        el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+      });
+    };
+    addHoverListeners();
+    setInterval(addHoverListeners, 2000);
+  }
 
-  // Smooth follow animation
-  function animateCursor() {
-    dotX += (mouseX - dotX) * 0.2;
-    dotY += (mouseY - dotY) * 0.2;
-    outlineX += (mouseX - outlineX) * 0.1;
-    outlineY += (mouseY - outlineY) * 0.1;
-    
+  let dotX = cursorMouseX, dotY = cursorMouseY;
+  let outlineX = cursorMouseX, outlineY = cursorMouseY;
+
+  // Smooth follow animation — loop berhenti total saat cursorRunning false
+  (function animateCursor() {
+    if (!cursorRunning) return;
+    dotX += (cursorMouseX - dotX) * 0.2;
+    dotY += (cursorMouseY - dotY) * 0.2;
+    outlineX += (cursorMouseX - outlineX) * 0.1;
+    outlineY += (cursorMouseY - outlineY) * 0.1;
+
     els.cursorDot.style.left = dotX + 'px';
     els.cursorDot.style.top = dotY + 'px';
     els.cursorOutline.style.left = outlineX + 'px';
     els.cursorOutline.style.top = outlineY + 'px';
-    
-    requestAnimationFrame(animateCursor);
-  }
-  animateCursor();
 
-  // Hover effects
-  function addHoverListeners() {
-    const interactiveElements = document.querySelectorAll('button, .cal-day, .filter-chip, .task-item, .action-btn, .switch, .grip, .select-trigger, .select-option, .chip-remove, .sort-chip, .github-mini-btn');
-    interactiveElements.forEach(el => {
-      el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
-      el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
-    });
-  }
-  addHoverListeners();
-  setInterval(addHoverListeners, 2000);
+    requestAnimationFrame(animateCursor);
+  })();
+}
+
+function stopCursor() {
+  cursorRunning = false;
+  if (els.cursorDot) els.cursorDot.style.display = 'none';
+  if (els.cursorOutline) els.cursorOutline.style.display = 'none';
+}
+
+function initCursor() {
+  applyMotionSettings();
 }
 
 function createTrail(x, y) {
@@ -531,8 +572,8 @@ function showDayDetail(dateStr, dayNum) {
 function toggleTaskFromCalendar(id) {
   const t = tasks.find(x => x.id === id);
   if (t) {
-    t.done = !t.done;
-    if (t.done) { t.ongoing = false; spawnRecurring(t); playSound('complete'); vibrate(); checkStreak(); setTimeout(checkAllDoneCelebration, 300); }
+    markDone(t, !t.done);
+    if (t.done) { spawnRecurring(t); playSound('complete'); vibrate(); checkStreak(); setTimeout(checkAllDoneCelebration, 300); }
     else { t.ongoing = false; }
     save(); renderCurrentView(); updateStats(); renderCalendar();
     if (selectedDate) showDayDetail(selectedDate, new Date(selectedDate).getDate());
@@ -787,6 +828,7 @@ function addTask() {
     priority: parsed.priority,
     done: parsed.statusDone || false,
     ongoing: (!parsed.statusDone && parsed.statusOngoing) || false,
+    completedAt: parsed.statusDone ? new Date().toISOString() : null,
     createdAt: new Date().toISOString(),
     dateTime: parsed.dateTime || (userSetDateTime && els.dateTimeInput && els.dateTimeInput.value ? new Date(els.dateTimeInput.value).toISOString() : null),
     repeat: els.repeatSelect ? els.repeatSelect.value : 'none',
@@ -1156,12 +1198,12 @@ function initKanbanDragDrop() {
 
       // Update task status based on column
       if (newStatus === 'done') {
-        if (!t.done) { t.done = true; t.ongoing = false; spawnRecurring(t); playSound('complete'); vibrate(); checkStreak(); }
+        if (!t.done) { markDone(t, true); spawnRecurring(t); playSound('complete'); vibrate(); checkStreak(); }
       } else if (newStatus === 'ongoing') {
-        if (!t.ongoing || t.done) { t.ongoing = true; t.done = false; }
+        if (!t.ongoing || t.done) { markDone(t, false); t.ongoing = true; }
       } else {
         // pending
-        if (t.done || t.ongoing) { t.done = false; t.ongoing = false; }
+        if (t.done || t.ongoing) { markDone(t, false); t.ongoing = false; }
       }
 
       save();
@@ -1193,8 +1235,8 @@ function toggleStatus(id) {
 function toggleTask(id, checkbox) {
   const t = tasks.find(x => x.id === id);
   if (!t) return;
-  t.done = checkbox.checked;
-  if (t.done) { t.ongoing = false; spawnRecurring(t); playSound('complete'); vibrate(); checkStreak(); setTimeout(checkAllDoneCelebration, 300); }
+  markDone(t, checkbox.checked);
+  if (t.done) { spawnRecurring(t); playSound('complete'); vibrate(); checkStreak(); setTimeout(checkAllDoneCelebration, 300); }
   else { t.ongoing = false; }
   save();
   setTimeout(() => { renderCurrentView(); updateStats(); renderCalendar(); }, 50);
@@ -1484,6 +1526,7 @@ function normalizeTask(t) {
     priority: priorities.includes(t.priority) ? t.priority : 'medium',
     done: !!t.done,
     ongoing: !t.done && !!t.ongoing,
+    completedAt: t.done && typeof t.completedAt === 'string' ? t.completedAt : null,
     createdAt: t.createdAt || new Date().toISOString(),
     dateTime: t.dateTime || null,
     // timeHint ikut dirender ke innerHTML — hanya terima format jam (H:MM/HH:MM)
@@ -1611,11 +1654,11 @@ function batchMarkDone() {
   if (selectedTaskIds.length === 0) return;
   pushUndo({ type: 'batch-update', ids: selectedTaskIds.slice(), oldStates: selectedTaskIds.map(id => {
     const t = tasks.find(x => x.id === id);
-    return t ? { done: t.done, ongoing: t.ongoing } : {};
+    return t ? { done: t.done, ongoing: t.ongoing, completedAt: t.completedAt || null } : {};
   })});
   selectedTaskIds.forEach(id => {
     const t = tasks.find(x => x.id === id);
-    if (t && !t.done) { t.done = true; t.ongoing = false; spawnRecurring(t); }
+    if (t && !t.done) { markDone(t, true); spawnRecurring(t); }
     else if (t) { t.ongoing = false; }
   });
   save();
@@ -1666,7 +1709,7 @@ function undo() {
   } else if (action.type === 'batch-update' && action.ids && action.oldStates) {
     action.ids.forEach((id, i) => {
       const t = tasks.find(x => x.id === id);
-      if (t && action.oldStates[i]) { t.done = action.oldStates[i].done; t.ongoing = action.oldStates[i].ongoing; }
+      if (t && action.oldStates[i]) { t.done = action.oldStates[i].done; t.ongoing = action.oldStates[i].ongoing; t.completedAt = action.oldStates[i].completedAt || null; }
     });
     showToast('Undo: Status dikembalikan', 'success');
   } else if (action.type === 'clear') {
@@ -1883,6 +1926,20 @@ function initButtonListeners() {
     saveSettings();
   });
 
+  if (els.reducedMotionToggle) els.reducedMotionToggle.addEventListener('click', () => {
+    settings.reducedMotion = !isReducedMotion();
+    els.reducedMotionToggle.classList.toggle('on', isReducedMotion());
+    saveSettings();
+    applyMotionSettings();
+  });
+
+  if (els.cursorToggle) els.cursorToggle.addEventListener('click', () => {
+    settings.customCursor = !settings.customCursor;
+    els.cursorToggle.classList.toggle('on', settings.customCursor);
+    saveSettings();
+    applyMotionSettings();
+  });
+
   if (els.reminderToggle) els.reminderToggle.addEventListener('click', async () => {
     if (!settings.reminders) {
       if (!('Notification' in window)) {
@@ -1991,9 +2048,9 @@ function initButtonListeners() {
     if (els.editRepeat) t.repeat = els.editRepeat.value;
     if (els.editStatus) {
       const st = els.editStatus.value;
-      if (st === 'done') { t.done = true; t.ongoing = false; }
-      else if (st === 'ongoing') { t.done = false; t.ongoing = true; }
-      else { t.done = false; t.ongoing = false; }
+      if (st === 'done') { markDone(t, true); }
+      else if (st === 'ongoing') { markDone(t, false); t.ongoing = true; }
+      else { markDone(t, false); t.ongoing = false; }
     }
     if (els.editDateTime.value) {
       t.dateTime = new Date(els.editDateTime.value).toISOString();
@@ -2419,6 +2476,8 @@ function loadSettings() {
   els.soundToggle.classList.toggle('on', settings.sound);
   els.hapticToggle.classList.toggle('on', settings.haptic);
   els.themeToggle.classList.toggle('on', settings.dayMode);
+  if (els.reducedMotionToggle) els.reducedMotionToggle.classList.toggle('on', isReducedMotion());
+  if (els.cursorToggle) els.cursorToggle.classList.toggle('on', !!settings.customCursor);
   if (els.reminderToggle) {
     // izin bisa dicabut dari browser — jangan tampilkan "on" kalau tidak granted
     const granted = ('Notification' in window) && Notification.permission === 'granted';

@@ -12,6 +12,13 @@
   --neon-green: #00f5a0;
   --neon-yellow: #ffd166;
   --neon-blue: #4facfe;
+  /* Design tokens — satu aksen utama; kuning/ungu/hijau khusus status, merah untuk bahaya */
+  --accent: var(--neon-purple);
+  --accent-soft: rgba(176, 38, 255, 0.15);
+  --status-pending: var(--neon-yellow);
+  --status-ongoing: var(--neon-purple);
+  --status-done: var(--neon-green);
+  --status-danger: var(--neon-coral);
   --font: 'Inter', sans-serif;
   --radius: 16px;
   --shadow: 0 8px 32px rgba(0,0,0,0.4);
@@ -107,6 +114,16 @@ body.hovering .cursor-outline { width: 50px; height: 50px; border-color: rgba(25
   0% { opacity: 0.6; transform: scale(1); }
   100% { opacity: 0; transform: scale(0); }
 }
+
+/* Reduced motion — kelas di <html> dikendalikan JS (settings / prefers-reduced-motion) */
+html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+html.no-custom-cursor .cursor-dot,
+html.no-custom-cursor .cursor-outline,
+html.no-custom-cursor .cursor-trail { display: none !important; }
 
 /* Layout 3 Kolom */
 .app-grid {
