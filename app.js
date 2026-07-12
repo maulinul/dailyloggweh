@@ -134,6 +134,7 @@ function cacheElements() {
     'formDetails','detailToggle','parseChips',
     'todayFocus','tfMeta','tfTop3','tfTimeline',
     'focusSubtasks','focusMoods',
+    'weeklyInsight','wiToggle','wiBody','wiStats','wiChart','wiHeatmap',
     'appDialog','appDialogTitle','appDialogMessage','appDialogInput','appDialogActions'
   ];
   ids.forEach(id => els[id] = getEl(id));
@@ -156,6 +157,7 @@ function safeInit() {
     initTodayFocus();
     initFocusMode();
     initMobileNav();
+    initWeeklyInsight();
     setDefaultDateTime();
     renderTasks();
     updateStats();
@@ -1690,6 +1692,74 @@ function updateStats() {
   if (els.progressFill) els.progressFill.style.background = `linear-gradient(90deg, ${color1}, ${color2})`;
 
   renderTodayFocus();
+  if (els.weeklyInsight && els.weeklyInsight.classList.contains('open')) renderWeeklyInsight();
+}
+
+// ===== WEEKLY INSIGHT: aktivitas 7 hari + heatmap jam produktif =====
+let wiAnimated = false; // animasi grafik hanya sekali per sesi
+
+function weeklyInsightData() {
+  const now = new Date();
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+    const key = d.toDateString();
+    days.push({
+      label: d.toLocaleDateString('id-ID', { weekday: 'short' }),
+      doneCount: tasks.filter(t => t.completedAt && new Date(t.completedAt).toDateString() === key).length,
+      pendingCount: tasks.filter(t => !t.done && t.dateTime && new Date(t.dateTime).toDateString() === key).length,
+      isToday: i === 0
+    });
+  }
+  const hours = new Array(24).fill(0);
+  const cutoff = Date.now() - 30 * 86400000;
+  tasks.forEach(t => {
+    if (!t.completedAt) return;
+    const d = new Date(t.completedAt);
+    if (!isNaN(d.getTime()) && d.getTime() >= cutoff) hours[d.getHours()]++;
+  });
+  return { days, hours };
+}
+
+function renderWeeklyInsight() {
+  if (!els.wiStats || !els.wiChart || !els.wiHeatmap) return;
+  const { days, hours } = weeklyInsightData();
+  const doneTotal = days.reduce((s, d) => s + d.doneCount, 0);
+  const pendingTotal = days.reduce((s, d) => s + d.pendingCount, 0);
+  const streak = parseInt(localStorage.getItem('tf_streak') || '0', 10);
+  els.wiStats.innerHTML = `
+    <div class="wi-stat"><span class="wi-num" style="color:var(--status-done)">${doneTotal}</span>Selesai 7 hari</div>
+    <div class="wi-stat"><span class="wi-num" style="color:var(--status-pending)">${pendingTotal}</span>Tertunda</div>
+    <div class="wi-stat"><span class="wi-num">${streak}🔥</span>Streak</div>`;
+  const max = Math.max(1, ...days.map(d => Math.max(d.doneCount, d.pendingCount)));
+  els.wiChart.innerHTML = days.map(d => `
+    <div class="wi-day ${d.isToday ? 'today' : ''}">
+      <div class="wi-bars">
+        <div class="wi-bar wi-done" style="height:${Math.round((d.doneCount / max) * 100)}%" title="${d.doneCount} selesai"></div>
+        <div class="wi-bar wi-pending" style="height:${Math.round((d.pendingCount / max) * 100)}%" title="${d.pendingCount} tertunda"></div>
+      </div>
+      <span class="wi-day-label">${d.label}</span>
+    </div>`).join('');
+  const hmax = Math.max(1, ...hours);
+  els.wiHeatmap.innerHTML = hours.map((c, h) => {
+    const alpha = c === 0 ? 0.06 : 0.15 + 0.85 * (c / hmax);
+    return `<div class="wi-cell" title="${String(h).padStart(2, '0')}:00 — ${c} selesai" style="background:rgba(0,245,160,${alpha.toFixed(2)})"></div>`;
+  }).join('');
+}
+
+function initWeeklyInsight() {
+  if (!els.wiToggle || !els.weeklyInsight) return;
+  els.wiToggle.addEventListener('click', () => {
+    const open = els.weeklyInsight.classList.toggle('open');
+    if (!open) return;
+    renderWeeklyInsight();
+    if (!wiAnimated && !isReducedMotion()) {
+      els.wiBody.classList.add('animate-once');
+      wiAnimated = true;
+    } else {
+      els.wiBody.classList.remove('animate-once');
+    }
+  });
 }
 
 // ===== TODAY FOCUS: 3 tugas terpenting + timeline jam =====

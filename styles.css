@@ -1492,3 +1492,40 @@ html.no-custom-cursor .cursor-trail { display: none !important; }
   from { transform: translateY(100%); }
   to { transform: translateY(0); }
 }
+
+/* ===== Weekly Insight ===== */
+.weekly-insight { padding: 0.9rem 1.1rem; }
+.wi-header {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  background: none; border: none; color: var(--text);
+  font-family: var(--font); font-weight: 700; font-size: 0.9rem;
+  cursor: pointer; padding: 0;
+}
+.wi-caret { transition: transform 0.3s; color: var(--text-dim); }
+.weekly-insight.open .wi-caret { transform: rotate(180deg); }
+.wi-body { display: none; margin-top: 0.9rem; }
+.weekly-insight.open .wi-body { display: block; animation: fadeUp 0.3s ease; }
+.wi-stats { display: flex; gap: 0.5rem; margin-bottom: 0.9rem; }
+.wi-stat {
+  flex: 1; text-align: center; font-size: 0.62rem; color: var(--text-dim);
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px;
+  padding: 0.5rem 0.2rem; display: flex; flex-direction: column; gap: 2px;
+}
+.wi-num { font-size: 1.05rem; font-weight: 700; color: var(--text); }
+.wi-chart { display: flex; gap: 4px; align-items: flex-end; height: 90px; margin-bottom: 0.35rem; }
+.wi-day { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; }
+.wi-bars { flex: 1; width: 100%; display: flex; gap: 2px; align-items: flex-end; justify-content: center; }
+.wi-bar { width: 8px; border-radius: 3px 3px 0 0; min-height: 2px; transform-origin: bottom; }
+.wi-done { background: var(--status-done); }
+.wi-pending { background: var(--status-pending); opacity: 0.8; }
+.wi-day-label { font-size: 0.58rem; color: var(--text-dim); }
+.wi-day.today .wi-day-label { color: var(--accent); font-weight: 700; }
+.animate-once .wi-bar { animation: barGrow 0.7s cubic-bezier(0.34, 1.2, 0.64, 1) both; }
+@keyframes barGrow { from { transform: scaleY(0); } }
+.wi-legend { display: flex; align-items: center; gap: 0.4rem; font-size: 0.6rem; color: var(--text-dim); margin-bottom: 0.7rem; }
+.wi-lg { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+.wi-lg-done { background: var(--status-done); }
+.wi-lg-pending { background: var(--status-pending); margin-left: 0.5rem; }
+.wi-heat-label { font-size: 0.62rem; color: var(--text-dim); margin-bottom: 0.3rem; }
+.wi-heatmap { display: grid; grid-template-columns: repeat(24, 1fr); gap: 2px; }
+.wi-cell { aspect-ratio: 1; border-radius: 2px; }
