@@ -108,6 +108,7 @@ function cacheElements() {
     'openParsingEditor','parsingEditorModal','parsingEditorClose','parsingSave','parsingCancel','parsingResetDefault',
     'repeatSelect','editRepeat','reminderToggle',
     'formDetails','detailToggle','parseChips',
+    'todayFocus','tfMeta','tfTop3','tfTimeline',
     'appDialog','appDialogTitle','appDialogMessage','appDialogInput','appDialogActions'
   ];
   ids.forEach(id => els[id] = getEl(id));
@@ -127,6 +128,7 @@ function safeInit() {
     initSubtaskInput();
     initEnterKey();
     initCommandBar();
+    initTodayFocus();
     setDefaultDateTime();
     renderTasks();
     updateStats();
@@ -1528,6 +1530,111 @@ function updateStats() {
   else if (todayPct <= 75) { color1 = '#00f5a0'; color2 = '#66f8c6'; }
   else { color1 = '#4facfe'; color2 = '#00f2fe'; }
   if (els.progressFill) els.progressFill.style.background = `linear-gradient(90deg, ${color1}, ${color2})`;
+
+  renderTodayFocus();
+}
+
+// ===== TODAY FOCUS: 3 tugas terpenting + timeline jam =====
+function todayFocusData() {
+  const todayStr = new Date().toDateString();
+  const isToday = (t) => {
+    if (t.dateTime) return new Date(t.dateTime).toDateString() === todayStr;
+    return new Date(t.createdAt).toDateString() === todayStr;
+  };
+  const todays = tasks.filter(isToday);
+  const overdues = tasks.filter(t => isOverdue(t)); // termasuk terlambat dari hari sebelumnya
+  const seen = new Set();
+  const candidates = [...overdues, ...todays.filter(t => !t.done)].filter(t => {
+    if (t.done || seen.has(t.id)) return false;
+    seen.add(t.id);
+    return true;
+  });
+  candidates.sort((a, b) => {
+    const oa = isOverdue(a) ? 1 : 0, ob = isOverdue(b) ? 1 : 0;
+    if (oa !== ob) return ob - oa;                                        // terlambat dulu
+    const pa = PRIORITY_ORDER[a.priority] || 2, pb = PRIORITY_ORDER[b.priority] || 2;
+    if (pa !== pb) return pb - pa;                                        // prioritas tinggi dulu
+    const ta = a.dateTime ? new Date(a.dateTime).getTime() : Infinity;
+    const tb = b.dateTime ? new Date(b.dateTime).getTime() : Infinity;
+    return ta - tb;                                                       // waktu terdekat dulu
+  });
+  const now = Date.now();
+  const next = todays
+    .filter(t => !t.done && t.dateTime && new Date(t.dateTime).getTime() > now)
+    .sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime))[0] || null;
+  return { todays, overdueCount: overdues.length, top3: candidates.slice(0, 3), next };
+}
+
+function renderTodayFocus() {
+  if (!els.todayFocus || !els.tfTop3) return;
+  const { todays, overdueCount, top3, next } = todayFocusData();
+
+  let meta = '';
+  if (next) {
+    const jam = new Date(next.dateTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    meta += `<span class="tf-badge tf-next-badge" title="Tugas berikutnya">⏭ ${escapeHtml(next.title)} · ${jam}</span>`;
+  }
+  if (overdueCount) meta += `<span class="tf-badge tf-overdue-badge">⏰ ${overdueCount} terlambat</span>`;
+  els.tfMeta.innerHTML = meta;
+
+  if (!top3.length) {
+    els.tfTop3.innerHTML = `<div class="tf-empty">${todays.length ? '🎉 Semua tugas penting hari ini beres!' : '✨ Belum ada tugas untuk hari ini'}</div>`;
+  } else {
+    els.tfTop3.innerHTML = top3.map((t, i) => {
+      const overdue = isOverdue(t);
+      const jam = t.dateTime ? new Date(t.dateTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '';
+      return `
+      <div class="tf-task ${overdue ? 'tf-overdue' : ''}" data-id="${t.id}">
+        <span class="tf-rank">${i + 1}</span>
+        <div class="tf-task-body">
+          <div class="tf-task-title">${escapeHtml(t.title)}</div>
+          <div class="tf-task-meta">
+            ${jam ? `<span>🕒 ${jam}</span>` : ''}
+            <span style="color:${getPriorityColor(t.priority)}">${getPriorityIcon(t.priority)} ${t.priority === 'super_high' ? 'S-High' : t.priority}</span>
+            ${overdue ? '<span class="tf-late">⏰ Terlambat</span>' : ''}
+          </div>
+        </div>
+        <input type="checkbox" class="task-check tf-check" title="Tandai selesai">
+      </div>`;
+    }).join('');
+  }
+
+  // Timeline jam — dot per tugas hari ini yang punya waktu, garis "sekarang"
+  const timed = todays.filter(t => t.dateTime);
+  const hourList = timed.map(t => new Date(t.dateTime).getHours());
+  const now = new Date();
+  const start = Math.min(6, now.getHours(), ...hourList);
+  const end = Math.max(21, now.getHours(), ...hourList);
+  let cells = '';
+  for (let h = start; h <= end; h++) {
+    const dots = timed
+      .filter(t => new Date(t.dateTime).getHours() === h)
+      .map(t => {
+        const color = t.done ? 'var(--status-done)' : (isOverdue(t) ? 'var(--status-danger)' : getPriorityColor(t.priority));
+        return `<span class="tf-dot" data-id="${t.id}" title="${escapeHtml(t.title)}" style="background:${color}"></span>`;
+      }).join('');
+    cells += `<div class="tf-hour"><div class="tf-hour-dots">${dots}</div><span class="tf-hour-label">${String(h).padStart(2, '0')}</span></div>`;
+  }
+  const span = end - start + 1;
+  // titik jam = tengah sel; garis "sekarang" diinterpolasi antar tengah sel
+  const frac = Math.min(1, Math.max(0, (now.getHours() - start + 0.5 + now.getMinutes() / 60) / span));
+  els.tfTimeline.innerHTML = `<div class="tf-hours">${cells}</div><div class="tf-now" style="left:${(frac * 100).toFixed(2)}%"></div>`;
+}
+
+function initTodayFocus() {
+  if (!els.tfTop3 || !els.tfTimeline) return;
+  els.tfTop3.addEventListener('click', (e) => {
+    const row = e.target.closest('.tf-task');
+    if (!row) return;
+    const check = e.target.closest('.tf-check');
+    if (check) { toggleTask(row.dataset.id, check); return; }
+    openEditModal(row.dataset.id);
+  });
+  els.tfTimeline.addEventListener('click', (e) => {
+    const dot = e.target.closest('.tf-dot');
+    if (dot) openEditModal(dot.dataset.id);
+  });
+  setInterval(renderTodayFocus, 60000); // garis "sekarang" bergeser tiap menit
 }
 
 // Streak Logic — streak dihitung dari tugas HARI INI saja,

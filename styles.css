@@ -1320,3 +1320,30 @@ html.no-custom-cursor .cursor-trail { display: none !important; }
 .parse-chip .chip-x:hover { opacity: 1; color: var(--status-danger); }
 .form-details { display: none; margin-top: 0.6rem; }
 .form-details.open { display: block; animation: fadeUp 0.3s ease; }
+
+/* ===== Today Focus: 3 tugas terpenting + timeline jam ===== */
+.today-focus { margin-top: 1rem; }
+.tf-header { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.7rem; }
+.tf-title { font-weight: 700; font-size: 0.95rem; letter-spacing: 0.02em; }
+.tf-meta { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; font-size: 0.72rem; color: var(--text-dim); }
+.tf-badge { padding: 0.2rem 0.55rem; border-radius: 999px; border: 1px solid var(--border); background: var(--surface-3); max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tf-badge.tf-overdue-badge { border-color: var(--status-danger); color: var(--status-danger); }
+.tf-badge.tf-next-badge { border-color: var(--accent); color: var(--text); background: var(--accent-soft); }
+.tf-top3 { display: flex; flex-direction: column; gap: 0.45rem; }
+.tf-task { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.7rem; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--border); transition: var(--transition); cursor: pointer; }
+.tf-task:hover { background: var(--surface-4); }
+.tf-rank { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; background: var(--accent-soft); border: 1px solid var(--accent); flex-shrink: 0; }
+.tf-task.tf-overdue .tf-rank { background: rgba(255,77,109,0.15); border-color: var(--status-danger); }
+.tf-task-body { flex: 1; min-width: 0; }
+.tf-task-title { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tf-task-meta { font-size: 0.68rem; color: var(--text-dim); margin-top: 2px; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.tf-task-meta .tf-late { color: var(--status-danger); }
+.tf-empty { font-size: 0.8rem; color: var(--text-dim); text-align: center; padding: 0.8rem 0; }
+.tf-timeline { position: relative; margin-top: 0.8rem; padding-top: 0.4rem; border-top: 1px dashed var(--border); }
+.tf-hours { display: flex; }
+.tf-hour { flex: 1; text-align: center; position: relative; padding-top: 14px; }
+.tf-hour-label { font-size: 0.58rem; color: var(--text-dim); }
+.tf-hour-dots { position: absolute; top: 2px; left: 50%; transform: translateX(-50%); display: flex; gap: 2px; }
+.tf-dot { width: 8px; height: 8px; border-radius: 50%; cursor: pointer; }
+.tf-now { position: absolute; top: 6px; bottom: 0; width: 2px; background: var(--accent); box-shadow: 0 0 8px var(--accent); border-radius: 2px; pointer-events: none; }
+.tf-now::after { content: ''; position: absolute; top: -4px; left: -2px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
