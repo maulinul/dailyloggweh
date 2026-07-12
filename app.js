@@ -5,7 +5,7 @@ const prefersLight = () =>
 let settings = {
   sound: true, haptic: true, dayMode: false, reminders: false,
   // reducedMotion null = ikuti preferensi sistem (prefers-reduced-motion)
-  reducedMotion: null, customCursor: true,
+  reducedMotion: null, customCursor: true, focusMood: 'deep',
   githubToken: '', githubGistId: '', githubAutoSync: false
 };
 
@@ -133,6 +133,7 @@ function cacheElements() {
     'repeatSelect','editRepeat','reminderToggle',
     'formDetails','detailToggle','parseChips',
     'todayFocus','tfMeta','tfTop3','tfTimeline',
+    'focusSubtasks','focusMoods',
     'appDialog','appDialogTitle','appDialogMessage','appDialogInput','appDialogActions'
   ];
   ids.forEach(id => els[id] = getEl(id));
@@ -153,6 +154,7 @@ function safeInit() {
     initEnterKey();
     initCommandBar();
     initTodayFocus();
+    initFocusMode();
     setDefaultDateTime();
     renderTasks();
     updateStats();
@@ -1442,13 +1444,53 @@ function openEditModal(id) {
 
 
 // Focus Mode
+function applyFocusMood(mood) {
+  if (!els.focusOverlay) return;
+  settings.focusMood = ['deep', 'calm', 'night'].includes(mood) ? mood : 'deep';
+  els.focusOverlay.classList.remove('mood-calm', 'mood-night');
+  if (settings.focusMood === 'calm') els.focusOverlay.classList.add('mood-calm');
+  if (settings.focusMood === 'night') els.focusOverlay.classList.add('mood-night');
+  if (els.focusMoods) {
+    els.focusMoods.querySelectorAll('.focus-mood').forEach(b =>
+      b.classList.toggle('active', b.dataset.mood === settings.focusMood));
+  }
+}
+
+function renderFocusSubtasks() {
+  if (!els.focusSubtasks) return;
+  const t = tasks.find(x => x.id === focusTaskId);
+  if (!t || !t.subtasks.length) { els.focusSubtasks.innerHTML = ''; return; }
+  els.focusSubtasks.innerHTML = t.subtasks.map((s, i) => `
+    <label class="focus-subtask ${s.done ? 'done' : ''}">
+      <input type="checkbox" data-idx="${i}" ${s.done ? 'checked' : ''}>
+      <span>${escapeHtml(s.text)}</span>
+    </label>`).join('');
+}
+
 function enterFocusMode(id) {
   const t = tasks.find(x => x.id === id);
   if (!t || !els.focusOverlay) return;
   focusTaskId = id;
   focusTimeLeft = t.pomodoro.timeLeft;
-  els.focusTitle.textContent = `🎯 ${t.title}`;
-  els.focusOverlay.classList.add('active');
+  const open = () => {
+    els.focusTitle.textContent = `🎯 ${t.title}`;
+    applyFocusMood(settings.focusMood);
+    renderFocusSubtasks();
+    els.focusOverlay.classList.add('active');
+  };
+  // transisi menyambung: card tugas jadi hero yang membesar ke layar fokus
+  const card = document.querySelector(`.task-item[data-id="${CSS.escape(id)}"], .kanban-card[data-id="${CSS.escape(id)}"]`);
+  if (document.startViewTransition && !isReducedMotion() && card) {
+    const oldName = card.style.viewTransitionName;
+    card.style.viewTransitionName = 'focus-hero';
+    const vt = document.startViewTransition(() => {
+      card.style.viewTransitionName = oldName;
+      open();
+    });
+    if (vt.finished && vt.finished.catch) vt.finished.catch(() => {});
+  } else {
+    open();
+  }
   startFocusTimer();
 }
 
@@ -1480,7 +1522,26 @@ function exitFocusMode() {
   focusTaskId = null;
   focusTimeLeft = 1500;
   if (els.focusOverlay) els.focusOverlay.classList.remove('active');
-  renderTasks();
+  withViewTransition(renderTasks);
+}
+
+function initFocusMode() {
+  if (els.focusMoods) {
+    els.focusMoods.addEventListener('click', (e) => {
+      const btn = e.target.closest('.focus-mood');
+      if (!btn) return;
+      applyFocusMood(btn.dataset.mood);
+      saveSettings();
+    });
+  }
+  if (els.focusSubtasks) {
+    els.focusSubtasks.addEventListener('change', (e) => {
+      const cb = e.target.closest('input[data-idx]');
+      if (!cb || focusTaskId === null) return;
+      toggleSubtask(focusTaskId, parseInt(cb.dataset.idx, 10), cb.checked);
+      renderFocusSubtasks();
+    });
+  }
 }
 
 // Pomodoro

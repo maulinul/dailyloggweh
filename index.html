@@ -21,11 +21,20 @@
 
   <!-- Focus Mode Overlay -->
   <div class="focus-overlay" id="focusOverlay">
-    <div class="focus-title" id="focusTitle">Fokus Mode</div>
-    <div class="focus-timer" id="focusTimer">25:00</div>
-    <div class="focus-controls">
-      <button class="focus-btn-large" id="focusPause">⏸ Pause</button>
-      <button class="focus-btn-large focus-clear" id="focusClear">✕ Clear Focus</button>
+    <div class="focus-ambient"></div>
+    <div class="focus-card">
+      <div class="focus-title" id="focusTitle">Fokus Mode</div>
+      <div class="focus-timer" id="focusTimer">25:00</div>
+      <div class="focus-subtasks" id="focusSubtasks"></div>
+      <div class="focus-controls">
+        <button class="focus-btn-large" id="focusPause">⏸ Pause</button>
+        <button class="focus-btn-large focus-clear" id="focusClear">✕ Clear Focus</button>
+      </div>
+      <div class="focus-moods" id="focusMoods">
+        <button class="focus-mood active" data-mood="deep">🌌 Deep Focus</button>
+        <button class="focus-mood" data-mood="calm">🌿 Calm</button>
+        <button class="focus-mood" data-mood="night">🌙 Night</button>
+      </div>
     </div>
   </div>
 

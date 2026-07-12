@@ -1368,3 +1368,42 @@ html.no-custom-cursor .cursor-trail { display: none !important; }
   border: 2px dashed var(--accent); background: var(--accent-soft);
   animation: fadeIn 0.15s ease;
 }
+
+/* ===== Focus Mode imersif ===== */
+.focus-overlay { --fm-c1: #1a0b2e; --fm-c2: #2d1b4e; --fm-c3: #0b1e3a; } /* Deep Focus (default) */
+.focus-overlay.mood-calm { --fm-c1: #0b2e26; --fm-c2: #123f3a; --fm-c3: #0b1e3a; }
+.focus-overlay.mood-night { --fm-c1: #050508; --fm-c2: #0a0a14; --fm-c3: #000000; }
+.focus-ambient {
+  position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(120deg, var(--fm-c1), var(--fm-c2), var(--fm-c3));
+  background-size: 300% 300%;
+  animation: ambientDrift 45s ease-in-out infinite; /* sangat lambat */
+  opacity: 0.55;
+}
+@keyframes ambientDrift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.focus-card {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 2rem 2.5rem; border-radius: 24px;
+  view-transition-name: focus-hero; /* pasangan hero dari task card */
+  max-width: min(92vw, 560px);
+}
+.focus-subtasks { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.4rem; width: 100%; max-width: 380px; }
+.focus-subtask {
+  display: flex; align-items: center; gap: 0.55rem;
+  padding: 0.45rem 0.7rem; border-radius: 10px;
+  background: var(--surface-3); border: 1px solid var(--border);
+  font-size: 0.85rem; cursor: pointer;
+}
+.focus-subtask input { accent-color: var(--status-done); }
+.focus-subtask.done span { text-decoration: line-through; opacity: 0.55; }
+.focus-moods { display: flex; gap: 0.5rem; margin-top: 1.6rem; flex-wrap: wrap; justify-content: center; }
+.focus-mood {
+  padding: 0.4rem 0.9rem; border-radius: 999px; font-size: 0.75rem;
+  background: var(--surface-3); border: 1px solid var(--border);
+  color: var(--text-dim); cursor: pointer; transition: var(--transition);
+}
+.focus-mood:hover { color: var(--text); background: var(--surface-4); }
+.focus-mood.active { background: var(--accent-soft); border-color: var(--accent); color: var(--text); }
