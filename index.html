@@ -2194,7 +2194,7 @@ function closeAllPopups() {
             <div>
               <div style="font-weight:600; ${t.done ? 'text-decoration:line-through;opacity:0.6' : ''}">${escapeHtml(t.title)}</div>
               <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
-                ${t.timeHint ? '🕒 ' + t.timeHint + ' · ' : ''}
+                ${t.timeHint ? '🕒 ' + escapeHtml(t.timeHint) + ' · ' : ''}
                 <span class="priority-tag p-${t.priority}">${getPriorityIcon(t.priority)} ${t.priority === 'super_high' ? 'Super High' : t.priority}</span>
                 ${t.category ? `<span class="category-tag" style="margin-left:3px;">📁 ${escapeHtml(t.category)}</span>` : ''}
               </div>
@@ -2567,7 +2567,7 @@ function closeAllPopups() {
               </div>
             </div>
             <div class="task-meta">
-              <span class="task-time">🕒 ${scheduledStr || dateStr + ' ' + timeStr}${t.timeHint ? ' → ' + t.timeHint : ''}</span>
+              <span class="task-time">🕒 ${scheduledStr || dateStr + ' ' + timeStr}${t.timeHint ? ' → ' + escapeHtml(t.timeHint) : ''}</span>
               <span class="priority-tag p-${t.priority}">${getPriorityIcon(t.priority)} ${t.priority === 'super_high' ? 'Super High' : t.priority}</span>
               ${t.category ? `<span class="category-tag">📁 ${escapeHtml(t.category)}</span>` : ''}
               ${t.repeat && t.repeat !== 'none' ? `<span class="repeat-tag">🔁 ${REPEAT_LABELS[t.repeat] || t.repeat}</span>` : ''}
@@ -2733,7 +2733,7 @@ function closeAllPopups() {
         card.innerHTML = `
           <div class="kanban-card-title">${escapeHtml(t.title)}</div>
           <div class="kanban-card-meta">
-            ${t.timeHint || timeStr ? `<span class="kanban-card-time">🕒 ${t.timeHint || timeStr}</span>` : ''}
+            ${t.timeHint || timeStr ? `<span class="kanban-card-time">🕒 ${escapeHtml(t.timeHint || timeStr)}</span>` : ''}
             <span class="kanban-card-tag" style="background:${getPriorityBg(t.priority)};color:${getPriorityColor(t.priority)};">${getPriorityIcon(t.priority)} ${t.priority === 'super_high' ? 'S-High' : t.priority}</span>
             ${t.category ? `<span class="kanban-card-tag" style="background:rgba(79,172,254,0.15);color:var(--neon-blue);">📁 ${escapeHtml(t.category)}</span>` : ''}
             ${t.repeat && t.repeat !== 'none' ? `<span class="kanban-card-tag" style="background:rgba(199,210,254,0.12);color:var(--neon-silver);">🔁 ${REPEAT_LABELS[t.repeat] || t.repeat}</span>` : ''}
@@ -3163,7 +3163,8 @@ function closeAllPopups() {
         ongoing: !t.done && !!t.ongoing,
         createdAt: t.createdAt || new Date().toISOString(),
         dateTime: t.dateTime || null,
-        timeHint: t.timeHint ? String(t.timeHint) : '',
+        // timeHint ikut dirender ke innerHTML — hanya terima format jam (H:MM/HH:MM)
+        timeHint: /^\d{1,2}:\d{2}$/.test(String(t.timeHint || '').trim()) ? String(t.timeHint).trim() : '',
         repeat: ['daily', 'weekly', 'monthly'].includes(t.repeat) ? t.repeat : 'none',
         notified: !!t.notified,
         subtasks: Array.isArray(t.subtasks)
