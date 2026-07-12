@@ -1407,3 +1407,88 @@ html.no-custom-cursor .cursor-trail { display: none !important; }
 }
 .focus-mood:hover { color: var(--text); background: var(--surface-4); }
 .focus-mood.active { background: var(--accent-soft); border-color: var(--accent); color: var(--text); }
+
+/* ===== Navigasi mobile: bottom nav + FAB + filter bottom sheet ===== */
+.bottom-nav, .fab-add, .filter-sheet-btn, .filter-sheet-head, .sheet-backdrop { display: none; }
+
+@media (max-width: 768px) {
+  body { padding-bottom: 84px; } /* ruang untuk bottom nav */
+
+  .bottom-nav {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 1500;
+    background: rgba(10, 10, 18, 0.88);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    padding: 0.35rem 0.3rem calc(0.35rem + env(safe-area-inset-bottom));
+  }
+  .day-mode .bottom-nav { background: rgba(240, 240, 245, 0.88); }
+  .bnav-item {
+    background: none; border: none; color: var(--text-dim);
+    font-size: 0.6rem; font-family: var(--font);
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    padding: 0.3rem 0; cursor: pointer; border-radius: 10px;
+    transition: color 0.2s, background 0.2s;
+  }
+  .bnav-item span { font-size: 1.15rem; }
+  .bnav-item.active { color: var(--text); background: var(--accent-soft); }
+
+  .fab-add {
+    display: flex; align-items: center; justify-content: center;
+    position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: calc(72px + env(safe-area-inset-bottom));
+    width: 56px; height: 56px; border-radius: 50%;
+    font-size: 2rem; line-height: 1; font-family: var(--font);
+    background: linear-gradient(135deg, var(--accent), var(--neon-coral));
+    color: #fff; border: none; cursor: pointer; z-index: 1500;
+    box-shadow: 0 8px 24px rgba(176, 38, 255, 0.45);
+  }
+  .fab-add:active { transform: translateX(-50%) scale(0.92); }
+
+  /* View switching per tab — hanya berlaku di layar sempit */
+  body.mview-today #calendarBox { display: none; }
+  body.mview-today .col-right { display: none; }
+  body.mview-calendar .col-left, body.mview-calendar #inputBox,
+  body.mview-calendar #todayFocus, body.mview-calendar .col-right { display: none; }
+  body.mview-tasks .col-left, body.mview-tasks #inputBox,
+  body.mview-tasks #todayFocus, body.mview-tasks #calendarBox { display: none; }
+
+  /* Filter jadi bottom sheet */
+  .filter-sheet-btn {
+    display: block; width: 100%; margin-bottom: 0.6rem;
+    padding: 0.55rem; border-radius: 10px;
+    background: var(--surface-3); border: 1px solid var(--border);
+    color: var(--text); font-family: var(--font); font-size: 0.8rem; cursor: pointer;
+  }
+  .filter-block { display: none; }
+  body.filter-sheet-open .filter-block {
+    display: block;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 1600;
+    background: var(--bg); border-top: 1px solid var(--border);
+    border-radius: 20px 20px 0 0;
+    padding: 1rem 1rem calc(1.2rem + env(safe-area-inset-bottom));
+    max-height: 70vh; overflow-y: auto;
+    box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.5);
+    animation: sheetUp 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  body.filter-sheet-open .filter-sheet-head {
+    display: flex; justify-content: space-between; align-items: center;
+    font-weight: 700; font-size: 0.9rem; margin-bottom: 0.8rem;
+  }
+  body.filter-sheet-open .sheet-backdrop {
+    display: block; position: fixed; inset: 0;
+    background: rgba(0, 0, 0, 0.5); z-index: 1550;
+  }
+
+  /* Settings panel jadi sheet di atas bottom nav */
+  .settings-panel {
+    position: fixed; left: 0.6rem; right: 0.6rem; top: auto;
+    bottom: calc(76px + env(safe-area-inset-bottom));
+    max-height: 62vh; overflow-y: auto;
+  }
+}
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}

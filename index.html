@@ -208,7 +208,7 @@
 
     <!-- KOLOM 2: Calendar & Input -->
     <div class="column col-center">
-      <div class="glass">
+      <div class="glass" id="inputBox">
         <div class="progress-container">
           <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 0%;"></div></div>
           <div class="progress-text"><span id="progressLabel">0% Selesai Hari Ini</span><span id="progressRatio">0/0</span></div>
@@ -279,6 +279,7 @@
             <span style="margin-left:1.2rem;">📝 Contoh: <code style="background:rgba(255,255,255,0.05); padding:1px 5px; border-radius:3px;">Beli susu | besok | OGG | jam 8 | high</code> atau cukup: <code style="background:rgba(255,255,255,0.05); padding:1px 5px; border-radius:3px;">Beli susu</code> (default hari ini)</span>
             </div>
           </div>
+        </div>
       </div>
 
       <!-- TODAY FOCUS: 3 tugas terpenting + timeline jam hari ini -->
@@ -325,27 +326,31 @@
           <span class="search-icon">🔍</span>
           <input type="text" class="search-input" id="searchInput" placeholder="Cari tugas lama...">
         </div>
-        <div class="filters" id="statusFilters">
-          <div class="filter-chip active" data-filter="all">Semua</div>
-          <div class="filter-chip" data-filter="pending">Pending</div>
-          <div class="filter-chip" data-filter="ongoing">On Going</div>
-          <div class="filter-chip" data-filter="done">Selesai</div>
-        </div>
-        <div class="filter-row">
-          <span style="font-size:0.72rem;color:var(--text-dim);">Prioritas:</span>
-          <select class="filter-select" id="priorityFilterSelect">
-            <option value="all">Semua</option>
-            <option value="super_high">💥 Super High</option>
-            <option value="high">🔥 High</option>
-            <option value="medium">⚡ Medium</option>
-            <option value="low">🌿 Low</option>
-          </select>
-        </div>
-        <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:0.25rem;">Urutkan (pilih satu atau lebih):</div>
-        <div class="sort-controls" id="sortControls">
-          <div class="sort-chip" data-sort="date">📅 Tanggal</div>
-          <div class="sort-chip" data-sort="priority">🔥 Prioritas</div>
-          <div class="sort-chip" data-sort="status">✅ Status</div>
+        <button class="filter-sheet-btn" id="filterSheetBtn">⚙️ Filter &amp; Urutkan</button>
+        <div class="filter-block" id="filterBlock">
+          <div class="filter-sheet-head"><span>⚙️ Filter &amp; Urutkan</span><button class="day-detail-close" id="filterSheetClose">×</button></div>
+          <div class="filters" id="statusFilters">
+            <div class="filter-chip active" data-filter="all">Semua</div>
+            <div class="filter-chip" data-filter="pending">Pending</div>
+            <div class="filter-chip" data-filter="ongoing">On Going</div>
+            <div class="filter-chip" data-filter="done">Selesai</div>
+          </div>
+          <div class="filter-row">
+            <span style="font-size:0.72rem;color:var(--text-dim);">Prioritas:</span>
+            <select class="filter-select" id="priorityFilterSelect">
+              <option value="all">Semua</option>
+              <option value="super_high">💥 Super High</option>
+              <option value="high">🔥 High</option>
+              <option value="medium">⚡ Medium</option>
+              <option value="low">🌿 Low</option>
+            </select>
+          </div>
+          <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:0.25rem;">Urutkan (pilih satu atau lebih):</div>
+          <div class="sort-controls" id="sortControls">
+            <div class="sort-chip" data-sort="date">📅 Tanggal</div>
+            <div class="sort-chip" data-sort="priority">🔥 Prioritas</div>
+            <div class="sort-chip" data-sort="status">✅ Status</div>
+          </div>
         </div>
         <div class="data-actions" style="margin-bottom:0.4rem;">
           <button class="data-action-btn" id="exportJsonBtn" title="Export JSON">📦 Export JSON</button>
@@ -434,6 +439,17 @@
   </div>
 
   <script src="./app.js"></script>
+
+  <!-- Bottom Navigation (mobile) -->
+  <div class="sheet-backdrop" id="sheetBackdrop"></div>
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="bnav-item active" data-mview="today"><span>🎯</span>Hari Ini</button>
+    <button class="bnav-item" data-mview="calendar"><span>📅</span>Kalender</button>
+    <button class="bnav-item" data-mview="tasks"><span>📋</span>Tugas</button>
+    <button class="bnav-item" data-mview="focus"><span>⏱️</span>Fokus</button>
+    <button class="bnav-item" data-mview="menu"><span>☰</span>Menu</button>
+  </nav>
+  <button class="fab-add" id="fabAdd" title="Tambah tugas">+</button>
 
   <!-- Toast Container -->
   <div class="toast-container" id="toastContainer"></div>

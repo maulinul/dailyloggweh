@@ -155,6 +155,7 @@ function safeInit() {
     initCommandBar();
     initTodayFocus();
     initFocusMode();
+    initMobileNav();
     setDefaultDateTime();
     renderTasks();
     updateStats();
@@ -1523,6 +1524,59 @@ function exitFocusMode() {
   focusTimeLeft = 1500;
   if (els.focusOverlay) els.focusOverlay.classList.remove('active');
   withViewTransition(renderTasks);
+}
+
+// ===== Navigasi mobile: bottom nav + FAB + filter bottom sheet =====
+function setMobileView(view) {
+  document.body.classList.remove('mview-today', 'mview-calendar', 'mview-tasks');
+  document.body.classList.add('mview-' + view);
+  document.querySelectorAll('.bnav-item').forEach(b =>
+    b.classList.toggle('active', b.dataset.mview === view));
+  window.scrollTo({ top: 0 });
+}
+
+function initMobileNav() {
+  const nav = document.getElementById('bottomNav');
+  if (!nav) return;
+  setMobileView('today');
+  nav.addEventListener('click', (e) => {
+    const btn = e.target.closest('.bnav-item');
+    if (!btn) return;
+    const v = btn.dataset.mview;
+    if (v === 'menu') {
+      // Menu = settings panel sebagai sheet
+      const wasOpen = els.settingsPanel && els.settingsPanel.classList.contains('show');
+      closeAllPopups();
+      if (els.settingsPanel && !wasOpen) els.settingsPanel.classList.add('show');
+      return;
+    }
+    if (v === 'focus') {
+      // langsung fokus ke tugas paling penting hari ini
+      const { top3 } = todayFocusData();
+      const target = top3[0] || tasks.find(t => !t.done);
+      if (target) enterFocusMode(target.id);
+      else showToast('Tidak ada tugas untuk difokuskan', 'info');
+      return;
+    }
+    setMobileView(v);
+  });
+
+  const fab = document.getElementById('fabAdd');
+  if (fab) fab.addEventListener('click', () => {
+    setMobileView('today');
+    if (els.taskInput) {
+      els.taskInput.scrollIntoView({ behavior: isReducedMotion() ? 'auto' : 'smooth', block: 'center' });
+      els.taskInput.focus();
+    }
+  });
+
+  const sheetBtn = document.getElementById('filterSheetBtn');
+  const sheetClose = document.getElementById('filterSheetClose');
+  const backdrop = document.getElementById('sheetBackdrop');
+  const closeSheet = () => document.body.classList.remove('filter-sheet-open');
+  if (sheetBtn) sheetBtn.addEventListener('click', () => document.body.classList.toggle('filter-sheet-open'));
+  if (sheetClose) sheetClose.addEventListener('click', closeSheet);
+  if (backdrop) backdrop.addEventListener('click', closeSheet);
 }
 
 function initFocusMode() {
