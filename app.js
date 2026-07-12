@@ -22,6 +22,30 @@ function applyMotionSettings() {
   if (cursorOn) startCursor(); else stopCursor();
 }
 
+// ===== View Transitions: perpindahan card mulus saat re-render =====
+function vtName(prefix, id) { return prefix + '-' + String(id).replace(/[^a-zA-Z0-9_-]/g, ''); }
+function withViewTransition(fn) {
+  if (!document.startViewTransition || isReducedMotion()) { fn(); return; }
+  document.startViewTransition(fn);
+}
+
+// Angka statistik count-up halus
+const statAnims = new WeakMap();
+function setStatNumber(el, to, suffix = '') {
+  if (!el) return;
+  const from = parseInt(String(el.textContent).replace(/[^\d-]/g, ''), 10) || 0;
+  if (statAnims.has(el)) cancelAnimationFrame(statAnims.get(el));
+  if (from === to || isReducedMotion()) { el.textContent = to + suffix; return; }
+  const dur = 500, t0 = performance.now();
+  const step = (nowT) => {
+    const p = Math.min(1, (nowT - t0) / dur);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(from + (to - from) * eased) + suffix;
+    if (p < 1) statAnims.set(el, requestAnimationFrame(step));
+  };
+  statAnims.set(el, requestAnimationFrame(step));
+}
+
 // Transisi status selesai satu pintu — completedAt jadi sumber data Weekly Insight
 function markDone(t, done) {
   if (done) {
@@ -668,7 +692,8 @@ function toggleTaskFromCalendar(id) {
     markDone(t, !t.done);
     if (t.done) { spawnRecurring(t); playSound('complete'); vibrate(); checkStreak(); setTimeout(checkAllDoneCelebration, 300); }
     else { t.ongoing = false; }
-    save(); renderCurrentView(); updateStats(); renderCalendar();
+    save();
+    withViewTransition(() => { renderCurrentView(); updateStats(); renderCalendar(); });
     if (selectedDate) showDayDetail(selectedDate, new Date(selectedDate).getDate());
   }
 }
@@ -1003,6 +1028,7 @@ function renderTasks() {
     el.className = `task-item ${t.done ? 'task-done' : ''} ${t.ongoing ? 'ongoing-active' : ''} ${isOverdue(t) ? 'overdue' : ''} ${getGlowClass(t.priority)} ${multiSelectMode && selectedTaskIds.includes(t.id) ? 'selecting' : ''}`;
     el.draggable = true;
     el.dataset.id = t.id;
+    el.style.viewTransitionName = vtName('task', t.id);
     el.style.animationDelay = (index * 0.05) + 's';
 
     const created = new Date(t.createdAt);
@@ -1183,6 +1209,7 @@ function renderKanban() {
     card.className = `kanban-card priority-${t.priority} ${t.done ? 'done-card' : ''} ${isOverdue(t) ? 'overdue' : ''}`;
     card.draggable = true;
     card.dataset.id = t.id;
+    card.style.viewTransitionName = vtName('kanban', t.id);
     card.style.animationDelay = (index * 0.03) + 's';
 
     const taskDateTime = t.dateTime ? new Date(t.dateTime) : null;
@@ -1215,6 +1242,7 @@ function renderKanban() {
       card.classList.remove('dragging');
       draggedTaskId = null;
       document.querySelectorAll('.kanban-column').forEach(c => c.classList.remove('drag-over'));
+      document.querySelectorAll('.kanban-placeholder').forEach(p => p.remove());
     });
 
     // Action buttons
@@ -1269,20 +1297,27 @@ function getPriorityColor(p) {
 }
 
 function initKanbanDragDrop() {
+  // slot preview di kolom target saat drag
+  const placeholder = document.createElement('div');
+  placeholder.className = 'kanban-placeholder';
   document.querySelectorAll('.kanban-column').forEach(col => {
+    const zone = col.querySelector('.kanban-dropzone');
     col.addEventListener('dragover', (e) => {
       e.preventDefault();
       e.dataTransfer.dropEffect = 'move';
       col.classList.add('drag-over');
+      if (zone && placeholder.parentNode !== zone) zone.appendChild(placeholder);
     });
     col.addEventListener('dragleave', (e) => {
       if (!col.contains(e.relatedTarget)) {
         col.classList.remove('drag-over');
+        if (placeholder.parentNode === zone) placeholder.remove();
       }
     });
     col.addEventListener('drop', (e) => {
       e.preventDefault();
       col.classList.remove('drag-over');
+      placeholder.remove();
       const taskId = e.dataTransfer.getData('text/plain') || draggedTaskId;
       if (!taskId) return;
 
@@ -1301,9 +1336,7 @@ function initKanbanDragDrop() {
       }
 
       save();
-      renderKanban();
-      updateStats();
-      renderCalendar();
+      withViewTransition(() => { renderKanban(); updateStats(); renderCalendar(); });
       playSound('add');
 
       if (settings.githubAutoSync && settings.githubToken) syncToGitHub();
@@ -1322,7 +1355,7 @@ function toggleStatus(id) {
   if (!t || t.done) return;
   t.ongoing = !t.ongoing;
   save();
-  renderCurrentView();
+  withViewTransition(renderCurrentView);
   playSound('add');
 }
 
@@ -1333,7 +1366,15 @@ function toggleTask(id, checkbox) {
   if (t.done) { spawnRecurring(t); playSound('complete'); vibrate(); checkStreak(); setTimeout(checkAllDoneCelebration, 300); }
   else { t.ongoing = false; }
   save();
-  setTimeout(() => { renderCurrentView(); updateStats(); renderCalendar(); }, 50);
+  // micro-interaction dulu (centang pop + card settle), re-render menyusul via view transition
+  let delay = 50;
+  if (t.done && checkbox && checkbox.classList) {
+    checkbox.classList.add('completing');
+    const card = checkbox.closest('.task-item, .tf-task, .kanban-card');
+    if (card) card.classList.add('task-completing');
+    if (!isReducedMotion()) delay = 380;
+  }
+  setTimeout(() => withViewTransition(() => { renderCurrentView(); updateStats(); renderCalendar(); }), delay);
   
   if (settings.githubAutoSync && settings.githubToken) {
     syncToGitHub();
@@ -1345,7 +1386,9 @@ function deleteTask(id) {
   if (idx >= 0) pushUndo({ type: 'delete', task: Object.assign({}, tasks[idx]), index: idx });
   stopPomodoro(id);
   tasks = tasks.filter(x => x.id !== id);
-  save(); renderCurrentView(); updateStats(); updateSuggestions(); renderCalendar();
+  save();
+  withViewTransition(() => { renderCurrentView(); updateStats(); renderCalendar(); });
+  updateSuggestions();
   playSound('delete'); vibrate();
   showToast('Tugas dihapus', 'info', { label: '↩️ Undo', onClick: undo });
   if (settings.githubAutoSync && settings.githubToken) syncToGitHub();
@@ -1517,12 +1560,12 @@ function updateStats() {
   if (els.progressFill) els.progressFill.style.width = `${todayPct}%`;
   if (els.progressLabel) els.progressLabel.textContent = `${todayPct}% Selesai Hari Ini`;
   if (els.progressRatio) els.progressRatio.textContent = `${todayDone}/${todayTotal}`;
-  if (els.bentoProgress) els.bentoProgress.textContent = `${todayPct}%`;
-  if (els.bentoProgressAll) els.bentoProgressAll.textContent = `${pctAll}%`;
-  if (els.bentoTotal) els.bentoTotal.textContent = total;
-  if (els.bentoDone) els.bentoDone.textContent = done;
-  if (els.bentoPending) els.bentoPending.textContent = pending;
-  if (els.bentoHigh) els.bentoHigh.textContent = high;
+  setStatNumber(els.bentoProgress, todayPct, '%');
+  setStatNumber(els.bentoProgressAll, pctAll, '%');
+  setStatNumber(els.bentoTotal, total);
+  setStatNumber(els.bentoDone, done);
+  setStatNumber(els.bentoPending, pending);
+  setStatNumber(els.bentoHigh, high);
 
   let color1, color2;
   if (todayPct <= 25) { color1 = '#ff4d6d'; color2 = '#ff8fa3'; }
@@ -2075,7 +2118,7 @@ function initButtonListeners() {
       document.querySelectorAll('#statusFilters .filter-chip').forEach(x => x.classList.remove('active'));
       f.classList.add('active');
       currentFilter = f.dataset.filter;
-      renderCurrentView();
+      withViewTransition(renderCurrentView);
     });
   });
 
@@ -2083,7 +2126,7 @@ function initButtonListeners() {
   if (els.priorityFilterSelect) {
     els.priorityFilterSelect.addEventListener('change', () => {
       currentPriorityFilter = els.priorityFilterSelect.value;
-      renderCurrentView();
+      withViewTransition(renderCurrentView);
     });
   }
 
@@ -2099,7 +2142,7 @@ function initButtonListeners() {
           currentSortFields.push(field);
           chip.classList.add('active');
         }
-        renderCurrentView();
+        withViewTransition(renderCurrentView);
       });
     });
   }
