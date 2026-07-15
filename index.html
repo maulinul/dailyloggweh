@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id"><head><meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://api.github.com; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>TaskFlow | Daily Tracker</title>
   <meta name="description" content="TaskFlow Pro — daily task tracker dengan smart parser, kalender interaktif, kanban board, pomodoro timer, dan sinkronisasi GitHub Gist.">
   <meta name="theme-color" content="#0a0a12">
@@ -20,7 +21,7 @@
   <div class="cursor-outline" id="cursorOutline"></div>
 
   <!-- Focus Mode Overlay -->
-  <div class="focus-overlay" id="focusOverlay">
+  <div class="focus-overlay" id="focusOverlay" role="dialog" aria-modal="true" aria-labelledby="focusTitle">
     <div class="focus-ambient"></div>
     <div class="focus-card">
       <div class="focus-title" id="focusTitle">Fokus Mode</div>
@@ -39,9 +40,9 @@
   </div>
 
   <!-- Edit Modal -->
-  <div class="modal-overlay" id="editModal">
+  <div class="modal-overlay" id="editModal" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
     <div class="modal-content">
-      <div class="modal-header">✏️ Edit Tugas</div>
+      <div class="modal-header" id="editModalTitle">✏️ Edit Tugas</div>
       <input type="text" class="task-input modal-input" id="editTitle" placeholder="Judul tugas">
       <input type="text" class="task-input modal-input" id="editDesc" placeholder="Deskripsi (opsional)">
       <input type="text" class="task-input modal-input" id="editCategory" placeholder="📁 Kategori (cth: Kerja, Meeting, Personal)" list="editCategorySuggestions" autocomplete="off">
@@ -82,7 +83,7 @@
   </div>
 
   <!-- Dialog Kustom (pengganti prompt/confirm bawaan browser) -->
-  <div class="modal-overlay" id="appDialog" style="z-index: 3000;">
+  <div class="modal-overlay" id="appDialog" style="z-index: 3000;" role="dialog" aria-modal="true" aria-labelledby="appDialogTitle">
     <div class="modal-content" style="max-width: 420px;">
       <div class="modal-header" id="appDialogTitle"></div>
       <p id="appDialogMessage" style="font-size:0.88rem; color:var(--text-dim); margin-bottom:0.8rem; white-space:pre-line;"></p>
@@ -92,7 +93,7 @@
   </div>
 
   <!-- Parsing Keywords Editor Modal -->
-  <div class="modal-overlay" id="parsingEditorModal">
+  <div class="modal-overlay" id="parsingEditorModal" role="dialog" aria-modal="true" aria-label="Pengaturan parsing kata">
     <div class="modal-content" style="max-width: 650px; max-height: 85vh; overflow-y: auto;">
       <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
         <span>⚙️ Pengaturan Parsing Kata</span>
@@ -263,16 +264,16 @@
 
               <!-- Custom Priority Select -->
               <div class="custom-select" id="priorityCustomSelect">
-                <div class="select-trigger" id="priorityTrigger">
+                <div class="select-trigger" id="priorityTrigger" role="combobox" tabindex="0" aria-expanded="false" aria-controls="priorityOptions" aria-label="Prioritas tugas">
                   <span class="select-icon" id="priorityTriggerIcon">⚡</span>
                   <span class="select-text" id="priorityTriggerText">Medium</span>
                   <span class="select-arrow">▼</span>
                 </div>
-                <div class="select-options" id="priorityOptions">
-                  <div class="select-option" data-value="high"><span class="opt-icon">🔥</span> High</div>
-                  <div class="select-option active" data-value="medium"><span class="opt-icon">⚡</span> Medium</div>
-                  <div class="select-option" data-value="low"><span class="opt-icon">🌿</span> Low</div>
-                  <div class="select-option" data-value="super_high"><span class="opt-icon">💥</span> Super High</div>
+                <div class="select-options" id="priorityOptions" role="listbox">
+                  <div class="select-option" role="option" aria-selected="false" data-value="high"><span class="opt-icon">🔥</span> High</div>
+                  <div class="select-option active" role="option" aria-selected="true" data-value="medium"><span class="opt-icon">⚡</span> Medium</div>
+                  <div class="select-option" role="option" aria-selected="false" data-value="low"><span class="opt-icon">🌿</span> Low</div>
+                  <div class="select-option" role="option" aria-selected="false" data-value="super_high"><span class="opt-icon">💥</span> Super High</div>
                 </div>
               </div>
 
@@ -412,28 +413,29 @@
   </div>
 
   <!-- Settings Toggle -->
-  <div class="settings-toggle" id="settingsToggle">⚙️</div>
+  <button type="button" class="settings-toggle" id="settingsToggle" aria-label="Buka pengaturan">⚙️</button>
   <div class="settings-panel" id="settingsPanel">
-    <div class="toggle-row"><span>🔊 Suara</span><div class="switch on" id="soundToggle"></div></div>
-    <div class="toggle-row"><span>📳 Haptic</span><div class="switch on" id="hapticToggle"></div></div>
-    <div class="toggle-row"><span>🌀 Reduced Motion</span><div class="switch" id="reducedMotionToggle"></div></div>
-    <div class="toggle-row"><span>✨ Custom Cursor</span><div class="switch on" id="cursorToggle"></div></div>
-    <div class="toggle-row"><span>🔔 Reminder Notifikasi</span><div class="switch" id="reminderToggle"></div></div>
+    <div class="toggle-row"><span>🔊 Suara</span><div class="switch on" id="soundToggle" role="switch" tabindex="0" aria-checked="true" aria-label="Suara"></div></div>
+    <div class="toggle-row"><span>📳 Haptic</span><div class="switch on" id="hapticToggle" role="switch" tabindex="0" aria-checked="true" aria-label="Haptic"></div></div>
+    <div class="toggle-row"><span>🌀 Reduced Motion</span><div class="switch" id="reducedMotionToggle" role="switch" tabindex="0" aria-checked="false" aria-label="Reduced motion"></div></div>
+    <div class="toggle-row"><span>✨ Custom Cursor</span><div class="switch on" id="cursorToggle" role="switch" tabindex="0" aria-checked="true" aria-label="Custom cursor"></div></div>
+    <div class="toggle-row"><span>🔔 Reminder Notifikasi</span><div class="switch" id="reminderToggle" role="switch" tabindex="0" aria-checked="false" aria-label="Reminder notifikasi"></div></div>
     <div class="toggle-row">
       <span class="theme-indicator">
         <span class="theme-icon" id="themeIcon">🌙</span>
         <span id="themeLabel">Night Mode</span>
       </span>
-      <div class="switch" id="themeToggle"></div>
+      <div class="switch" id="themeToggle" role="switch" tabindex="0" aria-checked="false" aria-label="Mode terang"></div>
     </div>
     
     <div class="github-section">
       <div class="github-section-title">🔗 GitHub Gist Sync</div>
       <input type="password" class="github-input" id="githubToken" placeholder="GitHub Personal Access Token">
+      <div class="privacy-note">Token hanya disimpan selama tab ini terbuka.</div>
       <input type="text" class="github-input" id="githubGistId" placeholder="Gist ID (kosongkan untuk buat baru)">
       <div class="toggle-row" style="margin-bottom:0.5rem;">
         <span style="font-size:0.8rem;">Auto Sync</span>
-        <div class="switch on" id="githubAutoSync"></div>
+        <div class="switch on" id="githubAutoSync" role="switch" tabindex="0" aria-checked="true" aria-label="Auto Sync GitHub"></div>
       </div>
       <div class="input-row">
         <button class="btn" id="syncToGithub" style="flex:1; font-size:0.8rem; padding:0.6rem;">☁️ Save to GitHub</button>
@@ -448,6 +450,7 @@
       </button>
     </div>
     <div style="margin-top:0.8rem; font-size:0.75rem; color:var(--text-dim);">Data tersimpan di LocalStorage</div>
+    <button class="btn" style="width:100%; margin-top:0.5rem; background:rgba(79,172,254,0.12); color:var(--neon-blue);" id="restoreData">Pulihkan Snapshot Terakhir</button>
     <button class="btn" style="width:100%; margin-top:0.5rem; background:rgba(255,77,109,0.2); color:var(--neon-coral);" id="clearData">Hapus Semua Data</button>
   </div>
 
@@ -455,7 +458,7 @@
 
   <!-- Bottom Navigation (mobile) -->
   <div class="sheet-backdrop" id="sheetBackdrop"></div>
-  <nav class="bottom-nav" id="bottomNav">
+  <nav class="bottom-nav" id="bottomNav" aria-label="Navigasi utama mobile">
     <button class="bnav-item active" data-mview="today"><span>🎯</span>Hari Ini</button>
     <button class="bnav-item" data-mview="calendar"><span>📅</span>Kalender</button>
     <button class="bnav-item" data-mview="tasks"><span>📋</span>Tugas</button>
@@ -465,7 +468,7 @@
   <button class="fab-add" id="fabAdd" title="Tambah tugas">+</button>
 
   <!-- Toast Container -->
-  <div class="toast-container" id="toastContainer"></div>
+  <div class="toast-container" id="toastContainer" role="status" aria-live="polite"></div>
   <!-- Confetti Container -->
   <div class="confetti-container" id="confettiContainer"></div>
 </body></html>

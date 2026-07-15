@@ -1,5 +1,7 @@
 // State & Config
 let tasks = [];
+const STORAGE_SCHEMA_VERSION = 3;
+const RESTORE_POINT_KEY = 'tf_restore_point';
 const prefersLight = () =>
   window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
 let settings = {
@@ -87,10 +89,14 @@ let editingId = null;
 let focusTaskId = null;
 let focusInterval = null;
 let focusTimeLeft = 1500;
+let focusEndsAt = null;
 let currentPriority = 'medium';
 let tempSubtasks = [];
 let userSetDateTime = false;
 let isInitialized = false;
+let githubSyncTimer = null;
+let githubSyncInFlight = false;
+let githubSyncQueued = false;
 
 // Close all popup elements to prevent stacking
 function closeAllPopups() {
@@ -116,7 +122,7 @@ function cacheElements() {
     'subtaskChips','priorityCustomSelect','priorityTrigger','priorityTriggerIcon',
     'priorityTriggerText','priorityOptions','dateTimeInput','addBtn','taskSuggestions',
     'searchInput','taskList','settingsToggle','settingsPanel','soundToggle','hapticToggle',
-    'themeToggle','themeIcon','themeLabel','reducedMotionToggle','cursorToggle','clearData','calendarGrid','calendarTitle',
+    'themeToggle','themeIcon','themeLabel','reducedMotionToggle','cursorToggle','restoreData','clearData','calendarGrid','calendarTitle',
     'prevMonth','nextMonth','prevYear','nextYear','backToToday','dayDetailPanel',
     'dayDetailTitle','dayDetailContent','dayDetailClose','focusOverlay','focusTitle',
     'focusTimer','focusPause','focusClear','editModal','editTitle','editDesc',
@@ -170,6 +176,7 @@ function safeInit() {
     initParsingEditor();
     initReminders();
     isInitialized = true;
+    handleLaunchShortcut();
     console.log('TaskFlow initialized successfully');
   } catch (err) {
     console.error('Init error:', err);
@@ -179,19 +186,52 @@ function safeInit() {
 function loadData() {
   try {
     const savedTasks = localStorage.getItem('tf_tasks');
-    if (savedTasks) tasks = JSON.parse(savedTasks);
+    if (savedTasks) {
+      const parsedTasks = JSON.parse(savedTasks);
+      if (!Array.isArray(parsedTasks)) throw new Error('Format task lokal tidak valid');
+      tasks = parsedTasks.map(normalizeTask);
+    }
     const savedSettings = localStorage.getItem('tf_settings');
     if (savedSettings) {
       const parsed = JSON.parse(savedSettings);
+      // Token lama dimigrasikan ke session-only agar tidak menetap di perangkat.
+      if (parsed.githubToken) {
+        settings.githubToken = String(parsed.githubToken);
+        try { sessionStorage.setItem('tf_githubToken', settings.githubToken); } catch (_) {}
+        delete parsed.githubToken;
+      }
       settings = { ...settings, ...parsed };
       // Belum pernah memilih tema secara eksplisit → ikuti preferensi sistem
       if (!('dayMode' in parsed)) settings.dayMode = prefersLight();
     } else {
       settings.dayMode = prefersLight();
     }
+    try {
+      settings.githubToken = sessionStorage.getItem('tf_githubToken') || settings.githubToken || '';
+    } catch (_) {}
+    saveSettings();
   } catch (e) {
     console.error('Load data error:', e);
+    showToast('Data lokal tidak dapat dibaca. Salinan mentah tetap dipertahankan.', 'error');
   }
+}
+
+function handleLaunchShortcut() {
+  const shortcut = window.location.hash;
+  if (!shortcut) return;
+  setTimeout(() => {
+    if (shortcut === '#quick-add') {
+      setMobileView('today');
+      if (els.taskInput) els.taskInput.focus();
+    } else if (shortcut === '#today') {
+      setMobileView('today');
+    } else if (shortcut === '#focus') {
+      const nextTask = tasks.find(t => !t.done);
+      if (nextTask) enterFocusMode(nextTask.id);
+      else showToast('Belum ada tugas untuk difokuskan.', 'info');
+    }
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+  }, 0);
 }
 
 // Set default datetime to now
@@ -201,8 +241,11 @@ function setDefaultDateTime() {
   now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
   els.dateTimeInput.value = now.toISOString().slice(0, 16);
   userSetDateTime = false;
-  els.dateTimeInput.addEventListener('change', () => { userSetDateTime = true; });
-  els.dateTimeInput.addEventListener('input', () => { userSetDateTime = true; });
+  if (!els.dateTimeInput.dataset.changeReady) {
+    els.dateTimeInput.dataset.changeReady = 'true';
+    els.dateTimeInput.addEventListener('change', () => { userSetDateTime = true; });
+    els.dateTimeInput.addEventListener('input', () => { userSetDateTime = true; });
+  }
 }
 
 // Custom Cursor — opsional (settings), auto-off di layar sentuh & saat reduced motion
@@ -218,19 +261,20 @@ function startCursor() {
 
   if (!cursorListenersReady) {
     cursorListenersReady = true;
+    let cursorFrame = null;
     document.addEventListener('mousemove', (e) => {
       cursorMouseX = e.clientX;
       cursorMouseY = e.clientY;
       if (!cursorRunning) return;
 
-      // Update CSS variables for calendar hover glow
-      const calDays = document.querySelectorAll('.cal-day');
-      calDays.forEach(day => {
+      // Hanya hitung elemen kalender yang sedang di-hover, maksimal sekali per frame.
+      if (!cursorFrame) cursorFrame = requestAnimationFrame(() => {
+        cursorFrame = null;
+        const day = document.elementFromPoint(cursorMouseX, cursorMouseY)?.closest('.cal-day');
+        if (!day) return;
         const rect = day.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * 100;
-        const y = ((e.clientY - rect.top) / rect.height) * 100;
-        day.style.setProperty('--mx', x + '%');
-        day.style.setProperty('--my', y + '%');
+        day.style.setProperty('--mx', ((cursorMouseX - rect.left) / rect.width) * 100 + '%');
+        day.style.setProperty('--my', ((cursorMouseY - rect.top) / rect.height) * 100 + '%');
       });
 
       // Trail effect
@@ -239,16 +283,16 @@ function startCursor() {
       }
     });
 
-    // Hover effects
-    const addHoverListeners = () => {
-      const interactiveElements = document.querySelectorAll('button, .cal-day, .filter-chip, .task-item, .action-btn, .switch, .grip, .select-trigger, .select-option, .chip-remove, .sort-chip, .github-mini-btn');
-      interactiveElements.forEach(el => {
-        el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
-        el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
-      });
-    };
-    addHoverListeners();
-    setInterval(addHoverListeners, 2000);
+    // Delegasi sekali untuk elemen statis maupun elemen hasil render ulang.
+    const interactiveSelector = 'button, .cal-day, .filter-chip, .task-item, .action-btn, .switch, .grip, .select-trigger, .select-option, .chip-remove, .sort-chip, .github-mini-btn';
+    document.addEventListener('mouseover', (e) => {
+      if (e.target.closest(interactiveSelector)) document.body.classList.add('hovering');
+    });
+    document.addEventListener('mouseout', (e) => {
+      const from = e.target.closest(interactiveSelector);
+      const to = e.relatedTarget && e.relatedTarget.closest ? e.relatedTarget.closest(interactiveSelector) : null;
+      if (from && !to) document.body.classList.remove('hovering');
+    });
   }
 
   let dotX = cursorMouseX, dotY = cursorMouseY;
@@ -345,6 +389,14 @@ function initCustomSelect() {
       openPrioritySelect();
     }
   });
+  els.priorityTrigger.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      els.priorityOptions.classList.contains('open') ? closePrioritySelect() : openPrioritySelect();
+    } else if (e.key === 'Escape') {
+      closePrioritySelect();
+    }
+  });
 
   // Hover: hanya di perangkat yang benar-benar punya hover.
   // Di layar sentuh tap memicu mouseenter simulasi yang akan
@@ -384,6 +436,7 @@ function initCustomSelect() {
 function openPrioritySelect() {
   if (els.priorityOptions) els.priorityOptions.classList.add('open');
   if (els.priorityTrigger) els.priorityTrigger.classList.add('open');
+  if (els.priorityTrigger) els.priorityTrigger.setAttribute('aria-expanded', 'true');
   if (els.priorityCustomSelect) els.priorityCustomSelect.classList.add('is-open');
   // Ensure parent glass doesn't clip
   const glass = els.priorityCustomSelect.closest('.glass');
@@ -393,6 +446,7 @@ function openPrioritySelect() {
 function closePrioritySelect() {
   if (els.priorityOptions) els.priorityOptions.classList.remove('open');
   if (els.priorityTrigger) els.priorityTrigger.classList.remove('open');
+  if (els.priorityTrigger) els.priorityTrigger.setAttribute('aria-expanded', 'false');
   if (els.priorityCustomSelect) els.priorityCustomSelect.classList.remove('is-open');
   const glass = (els.priorityCustomSelect && els.priorityCustomSelect.closest('.glass'));
   if (glass) glass.classList.remove('dropdown-active');
@@ -406,6 +460,7 @@ function updatePrioritySelectUI(val) {
   
   document.querySelectorAll('.select-option').forEach(opt => {
     opt.classList.toggle('active', opt.dataset.value === val);
+    opt.setAttribute('aria-selected', opt.dataset.value === val ? 'true' : 'false');
   });
 }
 
@@ -451,6 +506,9 @@ function renderParseChips() {
   }
   if (p.dateTime) {
     html += `<span class="parse-chip chip-date" data-chip="date" title="Klik untuk ubah manual, × untuk hapus">📅 ${escapeHtml(smartDateDisplay(p.dateTime, p.timeHint))}<span class="chip-x" data-x="date">×</span></span>`;
+  }
+  if (p.parseError) {
+    html += `<span class="parse-chip chip-error" title="Perbaiki input sebelum menambahkan tugas">⚠️ ${escapeHtml(p.parseError)}</span>`;
   }
   html += `<span class="parse-chip chip-priority" data-chip="priority" title="Klik untuk ganti prioritas">${getPriorityIcon(p.priority)} ${labels[p.priority] || p.priority}</span>`;
   html += `<span class="parse-chip chip-status chip-status-${statusKey}" data-chip="status" title="Klik untuk ganti status">${statusLabel}</span>`;
@@ -542,21 +600,14 @@ function renderSubtaskChips() {
 
 // Enter key on ALL inputs
 function initEnterKey() {
-  const inputs = ['taskInput', 'descInput', 'categoryInput', 'subtaskInput', 'dateTimeInput'];
+  // Subtask punya handler Enter sendiri agar tidak ikut men-submit task utama.
+  const inputs = ['taskInput', 'descInput', 'categoryInput', 'dateTimeInput'];
   inputs.forEach(id => {
     const el = els[id];
     if (el) {
       el.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
-          // If subtask input and has value, add subtask chip instead
-          if (id === 'subtaskInput' && el.value.trim()) {
-            tempSubtasks.push({ text: el.value.trim(), done: false });
-            renderSubtaskChips();
-            el.value = '';
-            playSound('add');
-            return;
-          }
           addTask();
         }
       });
@@ -676,7 +727,7 @@ function showDayDetail(dateStr, dayNum) {
   } else {
     els.dayDetailContent.innerHTML = dayTasks.map((t, i) => `
       <div class="day-task-item ${t.priority} ${t.done ? 'done' : ''}" style="animation-delay:${i * 0.1}s">
-        <input type="checkbox" class="task-check" ${t.done ? 'checked' : ''} onchange="toggleTaskFromCalendar('${t.id}')">
+        <input type="checkbox" class="task-check" data-task-id="${escapeHtml(t.id)}" ${t.done ? 'checked' : ''}>
         <div>
           <div style="font-weight:600; ${t.done ? 'text-decoration:line-through;opacity:0.6' : ''}">${escapeHtml(t.title)}</div>
           <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
@@ -687,6 +738,9 @@ function showDayDetail(dateStr, dayNum) {
         </div>
       </div>
     `).join('');
+    els.dayDetailContent.querySelectorAll('.task-check[data-task-id]').forEach(checkbox => {
+      checkbox.addEventListener('change', () => toggleTaskFromCalendar(checkbox.dataset.taskId));
+    });
   }
   els.dayDetailPanel.classList.add('show');
 }
@@ -710,6 +764,7 @@ function smartParse(text) {
   let timeHint = '';
   let cleanedText = text;
   let parsedDateTime = null;
+  let parseError = '';
   const config = loadParsingConfig();
 
   // ── Priority ──
@@ -737,27 +792,36 @@ function smartParse(text) {
   cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
 
   // ── Time parsing (jam/pukul) ──
-  const timeMatch = cleanedText.match(/(jam|pukul)\s+(\d{1,2})(?:[.:](\d{2}))?\s*(pagi|siang|sore|malam)?/i);
+  const timeMatch = cleanedText.match(/(jam|pukul)\s+(\d{1,2})(?:[.:](\d{2}))?\s*(pagi|siang|sore|malam|am|pm)?/i);
   if (timeMatch) {
     let h = parseInt(timeMatch[2]);
     const period = timeMatch[4]?.toLowerCase();
-    const m = timeMatch[3] || '00';
-    if (period === 'sore' || period === 'malam') {
-      if (h < 12) h += 12;
-    } else if (period === 'pagi' || period === 'siang') {
-      if (h === 12) h = 0;
+    const minute = parseInt(timeMatch[3] || '00');
+    const usesTwelveHourClock = !!period;
+    const validHour = usesTwelveHourClock ? h >= 1 && h <= 12 : h >= 0 && h <= 23;
+    if (validHour && minute >= 0 && minute <= 59) {
+      if (period === 'pagi' || period === 'am') {
+        if (h === 12) h = 0;
+      } else if (period === 'siang' || period === 'sore' || period === 'pm') {
+        if (h < 12) h += 12;
+      } else if (period === 'malam') {
+        h = h === 12 ? 0 : h + 12;
+      }
+      timeHint = `${String(h).padStart(2,'0')}:${String(minute).padStart(2,'0')}`;
+      cleanedText = cleanedText.replace(timeMatch[0], '').trim();
+    } else {
+      parseError = 'Waktu tidak valid';
     }
-    if (h >= 24) h -= 24;
-    timeHint = `${String(h).padStart(2,'0')}:${m}`;
-    cleanedText = cleanedText.replace(timeMatch[0], '').trim();
   }
   const standaloneTime = cleanedText.match(/\b(\d{1,2})[.:](\d{2})\b/);
   if (standaloneTime && !timeHint) {
     const h = parseInt(standaloneTime[1]);
-    const m = standaloneTime[2];
+    const m = parseInt(standaloneTime[2]);
     if (h >= 0 && h <= 23 && m >= 0 && m <= 59) {
-      timeHint = `${String(h).padStart(2,'0')}:${m}`;
+      timeHint = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
       cleanedText = cleanedText.replace(standaloneTime[0], '').trim();
+    } else {
+      parseError = 'Waktu tidak valid';
     }
   }
 
@@ -791,10 +855,13 @@ function smartParse(text) {
       const d = new Date(yyyy, mm, dd,
                         timeHint ? parseInt(timeHint.split(':')[0]) : 8,
                         timeHint ? parseInt(timeHint.split(':')[1]) : 0, 0);
-      if (!isNaN(d.getTime())) {
+      // Date akan di-rollover otomatis oleh JS; validasi kembali komponennya.
+      if (!isNaN(d.getTime()) && d.getFullYear() === yyyy && d.getMonth() === mm && d.getDate() === dd) {
         parsedDateTime = d.toISOString();
         cleanedText = cleanedText.replace(absDateMatch[0], '').trim();
         hasDateKeyword = true;
+      } else {
+        parseError = 'Tanggal tidak valid';
       }
     }
   }
@@ -841,7 +908,7 @@ function smartParse(text) {
   }
 
   // If still no date but there's a timeHint, default to today
-  if (!parsedDateTime && timeHint) {
+  if (!parsedDateTime && timeHint && !parseError) {
     const d = new Date(now);
     const [th, tm] = timeHint.split(':');
     d.setHours(parseInt(th), parseInt(tm), 0, 0);
@@ -866,7 +933,7 @@ function smartParse(text) {
     if (match) desc = match[0];
   }
 
-  return { title: cleanedText || text, priority, desc, timeHint, statusDone, statusOngoing, dateTime: parsedDateTime };
+  return { title: cleanedText || text, priority, desc, timeHint, statusDone, statusOngoing, dateTime: parsedDateTime, parseError };
 }
 
 function escapeRegex(str) {
@@ -942,6 +1009,11 @@ function addTask() {
   if (!raw) return;
 
   const parsed = effectiveParse(raw);
+  if (parsed.parseError) {
+    showToast(parsed.parseError + '. Periksa tanggal atau waktu pada input.', 'error');
+    els.taskInput.focus();
+    return;
+  }
 
   const newTask = {
     id: Date.now().toString(),
@@ -981,9 +1053,6 @@ function addTask() {
   userSetDateTime = false;
   setDefaultDateTime();
   
-  if (settings.githubAutoSync && settings.githubToken) {
-    syncToGitHub();
-  }
 }
 
 
@@ -1071,7 +1140,7 @@ function renderTasks() {
             <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="${100 - (t.pomodoro.timeLeft/1500)*100}"/></svg>
             <span class="pomo-time">${formatTime(t.pomodoro.timeLeft)}</span>
             <button class="pomo-btn">${t.pomodoro.active ? '⏸' : '▶'}</button>
-            ${t.pomodoro.active ? '<button class="pomo-clear-btn" title="Clear Focus">✕</button>' : ''}
+            ${t.pomodoro.active || t.pomodoro.timeLeft < 1500 ? '<button class="pomo-clear-btn" title="Clear Focus">✕</button>' : ''}
           </div>
           ${!t.done ? `<button class="status-toggle-btn ${t.ongoing ? 's-ongoing' : 's-pending'}" data-id="${t.id}" title="${t.ongoing ? 'Klik untuk set Pending' : 'Klik untuk set On Going'}">${t.ongoing ? '🔥 On Going' : '⏳ Pending'}</button>` : ''}
         </div>
@@ -1344,7 +1413,6 @@ function initKanbanDragDrop() {
       withViewTransition(() => { renderKanban(); updateStats(); renderCalendar(); });
       playSound('add');
 
-      if (settings.githubAutoSync && settings.githubToken) syncToGitHub();
     });
   });
 }
@@ -1381,9 +1449,6 @@ function toggleTask(id, checkbox) {
   }
   setTimeout(() => withViewTransition(() => { renderCurrentView(); updateStats(); renderCalendar(); }), delay);
   
-  if (settings.githubAutoSync && settings.githubToken) {
-    syncToGitHub();
-  }
 }
 
 function deleteTask(id) {
@@ -1396,7 +1461,6 @@ function deleteTask(id) {
   updateSuggestions();
   playSound('delete'); vibrate();
   showToast('Tugas dihapus', 'info', { label: '↩️ Undo', onClick: undo });
-  if (settings.githubAutoSync && settings.githubToken) syncToGitHub();
 }
 
 async function addSubtask(id) {
@@ -1474,7 +1538,9 @@ function enterFocusMode(id) {
   const t = tasks.find(x => x.id === id);
   if (!t || !els.focusOverlay) return;
   focusTaskId = id;
-  focusTimeLeft = t.pomodoro.timeLeft;
+  focusTimeLeft = t.pomodoro.timeLeft > 0 ? t.pomodoro.timeLeft : 1500;
+  t.pomodoro.timeLeft = focusTimeLeft;
+  if (els.focusTimer) els.focusTimer.textContent = formatTime(focusTimeLeft);
   const open = () => {
     els.focusTitle.textContent = `🎯 ${t.title}`;
     applyFocusMood(settings.focusMood);
@@ -1499,29 +1565,52 @@ function enterFocusMode(id) {
 
 function startFocusTimer() {
   if (focusInterval) clearInterval(focusInterval);
+  if (focusTimeLeft <= 0) focusTimeLeft = 1500;
+  focusEndsAt = Date.now() + focusTimeLeft * 1000;
   if (els.focusPause) els.focusPause.textContent = '⏸ Pause';
-  focusInterval = setInterval(() => {
-    if (focusTimeLeft > 0) {
-      focusTimeLeft--;
-      if (els.focusTimer) els.focusTimer.textContent = formatTime(focusTimeLeft);
-      const t = tasks.find(x => x.id === focusTaskId);
-      if (t) { t.pomodoro.timeLeft = focusTimeLeft; save(); }
-    } else {
+  const activeTask = tasks.find(x => x.id === focusTaskId);
+  if (activeTask) {
+    activeTask.pomodoro.active = true;
+    activeTask.pomodoro.timeLeft = focusTimeLeft;
+    save();
+  }
+  const tick = () => {
+    focusTimeLeft = Math.max(0, Math.ceil((focusEndsAt - Date.now()) / 1000));
+    if (els.focusTimer) els.focusTimer.textContent = formatTime(focusTimeLeft);
+    const t = tasks.find(x => x.id === focusTaskId);
+    if (t) t.pomodoro.timeLeft = focusTimeLeft;
+    if (focusTimeLeft <= 0) {
       clearInterval(focusInterval);
+      focusInterval = null;
+      if (t) {
+        t.pomodoro.active = false;
+        t.pomodoro.timeLeft = 1500;
+        save();
+      }
       playSound('complete');
       showToast('⏰ Fokus selesai!', 'success');
       exitFocusMode();
     }
-  }, 1000);
+  };
+  tick();
+  focusInterval = setInterval(tick, 250);
 }
 
 
 
 
 
-function exitFocusMode() {
+function exitFocusMode(reset = false) {
   if (focusInterval) clearInterval(focusInterval);
+  const t = tasks.find(x => x.id === focusTaskId);
+  if (t) {
+    t.pomodoro.active = false;
+    if (reset) t.pomodoro.timeLeft = 1500;
+    else if (focusTimeLeft > 0) t.pomodoro.timeLeft = focusTimeLeft;
+    save();
+  }
   focusInterval = null;
+  focusEndsAt = null;
   focusTaskId = null;
   focusTimeLeft = 1500;
   if (els.focusOverlay) els.focusOverlay.classList.remove('active');
@@ -1614,6 +1703,7 @@ function stopAllPomodoros() {
 function togglePomodoro(id) {
   const t = tasks.find(x => x.id === id);
   if (!t) return;
+  if (!t.pomodoro.active && t.pomodoro.timeLeft <= 0) t.pomodoro.timeLeft = 1500;
   t.pomodoro.active = !t.pomodoro.active;
 
   if (t.pomodoro.active && !pomoIntervals[id]) {
@@ -1634,6 +1724,7 @@ function togglePomodoro(id) {
       } else {
         stopPomodoro(id);
         task.pomodoro.active = false;
+        task.pomodoro.timeLeft = 1500;
         save();
         renderCurrentView();
         playSound('complete');
@@ -1912,7 +2003,17 @@ function renderQuickTemplates() {
 
 // ===== EXPORT / IMPORT =====
 function exportToJson() {
-  const data = { tasks: tasks, settings: Object.assign({}, settings, {githubToken: undefined}), exportDate: new Date().toISOString() };
+  const data = {
+    schemaVersion: STORAGE_SCHEMA_VERSION,
+    tasks,
+    settings: Object.assign({}, settings, { githubToken: undefined }),
+    parsingConfig: loadParsingConfig(),
+    streak: {
+      count: parseInt(localStorage.getItem('tf_streak') || '0'),
+      lastComplete: localStorage.getItem('tf_lastComplete') || null
+    },
+    exportDate: new Date().toISOString()
+  };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -1924,16 +2025,20 @@ function exportToJson() {
 }
 function exportToCsv() {
   const headers = ['ID','Title','Description','Category','Priority','Status','DateTime','CreatedAt','Subtasks'];
+  const csvCell = (value) => {
+    let text = String(value ?? '');
+    if (/^[=+\-@]/.test(text)) text = "'" + text;
+    return '"' + text.replace(/"/g, '""') + '"';
+  };
   const rows = tasks.map(t => [
-    t.id, '"' + (t.title || '').replace(/"/g, '""') + '"',
-    '"' + (t.desc || '').replace(/"/g, '""') + '"',
+    t.id, t.title || '', t.desc || '',
     t.category || '', t.priority || '',
     t.done ? 'done' : (t.ongoing ? 'ongoing' : 'pending'),
     t.dateTime || '', t.createdAt || '',
     (t.subtasks || []).map(s => s.text).join('; ')
   ]);
-  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
+  const csv = '\uFEFF' + [headers.map(csvCell).join(','), ...rows.map(r => r.map(csvCell).join(','))].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -1942,20 +2047,129 @@ function exportToCsv() {
   URL.revokeObjectURL(url);
   showToast(tasks.length + ' tugas diekspor ke CSV', 'success');
 }
+
+function createTaskId() {
+  if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
+  return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+}
+
+function normalizeDateValue(value, fallback = null) {
+  if (!value) return fallback;
+  const date = new Date(value);
+  return isNaN(date.getTime()) ? fallback : date.toISOString();
+}
+
+function createRestorePoint(source) {
+  try {
+    localStorage.setItem(RESTORE_POINT_KEY, JSON.stringify({
+      schemaVersion: STORAGE_SCHEMA_VERSION,
+      source,
+      createdAt: new Date().toISOString(),
+      tasks,
+      settings: Object.assign({}, settings, { githubToken: undefined }),
+      parsingConfig: loadParsingConfig()
+    }));
+    return true;
+  } catch (error) {
+    console.error('Restore point error:', error);
+    showToast('Restore dibatalkan karena snapshot lokal tidak dapat dibuat.', 'error');
+    return false;
+  }
+}
+
+async function restoreLastSnapshot() {
+  try {
+    const raw = localStorage.getItem(RESTORE_POINT_KEY);
+    if (!raw) {
+      showToast('Belum ada snapshot pemulihan.', 'info');
+      return;
+    }
+    const snapshot = JSON.parse(raw);
+    if (!Array.isArray(snapshot.tasks)) throw new Error('Snapshot tidak valid');
+    const label = snapshot.createdAt
+      ? new Date(snapshot.createdAt).toLocaleString('id-ID')
+      : 'snapshot terakhir';
+    const replaced = await replaceTasksSafely(snapshot.tasks, `Snapshot ${label}`);
+    if (!replaced) return;
+    applyImportedSettings(snapshot.settings);
+    if (snapshot.parsingConfig) saveParsingConfig(snapshot.parsingConfig);
+    showToast('Snapshot berhasil dipulihkan.', 'success', { label: 'Undo', onClick: undo });
+  } catch (error) {
+    showToast('Snapshot tidak dapat dipulihkan: ' + error.message, 'error');
+  }
+}
+
+function applyImportedSettings(importedSettings) {
+  if (!importedSettings || typeof importedSettings !== 'object') return;
+  ['sound', 'haptic', 'dayMode', 'reminders', 'customCursor', 'githubAutoSync'].forEach(key => {
+    if (typeof importedSettings[key] === 'boolean') settings[key] = importedSettings[key];
+  });
+  if (typeof importedSettings.reducedMotion === 'boolean' || importedSettings.reducedMotion === null) {
+    settings.reducedMotion = importedSettings.reducedMotion;
+  }
+  if (['deep', 'calm', 'night'].includes(importedSettings.focusMood)) settings.focusMood = importedSettings.focusMood;
+  if (typeof importedSettings.githubGistId === 'string' && /^[a-zA-Z0-9]+$/.test(importedSettings.githubGistId)) {
+    settings.githubGistId = importedSettings.githubGistId;
+  }
+  saveSettings();
+  loadSettings();
+  applyMotionSettings();
+}
+
+async function replaceTasksSafely(imported, source, syncAfterReplace = true) {
+  if (!Array.isArray(imported)) throw new Error('Daftar tugas tidak valid');
+  const normalized = imported.map(normalizeTask).filter(t => t.title);
+  const confirmed = await showConfirm(
+    'Ganti Data Tugas?',
+    `${source} berisi ${normalized.length} tugas. Data lokal saat ini (${tasks.length} tugas) akan diganti. Snapshot pemulihan dan Undo akan dibuat terlebih dahulu.`,
+    'Ganti Data'
+  );
+  if (!confirmed) return false;
+  if (tasks.length && !createRestorePoint(source)) return false;
+
+  const previous = JSON.parse(JSON.stringify(tasks));
+  pushUndo({ type: 'clear', tasks: previous });
+  stopAllPomodoros();
+  if (focusInterval) clearInterval(focusInterval);
+  focusInterval = null;
+  focusEndsAt = null;
+  focusTaskId = null;
+  focusTimeLeft = 1500;
+  if (els.focusOverlay) els.focusOverlay.classList.remove('active');
+  tasks = normalized;
+  if (!save({ sync: syncAfterReplace })) {
+    tasks = previous;
+    return false;
+  }
+  renderCurrentView();
+  updateStats();
+  renderCalendar();
+  updateSuggestions();
+  checkStreak();
+  return true;
+}
+
 // Pastikan task dari import/sync punya semua field yang dibutuhkan renderer
 function normalizeTask(t) {
+  t = t && typeof t === 'object' ? t : {};
   const priorities = ['super_high', 'high', 'medium', 'low'];
+  const rawId = String((t && t.id) || '');
+  const safeId = /^[a-zA-Z0-9_-]{1,128}$/.test(rawId) ? rawId : createTaskId();
+  const createdAt = normalizeDateValue(t && t.createdAt, new Date().toISOString());
+  const timeLeft = t && t.pomodoro && Number.isFinite(Number(t.pomodoro.timeLeft))
+    ? Math.max(0, Math.min(1500, Math.floor(Number(t.pomodoro.timeLeft))))
+    : 1500;
   return {
-    id: String(t.id || (Date.now().toString() + Math.random().toString(36).slice(2, 7))),
-    title: String(t.title || ''),
-    desc: t.desc ? String(t.desc) : '',
-    category: t.category ? String(t.category) : '',
-    priority: priorities.includes(t.priority) ? t.priority : 'medium',
-    done: !!t.done,
-    ongoing: !t.done && !!t.ongoing,
-    completedAt: t.done && typeof t.completedAt === 'string' ? t.completedAt : null,
-    createdAt: t.createdAt || new Date().toISOString(),
-    dateTime: t.dateTime || null,
+    id: safeId,
+    title: String((t && t.title) || ''),
+    desc: t && t.desc ? String(t.desc) : '',
+    category: t && t.category ? String(t.category) : '',
+    priority: t && priorities.includes(t.priority) ? t.priority : 'medium',
+    done: !!(t && t.done),
+    ongoing: !(t && t.done) && !!(t && t.ongoing),
+    completedAt: t && t.done ? normalizeDateValue(t.completedAt) : null,
+    createdAt,
+    dateTime: normalizeDateValue(t && t.dateTime),
     // timeHint ikut dirender ke innerHTML — hanya terima format jam (H:MM/HH:MM)
     timeHint: /^\d{1,2}:\d{2}$/.test(String(t.timeHint || '').trim()) ? String(t.timeHint).trim() : '',
     repeat: ['daily', 'weekly', 'monthly'].includes(t.repeat) ? t.repeat : 'none',
@@ -1965,7 +2179,7 @@ function normalizeTask(t) {
       : [],
     pomodoro: {
       active: false,
-      timeLeft: (t.pomodoro && Number.isFinite(t.pomodoro.timeLeft)) ? t.pomodoro.timeLeft : 1500
+      timeLeft: timeLeft > 0 ? timeLeft : 1500
     }
   };
 }
@@ -2026,22 +2240,29 @@ function parseCsvTasks(text) {
 
 function importFile(file) {
   const reader = new FileReader();
-  reader.onload = (e) => {
+  reader.onload = async (e) => {
     try {
       let imported;
+      let importedData = null;
       if (/\.csv$/i.test(file.name)) {
         imported = parseCsvTasks(e.target.result);
       } else {
-        const data = JSON.parse(e.target.result);
-        if (!data.tasks || !Array.isArray(data.tasks)) throw new Error('Format JSON tidak valid');
-        imported = data.tasks;
+        importedData = JSON.parse(e.target.result);
+        if (!importedData.tasks || !Array.isArray(importedData.tasks)) throw new Error('Format JSON tidak valid');
+        imported = importedData.tasks;
       }
-      stopAllPomodoros();
-      tasks = imported.map(normalizeTask);
-      save();
-      renderCurrentView();
-      updateStats(); renderCalendar(); updateSuggestions();
-      showToast('Import berhasil: ' + tasks.length + ' tugas', 'success');
+      const replaced = await replaceTasksSafely(imported, `Import ${file.name}`);
+      if (!replaced) return;
+      if (importedData) {
+        applyImportedSettings(importedData.settings);
+        if (importedData.parsingConfig) saveParsingConfig(importedData.parsingConfig);
+        if (importedData.streak) {
+          const count = parseInt(importedData.streak.count);
+          if (!isNaN(count)) localStorage.setItem('tf_streak', count);
+          if (importedData.streak.lastComplete) localStorage.setItem('tf_lastComplete', importedData.streak.lastComplete);
+        }
+      }
+      showToast('Import berhasil: ' + tasks.length + ' tugas', 'success', { label: 'Undo', onClick: undo });
     } catch (err) {
       showToast('Error import: ' + err.message, 'error');
     }
@@ -2094,6 +2315,7 @@ function batchMarkDone() {
   renderCurrentView();
   updateStats(); renderCalendar();
   playSound('complete');
+  checkStreak();
   showToast('Tugas ditandai selesai', 'success');
   setTimeout(checkAllDoneCelebration, 300);
 }
@@ -2297,6 +2519,18 @@ function saveParsingEditor() {
 }
 
 function initButtonListeners() {
+  document.querySelectorAll('[role="switch"]').forEach(sw => {
+    sw.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        sw.click();
+      }
+    });
+    sw.addEventListener('click', () => setTimeout(() => {
+      sw.setAttribute('aria-checked', sw.classList.contains('on') ? 'true' : 'false');
+    }, 0));
+  });
+
   // Status filters
   document.querySelectorAll('#statusFilters .filter-chip').forEach(f => {
     f.addEventListener('click', () => {
@@ -2409,10 +2643,15 @@ function initButtonListeners() {
     settings.githubAutoSync = !settings.githubAutoSync;
     els.githubAutoSync.classList.toggle('on');
     saveSettings();
+    if (settings.githubAutoSync) scheduleGitHubSync();
   });
 
   if (els.githubToken) els.githubToken.addEventListener('change', () => {
     settings.githubToken = els.githubToken.value.trim();
+    try {
+      if (settings.githubToken) sessionStorage.setItem('tf_githubToken', settings.githubToken);
+      else sessionStorage.removeItem('tf_githubToken');
+    } catch (_) {}
     saveSettings();
   });
 
@@ -2421,7 +2660,7 @@ function initButtonListeners() {
     saveSettings();
   });
 
-  
+  if (els.restoreData) els.restoreData.addEventListener('click', restoreLastSnapshot);
 
   if (els.clearData) els.clearData.addEventListener('click', async () => {
     const ok = await showConfirm('🗑️ Hapus Semua Data',
@@ -2450,6 +2689,13 @@ function initButtonListeners() {
     if (focusInterval) {
       clearInterval(focusInterval);
       focusInterval = null;
+      focusEndsAt = null;
+      const t = tasks.find(x => x.id === focusTaskId);
+      if (t) {
+        t.pomodoro.active = false;
+        t.pomodoro.timeLeft = focusTimeLeft;
+        save();
+      }
       els.focusPause.textContent = '▶ Resume';
     } else {
       startFocusTimer();
@@ -2458,7 +2704,7 @@ function initButtonListeners() {
 
   if (els.focusClear) els.focusClear.addEventListener('click', async () => {
     if (await showConfirm('✕ Clear Focus', 'Yakin ingin menghentikan focus mode?', 'Hentikan')) {
-      exitFocusMode();
+      exitFocusMode(true);
     }
   });
 
@@ -2482,13 +2728,16 @@ function initButtonListeners() {
     if (els.editDateTime.value) {
       t.dateTime = new Date(els.editDateTime.value).toISOString();
       t.notified = false;
+    } else {
+      t.dateTime = null;
+      t.timeHint = '';
+      t.notified = false;
     }
     if (!wasDone && t.done) spawnRecurring(t);
     save(); renderCurrentView(); updateStats(); renderCalendar();
     if (els.editModal) els.editModal.classList.remove('show');
     editingId = null;
     playSound('add');
-    if (settings.githubAutoSync && settings.githubToken) syncToGitHub();
   });
 
   if (els.editCancel) els.editCancel.addEventListener('click', () => {
@@ -2792,13 +3041,32 @@ function showGithubStatus(msg, type) {
   }
 }
 
-async function syncToGitHub() {
-  const token = els.githubToken ? els.githubToken.value.trim() : '';
+function scheduleGitHubSync() {
+  if (!isInitialized || !settings.githubAutoSync || !settings.githubToken) return;
+  clearTimeout(githubSyncTimer);
+  githubSyncTimer = setTimeout(() => {
+    githubSyncTimer = null;
+    if (githubSyncInFlight) {
+      githubSyncQueued = true;
+      return;
+    }
+    syncToGitHub({ automatic: true });
+  }, 900);
+}
+
+async function syncToGitHub({ automatic = false } = {}) {
+  const token = (els.githubToken ? els.githubToken.value.trim() : '') || settings.githubToken || '';
   if (!token) { showGithubStatus('❌ Token diperlukan', 'error'); return; }
+  if (githubSyncInFlight) {
+    githubSyncQueued = true;
+    return;
+  }
+  githubSyncInFlight = true;
   
-  showGithubStatus('☁️ Menyinkronkan...', 'info');
+  if (!automatic) showGithubStatus('☁️ Menyinkronkan...', 'info');
   try {
     const data = {
+      schemaVersion: STORAGE_SCHEMA_VERSION,
       tasks,
       settings: {...settings, githubToken: undefined, githubGistId: undefined},
       parsingConfig: loadParsingConfig(),
@@ -2827,7 +3095,8 @@ async function syncToGitHub() {
         })
       });
       if (!res.ok) throw new Error('Gagal update Gist: ' + res.status);
-      showGithubStatus('✅ Tersimpan ke GitHub', 'success'); showToast('Data tersimpan ke GitHub', 'success');
+      showGithubStatus('✅ Tersimpan ke GitHub', 'success');
+      if (!automatic) showToast('Data tersimpan ke GitHub', 'success');
     } else {
       const res = await fetch('https://api.github.com/gists', {
         method: 'POST',
@@ -2847,10 +3116,17 @@ async function syncToGitHub() {
       if (els.githubGistId) els.githubGistId.value = json.id;
       settings.githubGistId = json.id;
       saveSettings();
-      showGithubStatus(`✅ Gist dibuat: ${json.id}`, 'success'); showToast('Gist baru berhasil dibuat', 'success');
+      showGithubStatus(`✅ Gist dibuat: ${json.id}`, 'success');
+      if (!automatic) showToast('Gist baru berhasil dibuat', 'success');
     }
   } catch (err) {
     showGithubStatus('❌ Error: ' + err.message, 'error'); showToast('Error: ' + err.message, 'error');
+  } finally {
+    githubSyncInFlight = false;
+    if (githubSyncQueued) {
+      githubSyncQueued = false;
+      scheduleGitHubSync();
+    }
   }
 }
 
@@ -2864,6 +3140,7 @@ async function loadFromGitHub() {
   showGithubStatus('📥 Memuat...', 'info');
   try {
     const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+      cache: 'no-store',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Accept': 'application/vnd.github.v3+json'
@@ -2873,25 +3150,33 @@ async function loadFromGitHub() {
     const json = await res.json();
     const file = json.files['taskflow-data.json'];
     if (!file) throw new Error('File taskflow-data.json tidak ditemukan');
-    
-    const data = JSON.parse(file.content);
+
+    let gistContent = file.content;
+    if (file.truncated && file.raw_url) {
+      const raw = await fetch(file.raw_url, {
+        cache: 'no-store',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!raw.ok) throw new Error('Gagal memuat isi Gist lengkap: ' + raw.status);
+      gistContent = await raw.text();
+    }
+    const data = JSON.parse(gistContent);
+    if (!Array.isArray(data.tasks)) throw new Error('Format task di Gist tidak valid');
+    const replaced = await replaceTasksSafely(data.tasks, 'GitHub Gist', false);
+    if (!replaced) {
+      showGithubStatus('Load dibatalkan', 'info');
+      return;
+    }
+    applyImportedSettings(data.settings);
     if (data.parsingConfig) saveParsingConfig(data.parsingConfig);
     if (data.streak) {
       const count = parseInt(data.streak.count);
       if (!isNaN(count)) localStorage.setItem('tf_streak', count);
       if (data.streak.lastComplete) localStorage.setItem('tf_lastComplete', data.streak.lastComplete);
     }
-    if (data.tasks) {
-      stopAllPomodoros();
-      tasks = data.tasks.map(normalizeTask);
-      save();
-      renderCurrentView();
-      updateStats();
-      renderCalendar();
-      updateSuggestions();
-      checkStreak();
-      showGithubStatus(`✅ Data dimuat (${tasks.length} tugas)`, 'success'); showToast(`${tasks.length} tugas dimuat dari GitHub`, 'success');
-    }
+    checkStreak();
+    showGithubStatus(`✅ Data dimuat (${tasks.length} tugas)`, 'success');
+    showToast(`${tasks.length} tugas dimuat dari GitHub`, 'success', { label: 'Undo', onClick: undo });
   } catch (err) {
     showGithubStatus('❌ Error: ' + err.message, 'error'); showToast('Error: ' + err.message, 'error');
   }
@@ -2916,18 +3201,34 @@ function loadSettings() {
   if (els.githubGistId) els.githubGistId.value = settings.githubGistId || '';
   if (els.aiApiKey) els.aiApiKey.value = settings.aiApiKey || '';
   
-  if (settings.dayMode) {
-    document.body.classList.add('day-mode');
-    if (els.themeIcon) els.themeIcon.textContent = '☀️';
-    if (els.themeLabel) els.themeLabel.textContent = 'Day Mode';
-  }
+  document.body.classList.toggle('day-mode', !!settings.dayMode);
+  if (els.themeIcon) els.themeIcon.textContent = settings.dayMode ? '☀️' : '🌙';
+  if (els.themeLabel) els.themeLabel.textContent = settings.dayMode ? 'Day Mode' : 'Night Mode';
+  document.querySelectorAll('[role="switch"]').forEach(sw =>
+    sw.setAttribute('aria-checked', sw.classList.contains('on') ? 'true' : 'false'));
 }
 
-function save() { 
-  try { localStorage.setItem('tf_tasks', JSON.stringify(tasks)); } catch(e) { console.error('Save error:', e); }
+function save({ sync = true } = {}) {
+  try {
+    localStorage.setItem('tf_tasks', JSON.stringify(tasks));
+    if (sync) scheduleGitHubSync();
+    return true;
+  } catch(e) {
+    console.error('Save error:', e);
+    showToast('Penyimpanan lokal penuh atau tidak tersedia. Perubahan belum aman.', 'error');
+    return false;
+  }
 }
-function saveSettings() { 
-  try { localStorage.setItem('tf_settings', JSON.stringify(settings)); } catch(e) { console.error('Save settings error:', e); }
+function saveSettings() {
+  try {
+    const persistableSettings = { ...settings, githubToken: undefined };
+    localStorage.setItem('tf_settings', JSON.stringify(persistableSettings));
+    return true;
+  } catch(e) {
+    console.error('Save settings error:', e);
+    showToast('Pengaturan tidak dapat disimpan.', 'error');
+    return false;
+  }
 }
 function escapeHtml(str) {
   if (!str) return '';
