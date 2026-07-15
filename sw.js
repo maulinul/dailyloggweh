@@ -1,7 +1,7 @@
 // TaskFlow Pro — Service Worker
 // App shell di-cache saat install; dokumen pakai network-first supaya update
 // cepat terlihat, aset lain cache-first dengan pengisian cache saat runtime.
-const CACHE = 'taskflow-v2';
+const CACHE = 'taskflow-v3';
 const APP_SHELL = [
   './',
   './index.html',
@@ -30,18 +30,22 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-function fetchAndCache(request) {
-  return fetch(request).then((res) => {
-    if (res && res.ok) {
-      const copy = res.clone();
-      caches.open(CACHE).then((c) => c.put(request, copy));
-    }
-    return res;
-  });
+async function fetchAndCache(request) {
+  const res = await fetch(request);
+  const url = new URL(request.url);
+  if (res && res.ok && url.origin === self.location.origin) {
+    const cache = await caches.open(CACHE);
+    await cache.put(request, res.clone());
+  }
+  return res;
 }
 
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
+  const url = new URL(e.request.url);
+
+  // Jangan pernah cache API/cross-origin, terutama respons private GitHub Gist.
+  if (url.origin !== self.location.origin) return;
 
   // Navigasi/dokumen: network-first, fallback ke cache saat offline
   if (e.request.mode === 'navigate') {
@@ -53,10 +57,10 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // Aset lain (termasuk font Google): cache-first, isi cache saat runtime
+  // Aset same-origin: network-first agar HTML, JS, dan CSS selalu satu versi.
   e.respondWith(
-    caches.match(e.request).then((cached) =>
-      cached || fetchAndCache(e.request).catch(() => cached)
+    fetchAndCache(e.request).catch(() =>
+      caches.match(e.request).then((cached) => cached || caches.match('./index.html'))
     )
   );
 });
