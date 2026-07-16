@@ -1,5 +1,5 @@
 // State & Config
-const APP_VERSION = '20260716a';
+const APP_VERSION = '20260716b';
 let tasks = [];
 const STORAGE_SCHEMA_VERSION = 3;
 const RESTORE_POINT_KEY = 'tf_restore_point';
@@ -1527,16 +1527,26 @@ function toggleTask(id, checkbox) {
   if (t.done) { spawnRecurring(t); playSound('complete'); vibrate(); checkStreak(); setTimeout(checkAllDoneCelebration, 300); }
   else { t.ongoing = false; }
   save();
-  // micro-interaction dulu (centang pop + card settle), re-render menyusul via view transition
-  let delay = 50;
-  if (t.done && checkbox && checkbox.classList) {
-    checkbox.classList.add('completing');
-    const card = checkbox.closest('.task-item, .tf-task, .kanban-card');
-    if (card) card.classList.add('task-completing');
-    if (!isReducedMotion()) delay = 380;
-  }
-  setTimeout(() => withViewTransition(() => { renderCurrentView(); updateStats(); renderCalendar(); }), delay);
-  
+  // render langsung tanpa delay; micro-interaction (centang pop + card settle)
+  // dimainkan di elemen hasil render baru supaya update terasa instan
+  const justDone = t.done;
+  withViewTransition(() => {
+    renderCurrentView(); updateStats(); renderCalendar();
+    if (justDone && !isReducedMotion()) {
+      const sel = `[data-id="${CSS.escape(id)}"]`;
+      const card = document.querySelector(`.task-item${sel}, .tf-task${sel}, .kanban-card${sel}`);
+      if (card) {
+        card.classList.add('task-completing');
+        const check = card.querySelector('.task-check');
+        if (check) check.classList.add('completing');
+        // lepas kelas animasi agar card done tidak permanen redup (taskSettle pakai forwards)
+        setTimeout(() => {
+          card.classList.remove('task-completing');
+          if (check) check.classList.remove('completing');
+        }, 500);
+      }
+    }
+  });
 }
 
 function deleteTask(id) {
