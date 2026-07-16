@@ -164,6 +164,7 @@ function safeInit() {
     initFocusMode();
     initMobileNav();
     initWeeklyInsight();
+    refreshCategoryDatalists();
     setDefaultDateTime();
     renderTasks();
     updateStats();
@@ -510,6 +511,9 @@ function renderParseChips() {
   if (p.parseError) {
     html += `<span class="parse-chip chip-error" title="Perbaiki input sebelum menambahkan tugas">⚠️ ${escapeHtml(p.parseError)}</span>`;
   }
+  if (p.category) {
+    html += `<span class="parse-chip chip-category" title="Kategori terdeteksi otomatis dari nama tugas">📁 ${escapeHtml(p.category)}</span>`;
+  }
   html += `<span class="parse-chip chip-priority" data-chip="priority" title="Klik untuk ganti prioritas">${getPriorityIcon(p.priority)} ${labels[p.priority] || p.priority}</span>`;
   html += `<span class="parse-chip chip-status chip-status-${statusKey}" data-chip="status" title="Klik untuk ganti status">${statusLabel}</span>`;
   els.parseChips.innerHTML = html;
@@ -791,6 +795,15 @@ function smartParse(text) {
   }
   cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
 
+  // ── Category (otomatis, hanya jika cocok dengan daftar kategori) ──
+  let category = '';
+  for (const item of (config.categories || [])) {
+    const kws = (item.keywords || []).filter(Boolean);
+    if (!kws.length) continue;
+    const regex = new RegExp('\\b(' + kws.map(escapeRegex).join('|') + ')\\b', 'i');
+    if (regex.test(cleanedText)) { category = item.val; break; }
+  }
+
   // ── Time parsing (jam/pukul) ──
   const timeMatch = cleanedText.match(/(jam|pukul)\s+(\d{1,2})(?:[.:](\d{2}))?\s*(pagi|siang|sore|malam|am|pm)?/i);
   if (timeMatch) {
@@ -933,7 +946,7 @@ function smartParse(text) {
     if (match) desc = match[0];
   }
 
-  return { title: cleanedText || text, priority, desc, timeHint, statusDone, statusOngoing, dateTime: parsedDateTime, parseError };
+  return { title: cleanedText || text, priority, desc, timeHint, statusDone, statusOngoing, dateTime: parsedDateTime, parseError, category };
 }
 
 function escapeRegex(str) {
@@ -973,6 +986,18 @@ const DEFAULT_PARSING_CONFIG = {
     { keywords: ['sore'], h: 15, m: 0, label: '🌇 Sore (15:00)' },
     { keywords: ['malam'], h: 19, m: 0, label: '🌙 Malam (19:00)' },
     { keywords: ['nanti'], h: 14, m: 0, label: '⏰ Nanti (14:00)' }
+  ],
+  categories: [
+    { keywords: ['kerja','kerjaan'], val: 'Kerja' },
+    { keywords: ['meeting','rapat'], val: 'Meeting' },
+    { keywords: ['laporan','report'], val: 'Laporan' },
+    { keywords: ['personal','pribadi'], val: 'Personal' },
+    { keywords: ['admin'], val: 'Admin' },
+    { keywords: ['keuangan','finance'], val: 'Keuangan' },
+    { keywords: ['proyek','project'], val: 'Proyek' },
+    { keywords: ['urgent','mendesak'], val: 'Urgent' },
+    { keywords: ['follow-up','followup','follow up'], val: 'Follow-up' },
+    { keywords: ['review'], val: 'Review' }
   ]
 };
 
@@ -1019,7 +1044,7 @@ function addTask() {
     id: Date.now().toString(),
     title: parsed.title || raw,
     desc: parsed.desc || (els.descInput ? els.descInput.value.trim() : ''),
-    category: els.categoryInput ? els.categoryInput.value.trim() : '',
+    category: (els.categoryInput && els.categoryInput.value.trim()) || parsed.category || '',
     priority: parsed.priority,
     done: parsed.statusDone || false,
     ongoing: (!parsed.statusDone && parsed.statusOngoing) || false,
@@ -1840,6 +1865,8 @@ function renderWeeklyInsight() {
 
 function initWeeklyInsight() {
   if (!els.wiToggle || !els.weeklyInsight) return;
+  // Terbuka secara default: render isi sekali saat load
+  if (els.weeklyInsight.classList.contains('open')) renderWeeklyInsight();
   els.wiToggle.addEventListener('click', () => {
     const open = els.weeklyInsight.classList.toggle('open');
     if (!open) return;
@@ -2421,6 +2448,16 @@ function initParsingEditor() {
   });
 }
 
+function refreshCategoryDatalists() {
+  const cfg = loadParsingConfig();
+  const names = (cfg.categories || []).map(c => c.val).filter(Boolean);
+  const opts = names.map(n => '<option value="' + escapeHtml(n) + '"></option>').join('');
+  ['categorySuggestions', 'editCategorySuggestions'].forEach(id => {
+    const dl = document.getElementById(id);
+    if (dl) dl.innerHTML = opts;
+  });
+}
+
 function openParsingEditor() {
   peTempConfig = JSON.parse(JSON.stringify(loadParsingConfig()));
   renderParsingEditorTable(peCurrentTab);
@@ -2460,6 +2497,8 @@ function renderParsingEditorTable(type) {
       const h = String(item.h).padStart(2,'0');
       const m = String(item.m).padStart(2,'0');
       return '<div class="pe-row" data-idx="' + idx + '"><input class="pe-input" value="' + escapeHtml(keywords) + '" placeholder="pagi, sore"><input type="time" class="pe-number" value="' + h + ':' + m + '"><button class="pe-delete" title="Hapus">🗑️</button></div>';
+    } else if (type === 'categories') {
+      return '<div class="pe-row" data-idx="' + idx + '"><input class="pe-input" value="' + escapeHtml(keywords) + '" placeholder="kerja, kerjaan (opsional)"><input class="pe-input" style="flex:0 0 140px; max-width:140px;" value="' + escapeHtml(item.val || '') + '" placeholder="Nama kategori"><button class="pe-delete" title="Hapus">🗑️</button></div>';
     }
   }).join('');
 
@@ -2480,7 +2519,8 @@ function addParsingRow(type) {
     priority: { keywords: [''], val: 'medium' },
     status: { keywords: [''], val: 'pending' },
     dates: { keywords: [''], days: 1 },
-    timeOfDay: { keywords: [''], h: 8, m: 0 }
+    timeOfDay: { keywords: [''], h: 8, m: 0 },
+    categories: { keywords: [''], val: '' }
   };
   peTempConfig[type].push(JSON.parse(JSON.stringify(defaults[type])));
   renderParsingEditorTable(type);
@@ -2490,7 +2530,7 @@ function saveParsingEditor() {
   if (!peTempConfig) return;
 
   // Collect data from all visible and hidden tabs
-  ['priority', 'status', 'dates', 'timeOfDay'].forEach(type => {
+  ['priority', 'status', 'dates', 'timeOfDay', 'categories'].forEach(type => {
     const body = document.getElementById('pe-body-' + type);
     if (!body) return;
     const rows = body.querySelectorAll('.pe-row');
@@ -2498,6 +2538,12 @@ function saveParsingEditor() {
     rows.forEach(row => {
       const inputs = row.querySelectorAll('input, select');
       const keywords = inputs[0].value.split(',').map(k => k.trim()).filter(Boolean);
+      if (type === 'categories') {
+        const name = (inputs[1].value || '').trim();
+        if (!name) return;
+        peTempConfig[type].push({ keywords, val: name });
+        return;
+      }
       if (keywords.length === 0) return;
 
       if (type === 'priority') {
@@ -2514,8 +2560,9 @@ function saveParsingEditor() {
   });
 
   saveParsingConfig(peTempConfig);
+  refreshCategoryDatalists();
   closeParsingEditor();
-  showToast('Kata kunci parsing tersimpan', 'success');
+  showToast('Kata kunci & kategori tersimpan', 'success');
 }
 
 function initButtonListeners() {
