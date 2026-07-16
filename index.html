@@ -99,7 +99,7 @@
         <span>⚙️ Pengaturan Parsing Kata</span>
         <button class="btn-icon" id="parsingEditorClose" style="font-size:1.2rem; padding:0.3rem 0.5rem;">✕</button>
       </div>
-      <p style="font-size:0.75rem; color:var(--text-dim); margin-bottom:0.8rem;">Edit kata kunci yang diparsing untuk prioritas, status, tanggal, dan waktu. Setiap baris: kata kunci (pisahkan dengan koma) → hasil.</p>
+      <p style="font-size:0.75rem; color:var(--text-dim); margin-bottom:0.8rem;">Edit kata kunci yang diparsing untuk prioritas, status, tanggal, waktu, dan kategori. Setiap baris: kata kunci (pisahkan dengan koma) → hasil.</p>
 
       <!-- Tabs -->
       <div class="pe-tabs">
@@ -107,6 +107,7 @@
         <button class="pe-tab" data-tab="status">🏷️ Status</button>
         <button class="pe-tab" data-tab="dates">📅 Tanggal</button>
         <button class="pe-tab" data-tab="timeOfDay">⏰ Waktu</button>
+        <button class="pe-tab" data-tab="categories">📁 Kategori</button>
       </div>
 
       <!-- Tab Content: Priority -->
@@ -153,6 +154,18 @@
         <button class="pe-add-btn" data-type="timeOfDay">+ Tambah</button>
       </div>
 
+      <!-- Tab Content: Categories -->
+      <div class="pe-panel" id="pe-panel-categories">
+        <p style="font-size:0.72rem; color:var(--text-dim); margin:0 0 0.6rem;">Kata kunci (opsional) untuk auto-parsing kategori dari nama tugas. Kosongkan kata kunci jika hanya ingin menambah pilihan kategori tanpa deteksi otomatis.</p>
+        <div class="pe-table-header">
+          <span style="flex:1;">Kata Kunci (pisah koma)</span>
+          <span style="width:140px;">Nama Kategori</span>
+          <span style="width:50px;"></span>
+        </div>
+        <div class="pe-table-body" id="pe-body-categories"></div>
+        <button class="pe-add-btn" data-type="categories">+ Tambah</button>
+      </div>
+
       <div class="modal-actions" style="margin-top:1rem; justify-content:space-between;">
         <button class="btn-icon" id="parsingResetDefault" title="Reset ke Default" style="color:var(--neon-coral); border-color:rgba(255,77,109,0.3);">🔄 Reset Default</button>
         <div style="display:flex; gap:0.5rem;">
@@ -170,6 +183,20 @@
         <div class="clock kinetic" id="clock">00:00<span class="seconds">:00</span></div>
         <div style="margin-top:0.5rem; color:var(--text-dim); font-size:0.9rem;" id="dateDisplay"></div>
       </div>
+<!-- WEEKLY INSIGHT: grafik 7 hari + heatmap jam produktif -->
+      <div class="glass weekly-insight open" id="weeklyInsight">
+        <button class="wi-header" id="wiToggle">
+          <span>📈 Weekly Insight</span><span class="wi-caret">▾</span>
+        </button>
+        <div class="wi-body" id="wiBody">
+          <div class="wi-stats" id="wiStats"></div>
+          <div class="wi-chart" id="wiChart"></div>
+          <div class="wi-legend"><span class="wi-lg wi-lg-done"></span>Selesai <span class="wi-lg wi-lg-pending"></span>Tertunda</div>
+          <div class="wi-heat-label">⏰ Jam produktif (30 hari terakhir)</div>
+          <div class="wi-heatmap" id="wiHeatmap"></div>
+        </div>
+      </div>
+
       <div class="bento">
         <div class="bento-card bento-progress">
           <div class="bento-title">Progress Hari Ini</div>
@@ -203,21 +230,7 @@
           </div>
         </div>
       </div>
-      
 
-      <!-- WEEKLY INSIGHT: grafik 7 hari + heatmap jam produktif -->
-      <div class="glass weekly-insight" id="weeklyInsight">
-        <button class="wi-header" id="wiToggle">
-          <span>📈 Weekly Insight</span><span class="wi-caret">▾</span>
-        </button>
-        <div class="wi-body" id="wiBody">
-          <div class="wi-stats" id="wiStats"></div>
-          <div class="wi-chart" id="wiChart"></div>
-          <div class="wi-legend"><span class="wi-lg wi-lg-done"></span>Selesai <span class="wi-lg wi-lg-pending"></span>Tertunda</div>
-          <div class="wi-heat-label">⏰ Jam produktif (30 hari terakhir)</div>
-          <div class="wi-heatmap" id="wiHeatmap"></div>
-        </div>
-      </div>
     </div>
 
     <!-- KOLOM 2: Calendar & Input -->
