@@ -1008,6 +1008,12 @@ function loadParsingConfig() {
     const saved = localStorage.getItem('tf_parsingConfig');
     if (saved) {
       parsingConfig = JSON.parse(saved);
+      // Config lama (sebelum fitur kategori) bisa kehilangan key baru — isi dari default
+      Object.keys(DEFAULT_PARSING_CONFIG).forEach(key => {
+        if (!Array.isArray(parsingConfig[key])) {
+          parsingConfig[key] = JSON.parse(JSON.stringify(DEFAULT_PARSING_CONFIG[key]));
+        }
+      });
       return parsingConfig;
     }
   } catch(e) { console.error('loadParsingConfig error:', e); }
@@ -2515,6 +2521,7 @@ function renderParsingEditorTable(type) {
 
 function addParsingRow(type) {
   if (!peTempConfig) return;
+  if (!Array.isArray(peTempConfig[type])) peTempConfig[type] = [];
   const defaults = {
     priority: { keywords: [''], val: 'medium' },
     status: { keywords: [''], val: 'pending' },
