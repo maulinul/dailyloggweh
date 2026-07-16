@@ -1,7 +1,7 @@
 // TaskFlow Pro — Service Worker
 // App shell di-cache saat install; dokumen pakai network-first supaya update
 // cepat terlihat, aset lain cache-first dengan pengisian cache saat runtime.
-const CACHE = 'taskflow-v3';
+const CACHE = 'taskflow-v4';
 const APP_SHELL = [
   './',
   './index.html',
@@ -31,7 +31,10 @@ self.addEventListener('activate', (e) => {
 });
 
 async function fetchAndCache(request) {
-  const res = await fetch(request);
+  // 'no-cache' = selalu revalidasi ke server (ETag/304), tidak percaya
+  // HTTP cache browser — GitHub Pages set max-age=600 sehingga update
+  // deploy bisa tertahan sampai 10 menit kalau pakai fetch biasa.
+  const res = await fetch(request, { cache: 'no-cache' });
   const url = new URL(request.url);
   if (res && res.ok && url.origin === self.location.origin) {
     const cache = await caches.open(CACHE);
