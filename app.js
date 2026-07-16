@@ -1163,13 +1163,6 @@ function renderTasks() {
       <div class="task-content">
         <div class="task-header">
           <span class="task-title">${escapeHtml(t.title)}</span>
-          <div class="task-actions">
-            <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-            <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-            <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-            ${!t.done ? '<button class="action-btn postpone-btn" title="Lanjut ke besok">⏩</button>' : ''}
-            <button class="action-btn delete-btn" title="Hapus">🗑️</button>
-          </div>
         </div>
         <div class="task-meta">
           <span class="task-time">🕒 ${scheduledStr || dateStr + ' ' + timeStr}${t.timeHint ? ' → ' + escapeHtml(t.timeHint) : ''}</span>
@@ -1188,6 +1181,13 @@ function renderTasks() {
             ${t.pomodoro.active || t.pomodoro.timeLeft < 1500 ? '<button class="pomo-clear-btn" title="Clear Focus">✕</button>' : ''}
           </div>
           ${!t.done ? `<button class="status-toggle-btn ${t.ongoing ? 's-ongoing' : 's-pending'}" data-id="${t.id}" title="${t.ongoing ? 'Klik untuk set Pending' : 'Klik untuk set On Going'}">${t.ongoing ? '🔥 On Going' : '⏳ Pending'}</button>` : ''}
+          <div class="task-actions">
+            <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
+            <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
+            <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+            ${!t.done ? '<button class="action-btn postpone-btn" title="Lanjut ke besok">⏩</button>' : ''}
+            <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+          </div>
         </div>
       </div>
     `;
