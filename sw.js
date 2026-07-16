@@ -5,8 +5,8 @@ const CACHE = 'taskflow-v5';
 const APP_SHELL = [
   './',
   './index.html',
-  './styles.css?v=20260716b',
-  './app.js?v=20260716b',
+  './styles.css?v=20260716c',
+  './app.js?v=20260716c',
   './manifest.webmanifest',
   './icon.svg',
   './icon-192.png',

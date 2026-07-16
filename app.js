@@ -1,5 +1,5 @@
 // State & Config
-const APP_VERSION = '20260716b';
+const APP_VERSION = '20260716c';
 let tasks = [];
 const STORAGE_SCHEMA_VERSION = 3;
 const RESTORE_POINT_KEY = 'tf_restore_point';
@@ -9,7 +9,7 @@ let settings = {
   sound: true, haptic: true, dayMode: false, reminders: false,
   // reducedMotion null = ikuti preferensi sistem (prefers-reduced-motion)
   reducedMotion: null, customCursor: true, focusMood: 'deep',
-  githubToken: '', githubGistId: '', githubAutoSync: false
+  githubToken: '', githubGistId: '', githubAutoSync: false, rememberToken: true
 };
 
 const systemReducedMotion = () =>
@@ -128,7 +128,7 @@ function cacheElements() {
     'dayDetailTitle','dayDetailContent','dayDetailClose','focusOverlay','focusTitle',
     'focusTimer','focusPause','focusClear','editModal','editTitle','editDesc',
     'editDateTime','editPriority','editStatus','editSave','editCancel','cursorDot','cursorOutline',
-    'githubToken','githubGistId','githubAutoSync','syncToGithub','loadFromGithub',
+    'githubToken','githubGistId','githubAutoSync','syncToGithub','loadFromGithub','rememberTokenToggle','tokenPrivacyNote',
     'githubStatus','categoryInput','editCategory',
     'priorityFilterSelect','sortControls','githubMiniSync',
     'kanbanBoard','listViewBtn','kanbanViewBtn',
@@ -191,6 +191,56 @@ function safeInit() {
   }
 }
 
+// ===== Token GitHub: simpan terenkripsi di perangkat (opsional) =====
+// Ciphertext AES-GCM di localStorage; kuncinya non-extractable di IndexedDB,
+// jadi token tidak pernah tersimpan sebagai teks polos di disk.
+const TOKEN_LS_KEY = 'tf_githubToken_enc';
+function tokenIdb(mode, fn) {
+  return new Promise((resolve, reject) => {
+    const open = indexedDB.open('tf-secure', 1);
+    open.onupgradeneeded = () => open.result.createObjectStore('keys');
+    open.onerror = () => reject(open.error);
+    open.onsuccess = () => {
+      const db = open.result;
+      const req = fn(db.transaction('keys', mode).objectStore('keys'));
+      req.onsuccess = () => { db.close(); resolve(req.result); };
+      req.onerror = () => { db.close(); reject(req.error); };
+    };
+  });
+}
+async function getTokenCryptoKey() {
+  let key = await tokenIdb('readonly', s => s.get('aes'));
+  if (!key) {
+    key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+    await tokenIdb('readwrite', s => s.put(key, 'aes'));
+  }
+  return key;
+}
+async function persistTokenLocal(token) {
+  try {
+    if (!token) { clearPersistedToken(); return; }
+    const key = await getTokenCryptoKey();
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(token)));
+    localStorage.setItem(TOKEN_LS_KEY, btoa(String.fromCharCode(...iv)) + '.' + btoa(String.fromCharCode(...ct)));
+  } catch (_) { /* WebCrypto/IDB tidak tersedia → token tetap session-only */ }
+}
+async function loadPersistedToken() {
+  try {
+    const raw = localStorage.getItem(TOKEN_LS_KEY);
+    if (!raw) return '';
+    const [ivB64, ctB64] = raw.split('.');
+    const iv = Uint8Array.from(atob(ivB64), c => c.charCodeAt(0));
+    const ct = Uint8Array.from(atob(ctB64), c => c.charCodeAt(0));
+    const key = await getTokenCryptoKey();
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct);
+    return new TextDecoder().decode(pt);
+  } catch (_) { return ''; }
+}
+function clearPersistedToken() {
+  try { localStorage.removeItem(TOKEN_LS_KEY); } catch (_) {}
+}
+
 function loadData() {
   try {
     const savedTasks = localStorage.getItem('tf_tasks');
@@ -202,7 +252,8 @@ function loadData() {
     const savedSettings = localStorage.getItem('tf_settings');
     if (savedSettings) {
       const parsed = JSON.parse(savedSettings);
-      // Token lama dimigrasikan ke session-only agar tidak menetap di perangkat.
+      // Token teks polos peninggalan versi lama dipindahkan keluar dari tf_settings;
+      // penyimpanan menetap kini lewat salinan terenkripsi (lihat persistTokenLocal).
       if (parsed.githubToken) {
         settings.githubToken = String(parsed.githubToken);
         try { sessionStorage.setItem('tf_githubToken', settings.githubToken); } catch (_) {}
@@ -217,6 +268,21 @@ function loadData() {
     try {
       settings.githubToken = sessionStorage.getItem('tf_githubToken') || settings.githubToken || '';
     } catch (_) {}
+    if (settings.rememberToken) {
+      if (settings.githubToken) {
+        persistTokenLocal(settings.githubToken);
+      } else {
+        // Muat token terenkripsi dari perangkat (async, mengisi input setelah init)
+        loadPersistedToken().then(tok => {
+          if (!tok || settings.githubToken) return;
+          settings.githubToken = tok;
+          try { sessionStorage.setItem('tf_githubToken', tok); } catch (_) {}
+          if (els.githubToken) els.githubToken.value = tok;
+        });
+      }
+    } else {
+      clearPersistedToken();
+    }
     saveSettings();
   } catch (e) {
     console.error('Load data error:', e);
@@ -2201,7 +2267,7 @@ async function restoreLastSnapshot() {
 
 function applyImportedSettings(importedSettings) {
   if (!importedSettings || typeof importedSettings !== 'object') return;
-  ['sound', 'haptic', 'dayMode', 'reminders', 'customCursor', 'githubAutoSync'].forEach(key => {
+  ['sound', 'haptic', 'dayMode', 'reminders', 'customCursor', 'githubAutoSync', 'rememberToken'].forEach(key => {
     if (typeof importedSettings[key] === 'boolean') settings[key] = importedSettings[key];
   });
   if (typeof importedSettings.reducedMotion === 'boolean' || importedSettings.reducedMotion === null) {
@@ -2773,6 +2839,18 @@ function initButtonListeners() {
       if (settings.githubToken) sessionStorage.setItem('tf_githubToken', settings.githubToken);
       else sessionStorage.removeItem('tf_githubToken');
     } catch (_) {}
+    if (settings.rememberToken && settings.githubToken) persistTokenLocal(settings.githubToken);
+    else clearPersistedToken();
+    saveSettings();
+  });
+
+  if (els.rememberTokenToggle) els.rememberTokenToggle.addEventListener('click', () => {
+    settings.rememberToken = !settings.rememberToken;
+    els.rememberTokenToggle.classList.toggle('on', settings.rememberToken);
+    els.rememberTokenToggle.setAttribute('aria-checked', settings.rememberToken ? 'true' : 'false');
+    if (settings.rememberToken && settings.githubToken) persistTokenLocal(settings.githubToken);
+    else clearPersistedToken();
+    updateTokenPrivacyNote();
     saveSettings();
   });
 
@@ -3303,6 +3381,13 @@ async function loadFromGitHub() {
   }
 }
 
+function updateTokenPrivacyNote() {
+  if (!els.tokenPrivacyNote) return;
+  els.tokenPrivacyNote.textContent = settings.rememberToken
+    ? '🔒 Token disimpan terenkripsi di perangkat ini.'
+    : 'Token hanya disimpan selama tab ini terbuka.';
+}
+
 // Settings
 function loadSettings() {
   if (!els.soundToggle || !els.hapticToggle || !els.themeToggle) return;
@@ -3318,6 +3403,8 @@ function loadSettings() {
     els.reminderToggle.classList.toggle('on', settings.reminders);
   }
   if (els.githubAutoSync) els.githubAutoSync.classList.toggle('on', settings.githubAutoSync);
+  if (els.rememberTokenToggle) els.rememberTokenToggle.classList.toggle('on', !!settings.rememberToken);
+  updateTokenPrivacyNote();
   if (els.githubToken) els.githubToken.value = settings.githubToken || '';
   if (els.githubGistId) els.githubGistId.value = settings.githubGistId || '';
   if (els.aiApiKey) els.aiApiKey.value = settings.aiApiKey || '';
