@@ -1177,11 +1177,10 @@ function renderTasks() {
           ${t.category ? `<span class="category-tag">📁 ${escapeHtml(t.category)}</span>` : ''}
           ${t.repeat && t.repeat !== 'none' ? `<span class="repeat-tag">🔁 ${REPEAT_LABELS[t.repeat] || t.repeat}</span>` : ''}
           ${isOverdue(t) ? `<span class="overdue-tag">⏰ Terlambat</span>` : ''}
-          ${t.ongoing ? `<span class="status-tag s-ongoing">🔥 On Going</span>` : ''}
           ${t.desc ? `<span style="font-size:0.72rem; color:var(--text-dim)">📝 ${escapeHtml(t.desc.length > 40 ? t.desc.slice(0,40)+'…' : t.desc)}</span>` : ''}
         </div>
         ${t.subtasks.length ? `<ul class="subtasks">${t.subtasks.map((s,i)=>`<li class="subtask ${s.done ? 'done' : ''}"><input type="checkbox" class="subtask-check" ${s.done?'checked':''} data-idx="${i}"><span>${escapeHtml(s.text)}</span></li>`).join('')}</ul>` : ''}
-        <div style="display:flex; align-items:center; gap:0.5rem; margin-top:0.4rem; flex-wrap:wrap;">
+        <div style="display:flex; align-items:center; gap:0.5rem; margin-top:0.6rem; flex-wrap:wrap;">
           <div class="pomodoro-wrap" style="display:${t.pomodoro.active||t.pomodoro.timeLeft<1500?'flex':'none'}; margin-top:0;">
             <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="${100 - (t.pomodoro.timeLeft/1500)*100}"/></svg>
             <span class="pomo-time">${formatTime(t.pomodoro.timeLeft)}</span>

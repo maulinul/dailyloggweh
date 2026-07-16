@@ -560,7 +560,7 @@ html.no-custom-cursor .cursor-trail { display: none !important; }
 .task-done .task-title::after { width: 100%; transition-delay: 0.3s; }
 .task-done .task-title { color: var(--text-dim); text-decoration: line-through; text-decoration-color: var(--neon-coral); text-decoration-thickness: 2px; }
 
-.task-meta { display: flex; gap: 0.4rem; align-items: center; margin-top: 0.3rem; flex-wrap: wrap; row-gap: 0.3rem; }
+.task-meta { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.4rem; flex-wrap: wrap; row-gap: 0.4rem; }
 .task-time { font-size: 0.85rem; color: var(--neon-silver); font-weight: 500; }
 .priority-tag {
   font-size: 0.7rem; padding: 2px 6px; border-radius: 6px; font-weight: 600; text-transform: uppercase;
