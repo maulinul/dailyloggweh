@@ -1,4 +1,5 @@
 // State & Config
+const APP_VERSION = '20260716a';
 let tasks = [];
 const STORAGE_SCHEMA_VERSION = 3;
 const RESTORE_POINT_KEY = 'tf_restore_point';
@@ -178,7 +179,13 @@ function safeInit() {
     initReminders();
     isInitialized = true;
     handleLaunchShortcut();
-    console.log('TaskFlow initialized successfully');
+    // Penanda versi: terlihat di bawah panel Settings untuk memastikan
+    // browser tidak menyajikan build lama dari cache
+    if (els.settingsPanel) {
+      els.settingsPanel.insertAdjacentHTML('beforeend',
+        `<div style="text-align:center; font-size:0.65rem; color:var(--text-dim); opacity:0.7; padding:0.5rem 0 0.2rem;">build ${APP_VERSION}</div>`);
+    }
+    console.log('TaskFlow initialized successfully — build', APP_VERSION);
   } catch (err) {
     console.error('Init error:', err);
   }
