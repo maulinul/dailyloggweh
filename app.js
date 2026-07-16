@@ -710,6 +710,16 @@ function renderCalendar(direction) {
       renderCalendar();
     });
   });
+
+  // Panel detail tanggal ikut segar setiap kalender di-render ulang
+  // (tambah/centang/hapus/edit tugas semuanya lewat renderCalendar)
+  refreshDayDetail();
+}
+
+function refreshDayDetail() {
+  if (selectedDate && els.dayDetailPanel && els.dayDetailPanel.classList.contains('show')) {
+    showDayDetail(selectedDate, new Date(selectedDate).getDate());
+  }
 }
 
 function showDayDetail(dateStr, dayNum) {
@@ -732,7 +742,7 @@ function showDayDetail(dateStr, dayNum) {
     els.dayDetailContent.innerHTML = dayTasks.map((t, i) => `
       <div class="day-task-item ${t.priority} ${t.done ? 'done' : ''}" style="animation-delay:${i * 0.1}s">
         <input type="checkbox" class="task-check" data-task-id="${escapeHtml(t.id)}" ${t.done ? 'checked' : ''}>
-        <div>
+        <div style="flex:1; min-width:0;">
           <div style="font-weight:600; ${t.done ? 'text-decoration:line-through;opacity:0.6' : ''}">${escapeHtml(t.title)}</div>
           <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
             ${t.timeHint ? '🕒 ' + escapeHtml(t.timeHint) + ' · ' : ''}
@@ -740,10 +750,14 @@ function showDayDetail(dateStr, dayNum) {
             ${t.category ? `<span class="category-tag" style="margin-left:3px;">📁 ${escapeHtml(t.category)}</span>` : ''}
           </div>
         </div>
+        ${!t.done ? `<button class="action-btn postpone-btn" data-task-id="${escapeHtml(t.id)}" title="Lanjut ke besok">⏩</button>` : ''}
       </div>
     `).join('');
     els.dayDetailContent.querySelectorAll('.task-check[data-task-id]').forEach(checkbox => {
       checkbox.addEventListener('change', () => toggleTaskFromCalendar(checkbox.dataset.taskId));
+    });
+    els.dayDetailContent.querySelectorAll('.postpone-btn[data-task-id]').forEach(btn => {
+      btn.addEventListener('click', () => postponeTask(btn.dataset.taskId));
     });
   }
   els.dayDetailPanel.classList.add('show');
@@ -756,8 +770,8 @@ function toggleTaskFromCalendar(id) {
     if (t.done) { spawnRecurring(t); playSound('complete'); vibrate(); checkStreak(); setTimeout(checkAllDoneCelebration, 300); }
     else { t.ongoing = false; }
     save();
+    // renderCalendar sudah otomatis me-refresh panel detail tanggal
     withViewTransition(() => { renderCurrentView(); updateStats(); renderCalendar(); });
-    if (selectedDate) showDayDetail(selectedDate, new Date(selectedDate).getDate());
   }
 }
 
@@ -1153,6 +1167,7 @@ function renderTasks() {
             <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
             <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
             <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
+            ${!t.done ? '<button class="action-btn postpone-btn" title="Lanjut ke besok">⏩</button>' : ''}
             <button class="action-btn delete-btn" title="Hapus">🗑️</button>
           </div>
         </div>
@@ -1212,6 +1227,9 @@ function renderTasks() {
 
     const statusToggleBtn = el.querySelector('.status-toggle-btn');
     if (statusToggleBtn) statusToggleBtn.addEventListener('click', () => toggleStatus(t.id));
+
+    const postponeBtn = el.querySelector('.postpone-btn');
+    if (postponeBtn) postponeBtn.addEventListener('click', () => postponeTask(t.id));
 
     el.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', t.id); el.classList.add('dragging'); });
     el.addEventListener('dragend', () => el.classList.remove('dragging'));
@@ -1332,6 +1350,7 @@ function renderKanban() {
       </div>
       <div class="kanban-card-actions">
         <button class="action-btn edit-btn" title="Edit">✏️</button>
+        ${!t.done ? '<button class="action-btn postpone-btn" title="Lanjut ke besok">⏩</button>' : ''}
         <button class="action-btn delete-btn" title="Hapus">🗑️</button>
       </div>
     `;
@@ -1353,6 +1372,9 @@ function renderKanban() {
     // Action buttons
     const editBtn = card.querySelector('.edit-btn');
     if (editBtn) editBtn.addEventListener('click', (e) => { e.stopPropagation(); openEditModal(t.id); });
+
+    const postponeBtn = card.querySelector('.postpone-btn');
+    if (postponeBtn) postponeBtn.addEventListener('click', (e) => { e.stopPropagation(); postponeTask(t.id); });
 
     const delBtn = card.querySelector('.delete-btn');
     if (delBtn) delBtn.addEventListener('click', (e) => {
@@ -1453,6 +1475,35 @@ function getPriorityIcon(p) {
   return icons[p] || '⚡';
 }
 const PRIORITY_ORDER = { super_high: 4, high: 3, medium: 2, low: 1 };
+
+// Lanjutkan tugas ke hari berikutnya: deadline pindah ke besok (jam dipertahankan).
+// Tugas yang dipindah keluar dari hitungan "hari ini", jadi streak hari ini tidak
+// terganjal — dan kalau besok diselesaikan, ia dihitung streak di hari itu.
+function postponeTask(id) {
+  const t = tasks.find(x => x.id === id);
+  if (!t || t.done) return;
+  const now = new Date();
+  const target = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const prev = t.dateTime ? new Date(t.dateTime) : null;
+  if (prev && !isNaN(prev.getTime())) {
+    target.setHours(prev.getHours(), prev.getMinutes(), 0, 0);
+    // sudah terjadwal besok atau setelahnya → geser satu hari dari jadwalnya
+    if (prev.getTime() >= target.getTime()) {
+      target.setTime(prev.getTime());
+      target.setDate(target.getDate() + 1);
+    }
+  } else {
+    target.setHours(8, 0, 0, 0);
+  }
+  t.dateTime = target.toISOString();
+  t.notified = false;
+  save();
+  withViewTransition(() => { renderCurrentView(); updateStats(); renderCalendar(); });
+  checkStreak(); // sisa tugas hari ini bisa jadi sudah beres semua
+  playSound('add');
+  vibrate();
+  showToast(`⏩ "${t.title}" dilanjut ke ${smartDateDisplay(t.dateTime)}`, 'info');
+}
 
 function toggleStatus(id) {
   const t = tasks.find(x => x.id === id);

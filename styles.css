@@ -667,6 +667,7 @@ html.no-custom-cursor .cursor-trail { display: none !important; }
 .focus-btn:hover { background: rgba(176,38,255,0.2); border-color: rgba(176,38,255,0.4); box-shadow: 0 4px 12px rgba(176,38,255,0.25); }
 .edit-btn:hover { background: rgba(79,172,254,0.2); border-color: rgba(79,172,254,0.4); box-shadow: 0 4px 12px rgba(79,172,254,0.25); }
 .subtask-btn:hover { background: rgba(255,209,102,0.2); border-color: rgba(255,209,102,0.4); box-shadow: 0 4px 12px rgba(255,209,102,0.2); }
+.postpone-btn:hover { background: rgba(0,245,160,0.2); border-color: rgba(0,245,160,0.4); box-shadow: 0 4px 12px rgba(0,245,160,0.25); }
 .delete-btn:hover { background: rgba(255,77,109,0.2); border-color: rgba(255,77,109,0.4); box-shadow: 0 4px 12px rgba(255,77,109,0.25); }
 .delete-btn.poof { animation: poof 0.3s forwards; }
 @keyframes poof { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.4; } 100% { transform: scale(0); opacity: 0; } }
