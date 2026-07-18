@@ -628,12 +628,12 @@ html.no-custom-cursor .cursor-trail { display: none !important; }
 .day-mode .filter-select option {
   background: rgba(240,240,250,0.95); color: var(--text);
 }
-.github-mini-btn {
+.cloud-mini-btn {
   background: rgba(0,245,160,0.1); border: 1px solid rgba(0,245,160,0.3);
   border-radius: 8px; color: var(--neon-green); font-size: 0.85rem;
   padding: 0.6rem 0.8rem; cursor: pointer; transition: all 0.25s; display:flex; align-items:center; gap:4px; white-space:nowrap;
 }
-.github-mini-btn:hover { background: rgba(0,245,160,0.2); transform:translateY(-1px); box-shadow: 0 4px 12px rgba(0,245,160,0.2); }
+.cloud-mini-btn:hover { background: rgba(0,245,160,0.2); transform:translateY(-1px); box-shadow: 0 4px 12px rgba(0,245,160,0.2); }
 .test-api-btn {
   width:100%; margin-top:0.3rem; padding:0.4rem;
   background: rgba(79,172,254,0.15); border: 1px solid rgba(79,172,254,0.3);
@@ -764,30 +764,35 @@ html.no-custom-cursor .cursor-trail { display: none !important; }
 .switch.on { background: var(--neon-purple); }
 .switch.on::after { left: 20px; }
 
-/* GitHub Settings */
-.github-section {
+/* Akun & Cloud Sync */
+.account-section {
   margin-top: 0.8rem;
   padding-top: 0.8rem;
   border-top: 1px solid var(--border);
 }
-.github-section-title {
+.account-section-title {
   font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem;
   display: flex; align-items: center; gap: 0.4rem;
 }
-.github-input {
+.account-input {
   width: 100%; background: var(--input-bg); border: 1px solid var(--border);
   border-radius: 8px; padding: 0.5rem 0.7rem; color: var(--text);
   font-family: var(--font); font-size: 0.8rem; margin-bottom: 0.4rem;
   transition: all 0.3s;
 }
-.github-input:focus { outline: none; border-color: var(--neon-purple); }
+.account-input:focus { outline: none; border-color: var(--neon-purple); }
 .privacy-note { margin-top: -0.2rem; margin-bottom: 0.45rem; font-size: 0.68rem; color: var(--text-dim); }
-.github-status {
+.account-email-row {
+  font-size: 0.78rem; margin-bottom: 0.5rem; color: var(--text-dim);
+  overflow-wrap: anywhere;
+}
+.account-email-row strong { color: var(--text); }
+.account-status {
   font-size: 0.75rem; margin-top: 0.4rem; min-height: 1.2rem;
 }
-.github-status.success { color: var(--neon-green); }
-.github-status.error { color: var(--neon-coral); }
-.github-status.info { color: var(--neon-blue); }
+.account-status.success { color: var(--neon-green); }
+.account-status.error { color: var(--neon-coral); }
+.account-status.info { color: var(--neon-blue); }
 
 /* Theme Toggle */
 .theme-indicator {

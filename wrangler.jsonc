@@ -1,14 +1,23 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "dailyloggweh",
+  "main": "worker.js",
   "compatibility_date": "2026-05-16",
   "observability": {
     "enabled": true
   },
   "assets": {
-    "directory": "."
+    "directory": ".",
+    "binding": "ASSETS"
   },
   "compatibility_flags": [
     "nodejs_compat"
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "dailyloggweh-db",
+      "database_id": "5f4c079d-1e1e-4dea-9ba2-c67b9d7ee972"
+    }
   ]
 }

@@ -4,7 +4,7 @@
 ![Version](https://img.shields.io/badge/version-2.0.0-00f5a0?style=for-the-badge)
 ![License](https://img.shields.io/badge/license-MIT-ff4d6d?style=for-the-badge)
 
-&gt; **TaskFlow Pro** adalah daily task tracker premium berbasis web dengan desain glassmorphism, animasi kinetik, dan sinkronisasi cloud via GitHub Gist. Dibangun untuk produktivitas maksimal dengan pengalaman visual yang memukau.
+&gt; **TaskFlow Pro** adalah daily task tracker premium berbasis web dengan desain glassmorphism, animasi kinetik, dan sinkronisasi cloud dengan akun email + password (Cloudflare Workers + D1). Dibangun untuk produktivitas maksimal dengan pengalaman visual yang memukau.
 
 ---
 
@@ -37,10 +37,25 @@ Ketik tugas secara natural dan sistem otomatis mendeteksi:
 - Focus mode overlay fullscreen
 - Progress circle SVG animasi
 
-### 🔗 GitHub Gist Sync
-- Sinkronisasi data ke cloud via GitHub Personal Access Token
+### ☁️ Cloud Sync dengan Akun
+- Daftar & masuk cukup dengan email + password — tanpa token GitHub
+- Data tersimpan per akun di Cloudflare D1 lewat Worker API
 - Auto-sync opsional setiap perubahan
 - Backup & restore antar perangkat
+
+**Setup backend (sekali saja):**
+```bash
+# 1. Buat database D1 (kalau belum ada)
+npx wrangler d1 create dailyloggweh-db
+
+# 2. Sesuaikan database_name & database_id di wrangler.jsonc
+
+# 3. Terapkan skema tabel
+npx wrangler d1 execute dailyloggweh-db --remote --file=./schema.sql
+
+# 4. Deploy
+npx wrangler deploy
+```
 
 ---
 
