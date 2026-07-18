@@ -1,5 +1,5 @@
 // State & Config
-const APP_VERSION = '20260718b';
+const APP_VERSION = '20260718c';
 let tasks = [];
 const STORAGE_SCHEMA_VERSION = 3;
 const RESTORE_POINT_KEY = 'tf_restore_point';
@@ -2500,6 +2500,7 @@ function initParsingEditor() {
   // Tabs
   document.querySelectorAll('.pe-tab').forEach(tab => {
     tab.addEventListener('click', () => {
+      syncParsingEditorTable(peCurrentTab);
       document.querySelectorAll('.pe-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.pe-panel').forEach(p => p.classList.remove('active'));
       tab.classList.add('active');
@@ -2527,7 +2528,7 @@ function refreshCategoryDatalists() {
 
 function openParsingEditor() {
   peTempConfig = JSON.parse(JSON.stringify(loadParsingConfig()));
-  renderParsingEditorTable(peCurrentTab);
+  ['priority', 'status', 'dates', 'timeOfDay', 'categories'].forEach(renderParsingEditorTable);
   const modal = document.getElementById('parsingEditorModal');
   if (modal) modal.classList.add('show');
 }
@@ -2574,6 +2575,7 @@ function renderParsingEditorTable(type) {
     btn.addEventListener('click', () => {
       const row = btn.closest('.pe-row');
       const idx = parseInt(row.dataset.idx);
+      syncParsingEditorTable(type);
       peTempConfig[type].splice(idx, 1);
       renderParsingEditorTable(type);
     });
@@ -2583,6 +2585,7 @@ function renderParsingEditorTable(type) {
 function addParsingRow(type) {
   if (!peTempConfig) return;
   if (!Array.isArray(peTempConfig[type])) peTempConfig[type] = [];
+  syncParsingEditorTable(type);
   const defaults = {
     priority: { keywords: [''], val: 'medium' },
     status: { keywords: [''], val: 'pending' },
@@ -2594,38 +2597,45 @@ function addParsingRow(type) {
   renderParsingEditorTable(type);
 }
 
+function syncParsingEditorTable(type) {
+  if (!peTempConfig) return;
+  const body = document.getElementById('pe-body-' + type);
+  if (!body || body.querySelectorAll('.pe-row').length === 0) return;
+
+  const next = [];
+  body.querySelectorAll('.pe-row').forEach(row => {
+    const inputs = row.querySelectorAll('input, select');
+    const keywords = (inputs[0] && inputs[0].value ? inputs[0].value : '')
+      .split(',')
+      .map(k => k.trim())
+      .filter(Boolean);
+
+    if (type === 'categories') {
+      const name = (inputs[1] && inputs[1].value ? inputs[1].value : '').trim();
+      if (!name && keywords.length === 0) return;
+      next.push({ keywords, val: name });
+    } else if (type === 'priority') {
+      if (keywords.length === 0) return;
+      next.push({ keywords, val: inputs[1].value });
+    } else if (type === 'status') {
+      if (keywords.length === 0) return;
+      next.push({ keywords, val: inputs[1].value });
+    } else if (type === 'dates') {
+      if (keywords.length === 0) return;
+      next.push({ keywords, val: keywords[0], days: parseInt(inputs[1].value) || 0, label: keywords[0] });
+    } else if (type === 'timeOfDay') {
+      if (keywords.length === 0) return;
+      const [h, m] = inputs[1].value.split(':');
+      next.push({ keywords, h: parseInt(h) || 0, m: parseInt(m) || 0, label: keywords[0] });
+    }
+  });
+  peTempConfig[type] = next;
+}
+
 function saveParsingEditor() {
   if (!peTempConfig) return;
 
-  // Collect data from all visible and hidden tabs
-  ['priority', 'status', 'dates', 'timeOfDay', 'categories'].forEach(type => {
-    const body = document.getElementById('pe-body-' + type);
-    if (!body) return;
-    const rows = body.querySelectorAll('.pe-row');
-    peTempConfig[type] = [];
-    rows.forEach(row => {
-      const inputs = row.querySelectorAll('input, select');
-      const keywords = inputs[0].value.split(',').map(k => k.trim()).filter(Boolean);
-      if (type === 'categories') {
-        const name = (inputs[1].value || '').trim();
-        if (!name) return;
-        peTempConfig[type].push({ keywords, val: name });
-        return;
-      }
-      if (keywords.length === 0) return;
-
-      if (type === 'priority') {
-        peTempConfig[type].push({ keywords, val: inputs[1].value });
-      } else if (type === 'status') {
-        peTempConfig[type].push({ keywords, val: inputs[1].value });
-      } else if (type === 'dates') {
-        peTempConfig[type].push({ keywords, val: keywords[0], days: parseInt(inputs[1].value) || 0, label: keywords[0] });
-      } else if (type === 'timeOfDay') {
-        const [h, m] = inputs[1].value.split(':');
-        peTempConfig[type].push({ keywords, h: parseInt(h) || 0, m: parseInt(m) || 0, label: keywords[0] });
-      }
-    });
-  });
+  ['priority', 'status', 'dates', 'timeOfDay', 'categories'].forEach(syncParsingEditorTable);
 
   saveParsingConfig(peTempConfig);
   refreshCategoryDatalists();
