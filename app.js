@@ -1046,6 +1046,9 @@ function saveParsingConfig(config) {
   parsingConfig = config;
   try {
     localStorage.setItem('tf_parsingConfig', JSON.stringify(config));
+    // Perubahan kata kunci parsing ikut payload sync — tanpa ini, edit
+    // kategori dkk. tidak pernah naik ke cloud sampai ada tugas berubah
+    scheduleCloudSync();
   } catch(e) { console.error('saveParsingConfig error:', e); }
 }
 function resetParsingConfig() {
@@ -3368,6 +3371,7 @@ function save({ sync = true } = {}) {
 function saveSettings() {
   try {
     localStorage.setItem('tf_settings', JSON.stringify(settings));
+    scheduleCloudSync();
     return true;
   } catch(e) {
     console.error('Save settings error:', e);
