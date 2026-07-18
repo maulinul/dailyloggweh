@@ -1,12 +1,12 @@
 // TaskFlow Pro — Service Worker
 // App shell di-cache saat install; dokumen pakai network-first supaya update
 // cepat terlihat, aset lain cache-first dengan pengisian cache saat runtime.
-const CACHE = 'taskflow-v5';
+const CACHE = 'taskflow-v6';
 const APP_SHELL = [
   './',
   './index.html',
-  './styles.css?v=20260716a',
-  './app.js?v=20260716a',
+  './styles.css?v=20260718a',
+  './app.js?v=20260718a',
   './manifest.webmanifest',
   './icon.svg',
   './icon-192.png',
@@ -47,8 +47,10 @@ self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
 
-  // Jangan pernah cache API/cross-origin, terutama respons private GitHub Gist.
+  // Jangan pernah cache API/cross-origin — respons /api/ berisi data privat
+  // per akun dan tidak boleh masuk cache.
   if (url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith('/api/')) return;
 
   // Navigasi/dokumen: network-first, fallback ke cache saat offline
   if (e.request.mode === 'navigate') {

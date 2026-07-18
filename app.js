@@ -1,5 +1,5 @@
 // State & Config
-const APP_VERSION = '20260716a';
+const APP_VERSION = '20260718a';
 let tasks = [];
 const STORAGE_SCHEMA_VERSION = 3;
 const RESTORE_POINT_KEY = 'tf_restore_point';
@@ -9,7 +9,7 @@ let settings = {
   sound: true, haptic: true, dayMode: false, reminders: false,
   // reducedMotion null = ikuti preferensi sistem (prefers-reduced-motion)
   reducedMotion: null, customCursor: true, focusMood: 'deep',
-  githubToken: '', githubGistId: '', githubAutoSync: false
+  cloudAutoSync: false
 };
 
 const systemReducedMotion = () =>
@@ -95,9 +95,10 @@ let currentPriority = 'medium';
 let tempSubtasks = [];
 let userSetDateTime = false;
 let isInitialized = false;
-let githubSyncTimer = null;
-let githubSyncInFlight = false;
-let githubSyncQueued = false;
+let cloudSyncTimer = null;
+let cloudSyncInFlight = false;
+let cloudSyncQueued = false;
+let currentUser = null; // { email } saat login, null saat logout
 
 // Close all popup elements to prevent stacking
 function closeAllPopups() {
@@ -128,9 +129,10 @@ function cacheElements() {
     'dayDetailTitle','dayDetailContent','dayDetailClose','focusOverlay','focusTitle',
     'focusTimer','focusPause','focusClear','editModal','editTitle','editDesc',
     'editDateTime','editPriority','editStatus','editSave','editCancel','cursorDot','cursorOutline',
-    'githubToken','githubGistId','githubAutoSync','syncToGithub','loadFromGithub',
-    'githubStatus','categoryInput','editCategory',
-    'priorityFilterSelect','sortControls','githubMiniSync',
+    'authForms','authEmail','authPassword','loginBtn','registerBtn',
+    'accountInfo','accountEmail','cloudAutoSync','syncToCloud','loadFromCloud',
+    'logoutBtn','accountStatus','categoryInput','editCategory',
+    'priorityFilterSelect','sortControls','cloudMiniSync',
     'kanbanBoard','listViewBtn','kanbanViewBtn',
     'kanbanPending','kanbanOngoing','kanbanDone',
     'kanbanPendingCount','kanbanOngoingCount','kanbanDoneCount',
@@ -177,6 +179,7 @@ function safeInit() {
     renderQuickTemplates();
     initParsingEditor();
     initReminders();
+    initAuth(); // async — cek sesi login di latar belakang
     isInitialized = true;
     handleLaunchShortcut();
     // Penanda versi: terlihat di bawah panel Settings untuk memastikan
@@ -202,21 +205,19 @@ function loadData() {
     const savedSettings = localStorage.getItem('tf_settings');
     if (savedSettings) {
       const parsed = JSON.parse(savedSettings);
-      // Token lama dimigrasikan ke session-only agar tidak menetap di perangkat.
-      if (parsed.githubToken) {
-        settings.githubToken = String(parsed.githubToken);
-        try { sessionStorage.setItem('tf_githubToken', settings.githubToken); } catch (_) {}
-        delete parsed.githubToken;
+      // Migrasi dari era GitHub Gist: auto-sync lama dipertahankan,
+      // sisa field Gist (token/gist id) dibuang.
+      if (typeof parsed.githubAutoSync === 'boolean' && !('cloudAutoSync' in parsed)) {
+        parsed.cloudAutoSync = parsed.githubAutoSync;
       }
+      delete parsed.githubToken; delete parsed.githubGistId; delete parsed.githubAutoSync;
       settings = { ...settings, ...parsed };
       // Belum pernah memilih tema secara eksplisit → ikuti preferensi sistem
       if (!('dayMode' in parsed)) settings.dayMode = prefersLight();
     } else {
       settings.dayMode = prefersLight();
     }
-    try {
-      settings.githubToken = sessionStorage.getItem('tf_githubToken') || settings.githubToken || '';
-    } catch (_) {}
+    try { sessionStorage.removeItem('tf_githubToken'); } catch (_) {}
     saveSettings();
   } catch (e) {
     console.error('Load data error:', e);
@@ -292,7 +293,7 @@ function startCursor() {
     });
 
     // Delegasi sekali untuk elemen statis maupun elemen hasil render ulang.
-    const interactiveSelector = 'button, .cal-day, .filter-chip, .task-item, .action-btn, .switch, .grip, .select-trigger, .select-option, .chip-remove, .sort-chip, .github-mini-btn';
+    const interactiveSelector = 'button, .cal-day, .filter-chip, .task-item, .action-btn, .switch, .grip, .select-trigger, .select-option, .chip-remove, .sort-chip, .cloud-mini-btn';
     document.addEventListener('mouseover', (e) => {
       if (e.target.closest(interactiveSelector)) document.body.classList.add('hovering');
     });
@@ -1045,6 +1046,9 @@ function saveParsingConfig(config) {
   parsingConfig = config;
   try {
     localStorage.setItem('tf_parsingConfig', JSON.stringify(config));
+    // Perubahan kata kunci parsing ikut payload sync — tanpa ini, edit
+    // kategori dkk. tidak pernah naik ke cloud sampai ada tugas berubah
+    scheduleCloudSync();
   } catch(e) { console.error('saveParsingConfig error:', e); }
 }
 function resetParsingConfig() {
@@ -1797,7 +1801,7 @@ function togglePomodoro(id) {
   if (t.pomodoro.active && !pomoIntervals[id]) {
     pomoIntervals[id] = setInterval(() => {
       // Cari ulang task & elemen DOM tiap tick — referensi lama bisa basi
-      // setelah re-render, import, atau load dari Gist
+      // setelah re-render, import, atau load dari cloud
       const task = tasks.find(x => x.id === id);
       if (!task) { stopPomodoro(id); return; }
       if (task.pomodoro.timeLeft > 0) {
@@ -2096,7 +2100,7 @@ function exportToJson() {
   const data = {
     schemaVersion: STORAGE_SCHEMA_VERSION,
     tasks,
-    settings: Object.assign({}, settings, { githubToken: undefined }),
+    settings: Object.assign({}, settings),
     parsingConfig: loadParsingConfig(),
     streak: {
       count: parseInt(localStorage.getItem('tf_streak') || '0'),
@@ -2156,7 +2160,7 @@ function createRestorePoint(source) {
       source,
       createdAt: new Date().toISOString(),
       tasks,
-      settings: Object.assign({}, settings, { githubToken: undefined }),
+      settings: Object.assign({}, settings),
       parsingConfig: loadParsingConfig()
     }));
     return true;
@@ -2191,16 +2195,16 @@ async function restoreLastSnapshot() {
 
 function applyImportedSettings(importedSettings) {
   if (!importedSettings || typeof importedSettings !== 'object') return;
-  ['sound', 'haptic', 'dayMode', 'reminders', 'customCursor', 'githubAutoSync'].forEach(key => {
+  ['sound', 'haptic', 'dayMode', 'reminders', 'customCursor', 'cloudAutoSync'].forEach(key => {
     if (typeof importedSettings[key] === 'boolean') settings[key] = importedSettings[key];
   });
+  if (typeof importedSettings.githubAutoSync === 'boolean' && typeof importedSettings.cloudAutoSync !== 'boolean') {
+    settings.cloudAutoSync = importedSettings.githubAutoSync; // backup era Gist
+  }
   if (typeof importedSettings.reducedMotion === 'boolean' || importedSettings.reducedMotion === null) {
     settings.reducedMotion = importedSettings.reducedMotion;
   }
   if (['deep', 'calm', 'night'].includes(importedSettings.focusMood)) settings.focusMood = importedSettings.focusMood;
-  if (typeof importedSettings.githubGistId === 'string' && /^[a-zA-Z0-9]+$/.test(importedSettings.githubGistId)) {
-    settings.githubGistId = importedSettings.githubGistId;
-  }
   saveSettings();
   loadSettings();
   applyMotionSettings();
@@ -2750,25 +2754,18 @@ function initButtonListeners() {
     saveSettings(); 
   });
 
-  if (els.githubAutoSync) els.githubAutoSync.addEventListener('click', () => {
-    settings.githubAutoSync = !settings.githubAutoSync;
-    els.githubAutoSync.classList.toggle('on');
+  if (els.cloudAutoSync) els.cloudAutoSync.addEventListener('click', () => {
+    settings.cloudAutoSync = !settings.cloudAutoSync;
+    els.cloudAutoSync.classList.toggle('on');
     saveSettings();
-    if (settings.githubAutoSync) scheduleGitHubSync();
+    if (settings.cloudAutoSync) scheduleCloudSync();
   });
 
-  if (els.githubToken) els.githubToken.addEventListener('change', () => {
-    settings.githubToken = els.githubToken.value.trim();
-    try {
-      if (settings.githubToken) sessionStorage.setItem('tf_githubToken', settings.githubToken);
-      else sessionStorage.removeItem('tf_githubToken');
-    } catch (_) {}
-    saveSettings();
-  });
-
-  if (els.githubGistId) els.githubGistId.addEventListener('change', () => {
-    settings.githubGistId = els.githubGistId.value.trim();
-    saveSettings();
+  if (els.loginBtn) els.loginBtn.addEventListener('click', () => doAuth('login'));
+  if (els.registerBtn) els.registerBtn.addEventListener('click', () => doAuth('register'));
+  if (els.logoutBtn) els.logoutBtn.addEventListener('click', doLogout);
+  if (els.authPassword) els.authPassword.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') doAuth('login');
   });
 
   if (els.restoreData) els.restoreData.addEventListener('click', restoreLastSnapshot);
@@ -2785,12 +2782,12 @@ function initButtonListeners() {
     showToast('Semua data dihapus.', 'info', { label: '↩️ Undo', onClick: undo });
   });
 
-  // GitHub buttons
-  if (els.syncToGithub) els.syncToGithub.addEventListener('click', syncToGitHub);
-  if (els.loadFromGithub) els.loadFromGithub.addEventListener('click', loadFromGitHub);
+  // Cloud sync buttons
+  if (els.syncToCloud) els.syncToCloud.addEventListener('click', () => syncToCloud());
+  if (els.loadFromCloud) els.loadFromCloud.addEventListener('click', loadFromCloud);
 
-  // GitHub mini sync
-  if (els.githubMiniSync) els.githubMiniSync.addEventListener('click', githubMiniHandler);
+  // Cloud mini sync
+  if (els.cloudMiniSync) els.cloudMiniSync.addEventListener('click', cloudMiniHandler);
 
   // Search input
   if (els.searchInput) els.searchInput.addEventListener('input', e => { searchQuery = e.target.value; renderCurrentView(); });
@@ -3140,46 +3137,133 @@ function showPrompt(title, placeholder) {
   ]});
 }
 
-// GitHub Gist Sync
-function showGithubStatus(msg, type) {
-  if (!els.githubStatus) return;
-  els.githubStatus.textContent = msg;
-  els.githubStatus.className = 'github-status ' + (type || '');
+// Cloud Sync — akun email+password, data tersimpan di D1 lewat Worker API
+async function api(path, options = {}) {
+  const res = await fetch('./api/' + path, {
+    credentials: 'same-origin',
+    ...options,
+    headers: options.body ? { 'Content-Type': 'application/json' } : undefined
+  });
+  let payload = null;
+  try { payload = await res.json(); } catch (_) {}
+  if (!res.ok) {
+    const err = new Error((payload && payload.error) || ('HTTP ' + res.status));
+    err.status = res.status;
+    throw err;
+  }
+  return payload;
+}
+
+function showAccountStatus(msg, type) {
+  if (!els.accountStatus) return;
+  els.accountStatus.textContent = msg;
+  els.accountStatus.className = 'account-status ' + (type || '');
   if (type === 'success' || type === 'error') {
-    setTimeout(() => { 
-      if(els.githubStatus) { els.githubStatus.textContent = ''; els.githubStatus.className = 'github-status'; }
+    setTimeout(() => {
+      if (els.accountStatus) { els.accountStatus.textContent = ''; els.accountStatus.className = 'account-status'; }
     }, 5000);
   }
 }
 
-function scheduleGitHubSync() {
-  if (!isInitialized || !settings.githubAutoSync || !settings.githubToken) return;
-  clearTimeout(githubSyncTimer);
-  githubSyncTimer = setTimeout(() => {
-    githubSyncTimer = null;
-    if (githubSyncInFlight) {
-      githubSyncQueued = true;
+function refreshAccountUI() {
+  if (els.authForms) els.authForms.style.display = currentUser ? 'none' : '';
+  if (els.accountInfo) els.accountInfo.style.display = currentUser ? '' : 'none';
+  if (els.accountEmail) els.accountEmail.textContent = currentUser ? currentUser.email : '';
+  if (els.cloudAutoSync) {
+    els.cloudAutoSync.classList.toggle('on', !!settings.cloudAutoSync);
+    els.cloudAutoSync.setAttribute('aria-checked', settings.cloudAutoSync ? 'true' : 'false');
+  }
+}
+
+// Cek sesi tersimpan (cookie HttpOnly) saat aplikasi dibuka
+async function initAuth() {
+  try {
+    const info = await api('me');
+    currentUser = { email: info.email };
+  } catch (_) {
+    currentUser = null;
+  }
+  refreshAccountUI();
+}
+
+async function doAuth(mode) {
+  const email = els.authEmail ? els.authEmail.value.trim() : '';
+  const password = els.authPassword ? els.authPassword.value : '';
+  if (!email || !email.includes('@')) { showAccountStatus('❌ Email tidak valid', 'error'); return; }
+  if (password.length < 8) { showAccountStatus('❌ Password minimal 8 karakter', 'error'); return; }
+
+  showAccountStatus(mode === 'register' ? '✨ Mendaftarkan akun...' : '🔑 Masuk...', 'info');
+  try {
+    const info = await api(mode, { method: 'POST', body: JSON.stringify({ email, password }) });
+    currentUser = { email: info.email };
+    if (els.authPassword) els.authPassword.value = '';
+    refreshAccountUI();
+    showAccountStatus('✅ Berhasil masuk', 'success');
+
+    if (mode === 'register') {
+      // Akun baru: langsung amankan data lokal ke cloud
+      if (tasks.length) await syncToCloud({ automatic: true });
+      showToast('Akun dibuat. Data lokal tersimpan ke cloud.', 'success');
       return;
     }
-    syncToGitHub({ automatic: true });
+    // Login: tawarkan muat data cloud bila ada
+    const remote = await api('data');
+    if (remote && remote.data) {
+      const when = remote.updatedAt ? new Date(remote.updatedAt).toLocaleString('id-ID') : '';
+      const choice = await showDialog({
+        title: '☁️ Data Cloud Ditemukan',
+        message: `Terakhir disimpan: ${when}.\nMuat data cloud (menggantikan data lokal), atau simpan data lokal ke cloud?`,
+        buttons: [
+          { label: 'Nanti', value: null },
+          { label: '☁️ Simpan Lokal ke Cloud', value: 'push' },
+          { label: '📥 Muat dari Cloud', value: 'pull', primary: true }
+        ]
+      });
+      if (choice === 'pull') await applyCloudData(remote);
+      else if (choice === 'push') await syncToCloud();
+    } else if (tasks.length) {
+      await syncToCloud({ automatic: true });
+      showToast('Data lokal tersimpan ke cloud.', 'success');
+    }
+  } catch (err) {
+    showAccountStatus('❌ ' + err.message, 'error');
+  }
+}
+
+async function doLogout() {
+  try { await api('logout', { method: 'POST' }); } catch (_) {}
+  currentUser = null;
+  refreshAccountUI();
+  showToast('Kamu sudah keluar. Data lokal tetap tersimpan di perangkat ini.', 'info');
+}
+
+function scheduleCloudSync() {
+  if (!isInitialized || !settings.cloudAutoSync || !currentUser) return;
+  clearTimeout(cloudSyncTimer);
+  cloudSyncTimer = setTimeout(() => {
+    cloudSyncTimer = null;
+    if (cloudSyncInFlight) {
+      cloudSyncQueued = true;
+      return;
+    }
+    syncToCloud({ automatic: true });
   }, 900);
 }
 
-async function syncToGitHub({ automatic = false } = {}) {
-  const token = (els.githubToken ? els.githubToken.value.trim() : '') || settings.githubToken || '';
-  if (!token) { showGithubStatus('❌ Token diperlukan', 'error'); return; }
-  if (githubSyncInFlight) {
-    githubSyncQueued = true;
+async function syncToCloud({ automatic = false } = {}) {
+  if (!currentUser) { showAccountStatus('❌ Masuk dulu untuk sinkronisasi', 'error'); return; }
+  if (cloudSyncInFlight) {
+    cloudSyncQueued = true;
     return;
   }
-  githubSyncInFlight = true;
-  
-  if (!automatic) showGithubStatus('☁️ Menyinkronkan...', 'info');
+  cloudSyncInFlight = true;
+
+  if (!automatic) showAccountStatus('☁️ Menyinkronkan...', 'info');
   try {
     const data = {
       schemaVersion: STORAGE_SCHEMA_VERSION,
       tasks,
-      settings: {...settings, githubToken: undefined, githubGistId: undefined},
+      settings: { ...settings },
       parsingConfig: loadParsingConfig(),
       streak: {
         count: parseInt(localStorage.getItem('tf_streak') || '0'),
@@ -3187,109 +3271,66 @@ async function syncToGitHub({ automatic = false } = {}) {
       },
       lastSync: new Date().toISOString()
     };
-    const content = JSON.stringify(data, null, 2);
-    
-    const gistId = els.githubGistId ? els.githubGistId.value.trim() : '';
-    
-    if (gistId) {
-      const res = await fetch(`https://api.github.com/gists/${gistId}`, {
-        method: 'PATCH',
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/vnd.github.v3+json'
-        },
-        body: JSON.stringify({
-          files: {
-            'taskflow-data.json': { content }
-          }
-        })
-      });
-      if (!res.ok) throw new Error('Gagal update Gist: ' + res.status);
-      showGithubStatus('✅ Tersimpan ke GitHub', 'success');
-      if (!automatic) showToast('Data tersimpan ke GitHub', 'success');
-    } else {
-      const res = await fetch('https://api.github.com/gists', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/vnd.github.v3+json'
-        },
-        body: JSON.stringify({
-          description: 'TaskFlow Pro Data Backup',
-          public: false,
-          files: { 'taskflow-data.json': { content } }
-        })
-      });
-      if (!res.ok) throw new Error('Gagal membuat Gist: ' + res.status);
-      const json = await res.json();
-      if (els.githubGistId) els.githubGistId.value = json.id;
-      settings.githubGistId = json.id;
-      saveSettings();
-      showGithubStatus(`✅ Gist dibuat: ${json.id}`, 'success');
-      if (!automatic) showToast('Gist baru berhasil dibuat', 'success');
-    }
+    await api('data', { method: 'PUT', body: JSON.stringify({ data }) });
+    showAccountStatus('✅ Tersimpan ke cloud', 'success');
+    if (!automatic) showToast('Data tersimpan ke cloud', 'success');
   } catch (err) {
-    showGithubStatus('❌ Error: ' + err.message, 'error'); showToast('Error: ' + err.message, 'error');
+    if (err.status === 401) {
+      currentUser = null;
+      refreshAccountUI();
+      showAccountStatus('❌ Sesi berakhir. Silakan masuk lagi.', 'error');
+    } else {
+      showAccountStatus('❌ Error: ' + err.message, 'error');
+      if (!automatic) showToast('Error: ' + err.message, 'error');
+    }
   } finally {
-    githubSyncInFlight = false;
-    if (githubSyncQueued) {
-      githubSyncQueued = false;
-      scheduleGitHubSync();
+    cloudSyncInFlight = false;
+    if (cloudSyncQueued) {
+      cloudSyncQueued = false;
+      scheduleCloudSync();
     }
   }
 }
 
-async function loadFromGitHub() {
-  const token = els.githubToken ? els.githubToken.value.trim() : '';
-  const gistId = els.githubGistId ? els.githubGistId.value.trim() : '';
-  
-  if (!token) { showGithubStatus('❌ Token diperlukan', 'error'); return; }
-  if (!gistId) { showGithubStatus('❌ Gist ID diperlukan', 'error'); return; }
-  
-  showGithubStatus('📥 Memuat...', 'info');
-  try {
-    const res = await fetch(`https://api.github.com/gists/${gistId}`, {
-      cache: 'no-store',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Accept': 'application/vnd.github.v3+json'
-      }
-    });
-    if (!res.ok) throw new Error('Gist tidak ditemukan: ' + res.status);
-    const json = await res.json();
-    const file = json.files['taskflow-data.json'];
-    if (!file) throw new Error('File taskflow-data.json tidak ditemukan');
+async function applyCloudData(remote) {
+  const data = remote.data;
+  if (!data || !Array.isArray(data.tasks)) throw new Error('Format data cloud tidak valid');
+  const replaced = await replaceTasksSafely(data.tasks, 'Cloud', false);
+  if (!replaced) {
+    showAccountStatus('Load dibatalkan', 'info');
+    return;
+  }
+  applyImportedSettings(data.settings);
+  if (data.parsingConfig) saveParsingConfig(data.parsingConfig);
+  if (data.streak) {
+    const count = parseInt(data.streak.count);
+    if (!isNaN(count)) localStorage.setItem('tf_streak', count);
+    if (data.streak.lastComplete) localStorage.setItem('tf_lastComplete', data.streak.lastComplete);
+  }
+  checkStreak();
+  showAccountStatus(`✅ Data dimuat (${tasks.length} tugas)`, 'success');
+  showToast(`${tasks.length} tugas dimuat dari cloud`, 'success', { label: 'Undo', onClick: undo });
+}
 
-    let gistContent = file.content;
-    if (file.truncated && file.raw_url) {
-      const raw = await fetch(file.raw_url, {
-        cache: 'no-store',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (!raw.ok) throw new Error('Gagal memuat isi Gist lengkap: ' + raw.status);
-      gistContent = await raw.text();
-    }
-    const data = JSON.parse(gistContent);
-    if (!Array.isArray(data.tasks)) throw new Error('Format task di Gist tidak valid');
-    const replaced = await replaceTasksSafely(data.tasks, 'GitHub Gist', false);
-    if (!replaced) {
-      showGithubStatus('Load dibatalkan', 'info');
+async function loadFromCloud() {
+  if (!currentUser) { showAccountStatus('❌ Masuk dulu untuk memuat data', 'error'); return; }
+  showAccountStatus('📥 Memuat...', 'info');
+  try {
+    const remote = await api('data');
+    if (!remote || !remote.data) {
+      showAccountStatus('Belum ada data di cloud', 'info');
       return;
     }
-    applyImportedSettings(data.settings);
-    if (data.parsingConfig) saveParsingConfig(data.parsingConfig);
-    if (data.streak) {
-      const count = parseInt(data.streak.count);
-      if (!isNaN(count)) localStorage.setItem('tf_streak', count);
-      if (data.streak.lastComplete) localStorage.setItem('tf_lastComplete', data.streak.lastComplete);
-    }
-    checkStreak();
-    showGithubStatus(`✅ Data dimuat (${tasks.length} tugas)`, 'success');
-    showToast(`${tasks.length} tugas dimuat dari GitHub`, 'success', { label: 'Undo', onClick: undo });
+    await applyCloudData(remote);
   } catch (err) {
-    showGithubStatus('❌ Error: ' + err.message, 'error'); showToast('Error: ' + err.message, 'error');
+    if (err.status === 401) {
+      currentUser = null;
+      refreshAccountUI();
+      showAccountStatus('❌ Sesi berakhir. Silakan masuk lagi.', 'error');
+    } else {
+      showAccountStatus('❌ Error: ' + err.message, 'error');
+      showToast('Error: ' + err.message, 'error');
+    }
   }
 }
 
@@ -3307,11 +3348,8 @@ function loadSettings() {
     settings.reminders = settings.reminders && granted;
     els.reminderToggle.classList.toggle('on', settings.reminders);
   }
-  if (els.githubAutoSync) els.githubAutoSync.classList.toggle('on', settings.githubAutoSync);
-  if (els.githubToken) els.githubToken.value = settings.githubToken || '';
-  if (els.githubGistId) els.githubGistId.value = settings.githubGistId || '';
-  if (els.aiApiKey) els.aiApiKey.value = settings.aiApiKey || '';
-  
+  if (els.cloudAutoSync) els.cloudAutoSync.classList.toggle('on', !!settings.cloudAutoSync);
+
   document.body.classList.toggle('day-mode', !!settings.dayMode);
   if (els.themeIcon) els.themeIcon.textContent = settings.dayMode ? '☀️' : '🌙';
   if (els.themeLabel) els.themeLabel.textContent = settings.dayMode ? 'Day Mode' : 'Night Mode';
@@ -3322,7 +3360,7 @@ function loadSettings() {
 function save({ sync = true } = {}) {
   try {
     localStorage.setItem('tf_tasks', JSON.stringify(tasks));
-    if (sync) scheduleGitHubSync();
+    if (sync) scheduleCloudSync();
     return true;
   } catch(e) {
     console.error('Save error:', e);
@@ -3332,8 +3370,8 @@ function save({ sync = true } = {}) {
 }
 function saveSettings() {
   try {
-    const persistableSettings = { ...settings, githubToken: undefined };
-    localStorage.setItem('tf_settings', JSON.stringify(persistableSettings));
+    localStorage.setItem('tf_settings', JSON.stringify(settings));
+    scheduleCloudSync();
     return true;
   } catch(e) {
     console.error('Save settings error:', e);
@@ -3370,29 +3408,23 @@ function initKeyboard() {
   });
 }
 
-async function githubMiniHandler() {
-  const token = settings.githubToken;
-  const gistId = settings.githubGistId;
-  if (!token) {
-    showToast('⚠️ Masukkan GitHub Token di Settings (⚙️) terlebih dulu.', 'warn');
+async function cloudMiniHandler() {
+  if (!currentUser) {
+    showToast('⚠️ Masuk dengan akunmu di Settings (⚙️) terlebih dulu.', 'warn');
     if (els.settingsPanel) els.settingsPanel.classList.add('show');
     return;
   }
-  if (gistId) {
-    const choice = await showDialog({
-      title: '☁️ GitHub Gist Sync',
-      message: 'Pilih arah sinkronisasi:',
-      buttons: [
-        { label: 'Batal', value: null },
-        { label: '📥 Download (Load)', value: 'load' },
-        { label: '☁️ Upload (Save)', value: 'save', primary: true }
-      ]
-    });
-    if (choice === 'save') syncToGitHub();
-    else if (choice === 'load') loadFromGitHub();
-  } else {
-    syncToGitHub();
-  }
+  const choice = await showDialog({
+    title: '☁️ Sinkronisasi Cloud',
+    message: 'Pilih arah sinkronisasi:',
+    buttons: [
+      { label: 'Batal', value: null },
+      { label: '📥 Download (Load)', value: 'load' },
+      { label: '☁️ Upload (Save)', value: 'save', primary: true }
+    ]
+  });
+  if (choice === 'save') syncToCloud();
+  else if (choice === 'load') loadFromCloud();
 }
 
 // PWA — daftarkan service worker (butuh HTTPS atau localhost)
