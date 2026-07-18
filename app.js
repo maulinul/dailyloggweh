@@ -1,5 +1,5 @@
 // State & Config
-const APP_VERSION = '20260718a';
+const APP_VERSION = '20260718b';
 let tasks = [];
 const STORAGE_SCHEMA_VERSION = 3;
 const RESTORE_POINT_KEY = 'tf_restore_point';
@@ -3142,16 +3142,26 @@ async function api(path, options = {}) {
   const res = await fetch('./api/' + path, {
     credentials: 'same-origin',
     ...options,
-    headers: options.body ? { 'Content-Type': 'application/json' } : undefined
+    headers: options.body
+      ? { ...(options.headers || {}), 'Content-Type': 'application/json' }
+      : options.headers
   });
   let payload = null;
   try { payload = await res.json(); } catch (_) {}
   if (!res.ok) {
-    const err = new Error((payload && payload.error) || ('HTTP ' + res.status));
+    const fallback = getApiErrorMessage(res.status, path);
+    const err = new Error((payload && payload.error) || fallback);
     err.status = res.status;
     throw err;
   }
   return payload;
+}
+
+function getApiErrorMessage(status, path) {
+  if (status === 404 || status === 405) {
+    return 'Backend akun belum aktif di hosting ini. Deploy lewat Cloudflare Worker, bukan static hosting/GitHub Pages.';
+  }
+  return 'HTTP ' + status;
 }
 
 function showAccountStatus(msg, type) {
