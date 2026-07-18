@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="DailyLog animated icon">
+  <defs>
+    <linearGradient id="bg" x1="88" y1="70" x2="424" y2="442" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#201034"/>
+      <stop offset="0.46" stop-color="#0b1024"/>
+      <stop offset="1" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="94" y1="256" x2="418" y2="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#b026ff"/>
+      <stop offset="0.45" stop-color="#31d4ff"/>
+      <stop offset="0.72" stop-color="#00f5a0"/>
+      <stop offset="1" stop-color="#ff4d6d"/>
+    </linearGradient>
+    <linearGradient id="card" x1="148" y1="140" x2="364" y2="372" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#b026ff"/>
+      <stop offset="0.48" stop-color="#4facfe"/>
+      <stop offset="1" stop-color="#1b2448"/>
+    </linearGradient>
+    <linearGradient id="check" x1="184" y1="276" x2="342" y2="276" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff3cad"/>
+      <stop offset="1" stop-color="#ff8a8a"/>
+    </linearGradient>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.52 0 0 0 0 0.22 0 0 0 0 1 0 0 0 0.75 0"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="checkGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 1 0 0 0 0 0.2 0 0 0 0 0.55 0 0 0 0.85 0"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <style>
+      .ring {
+        transform-origin: 256px 256px;
+        animation: ringSpin 4.8s cubic-bezier(.45,0,.2,1) infinite;
+      }
+      .tick {
+        stroke-dasharray: 184;
+        stroke-dashoffset: 184;
+        animation: drawTick 2.8s ease-in-out infinite;
+      }
+      .card {
+        transform-origin: 256px 260px;
+        animation: floatCard 2.8s ease-in-out infinite;
+      }
+      .dot {
+        transform-origin: center;
+        animation: dotPulse 2.8s ease-in-out infinite;
+      }
+      .dot:nth-of-type(2) { animation-delay: .12s; }
+      .dot:nth-of-type(3) { animation-delay: .24s; }
+      .dot:nth-of-type(4) { animation-delay: .36s; }
+      @keyframes ringSpin {
+        0% { transform: rotate(0deg); stroke-dashoffset: 52; }
+        55% { transform: rotate(160deg); stroke-dashoffset: 8; }
+        100% { transform: rotate(360deg); stroke-dashoffset: 52; }
+      }
+      @keyframes drawTick {
+        0%, 16% { stroke-dashoffset: 184; filter: none; }
+        42%, 72% { stroke-dashoffset: 0; filter: url(#checkGlow); }
+        100% { stroke-dashoffset: 184; filter: none; }
+      }
+      @keyframes floatCard {
+        0%, 100% { transform: translateY(0) scale(1); }
+        50% { transform: translateY(-7px) scale(1.015); }
+      }
+      @keyframes dotPulse {
+        0%, 100% { opacity: .45; transform: scale(1); }
+        50% { opacity: .95; transform: scale(1.16); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .ring, .tick, .card, .dot { animation: none; }
+        .tick { stroke-dashoffset: 0; }
+      }
+    </style>
+  </defs>
+
+  <rect x="44" y="44" width="424" height="424" rx="92" fill="url(#bg)"/>
+  <rect x="50" y="50" width="412" height="412" rx="86" fill="none" stroke="#ffffff" stroke-opacity=".16" stroke-width="4"/>
+  <rect x="64" y="64" width="384" height="384" rx="76" fill="#ffffff" opacity=".035"/>
+
+  <circle cx="256" cy="256" r="158" fill="none" stroke="#ffffff" stroke-opacity=".11" stroke-width="24"/>
+  <circle class="ring" cx="256" cy="256" r="158" fill="none" stroke="url(#ring)" stroke-width="26" stroke-linecap="round" stroke-dasharray="700 292" stroke-dashoffset="52" filter="url(#softGlow)"/>
+
+  <g class="card">
+    <rect x="148" y="152" width="216" height="216" rx="44" fill="#10182f" stroke="url(#card)" stroke-width="8"/>
+    <path d="M152 202h208" stroke="#7ec7ff" stroke-width="20" stroke-linecap="round" opacity=".55"/>
+    <rect x="182" y="126" width="24" height="58" rx="12" fill="#b026ff" stroke="#f0d7ff" stroke-width="5"/>
+    <rect x="244" y="126" width="24" height="58" rx="12" fill="#b026ff" stroke="#f0d7ff" stroke-width="5"/>
+    <rect x="306" y="126" width="24" height="58" rx="12" fill="#4facfe" stroke="#d7f2ff" stroke-width="5"/>
+    <circle class="dot" cx="206" cy="240" r="14" fill="#a88cff"/>
+    <circle class="dot" cx="256" cy="240" r="14" fill="#a88cff"/>
+    <circle class="dot" cx="306" cy="240" r="14" fill="#a88cff"/>
+    <circle class="dot" cx="206" cy="292" r="14" fill="#79b7ff"/>
+  </g>
+
+  <path class="tick" d="M184 278l50 50 104-116" fill="none" stroke="url(#check)" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
