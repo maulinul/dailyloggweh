@@ -1,12 +1,12 @@
 // TaskFlow Pro — Service Worker
 // App shell di-cache saat install; dokumen pakai network-first supaya update
 // cepat terlihat, aset lain cache-first dengan pengisian cache saat runtime.
-const CACHE = 'taskflow-v8';
+const CACHE = 'taskflow-v9';
 const APP_SHELL = [
   './',
   './index.html',
-  './styles.css?v=20260718c',
-  './app.js?v=20260718c',
+  './styles.css?v=20260718d',
+  './app.js?v=20260718d',
   './manifest.webmanifest',
   './icon.svg',
   './icon-192.png',

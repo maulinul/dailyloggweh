@@ -1,5 +1,5 @@
 // State & Config
-const APP_VERSION = '20260718c';
+const APP_VERSION = '20260718d';
 let tasks = [];
 const STORAGE_SCHEMA_VERSION = 3;
 const RESTORE_POINT_KEY = 'tf_restore_point';
