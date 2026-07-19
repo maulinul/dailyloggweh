@@ -8,12 +8,12 @@
   <meta property="og:title" content="TaskFlow | Daily Tracker">
   <meta property="og:description" content="Daily task tracker premium dengan smart parser, kalender, kanban board, dan cloud sync.">
   <meta property="og:type" content="website">
-  <link rel="manifest" href="./manifest.webmanifest?v=20260718e">
+  <link rel="manifest" href="./manifest.webmanifest?v=20260719a">
   <link rel="preconnect" href="https://fonts.googleapis.com/">
   <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
-  <link rel="icon" href="./icon.svg?v=20260718e" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css?v=20260718e">
+  <link rel="icon" href="./icon.svg?v=20260719a" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css?v=20260719a">
 </head>
 <body>
   <!-- Custom Cursor -->
@@ -24,17 +24,17 @@
   <div class="focus-overlay" id="focusOverlay" role="dialog" aria-modal="true" aria-labelledby="focusTitle">
     <div class="focus-ambient"></div>
     <div class="focus-card">
-      <div class="focus-title" id="focusTitle">Fokus Mode</div>
+      <div class="focus-title" id="focusTitle" data-i18n="focus.title">Fokus Mode</div>
       <div class="focus-timer" id="focusTimer">25:00</div>
       <div class="focus-subtasks" id="focusSubtasks"></div>
       <div class="focus-controls">
-        <button class="focus-btn-large" id="focusPause">⏸ Pause</button>
-        <button class="focus-btn-large focus-clear" id="focusClear">✕ Clear Focus</button>
+        <button class="focus-btn-large" id="focusPause" data-i18n="focus.pause">⏸ Pause</button>
+        <button class="focus-btn-large focus-clear" id="focusClear" data-i18n="focus.clear">✕ Clear Focus</button>
       </div>
       <div class="focus-moods" id="focusMoods">
-        <button class="focus-mood active" data-mood="deep">🌌 Deep Focus</button>
-        <button class="focus-mood" data-mood="calm">🌿 Calm</button>
-        <button class="focus-mood" data-mood="night">🌙 Night</button>
+        <button class="focus-mood active" data-mood="deep" data-i18n="focus.deep">🌌 Deep Focus</button>
+        <button class="focus-mood" data-mood="calm" data-i18n="focus.calm">🌿 Calm</button>
+        <button class="focus-mood" data-mood="night" data-i18n="focus.night">🌙 Night</button>
       </div>
     </div>
   </div>
@@ -42,10 +42,10 @@
   <!-- Edit Modal -->
   <div class="modal-overlay" id="editModal" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
     <div class="modal-content">
-      <div class="modal-header" id="editModalTitle">✏️ Edit Tugas</div>
-      <input type="text" class="task-input modal-input" id="editTitle" placeholder="Judul tugas">
-      <input type="text" class="task-input modal-input" id="editDesc" placeholder="Deskripsi (opsional)">
-      <input type="text" class="task-input modal-input" id="editCategory" placeholder="📁 Kategori (cth: Kerja, Meeting, Personal)" list="editCategorySuggestions" autocomplete="off">
+      <div class="modal-header" id="editModalTitle" data-i18n="edit.title">✏️ Edit Tugas</div>
+      <input type="text" class="task-input modal-input" id="editTitle" placeholder="Judul tugas" data-i18n-ph="ph.editTitle">
+      <input type="text" class="task-input modal-input" id="editDesc" placeholder="Deskripsi (opsional)" data-i18n-ph="ph.editDesc">
+      <input type="text" class="task-input modal-input" id="editCategory" placeholder="📁 Kategori (cth: Kerja, Meeting, Personal)" data-i18n-ph="ph.editCategory" list="editCategorySuggestions" autocomplete="off">
       <datalist id="editCategorySuggestions">
         <option value="Kerja"></option><option value="Meeting"></option>
         <option value="Laporan"></option><option value="Personal"></option>
@@ -56,28 +56,28 @@
       <div class="input-row">
         <input type="datetime-local" class="task-input" id="editDateTime" style="flex:1">
         <select class="task-input" id="editPriority" style="width:130px">
-          <option value="super_high">💥 Super High</option>
-          <option value="high">🔥 High</option>
-          <option value="medium">⚡ Medium</option>
-          <option value="low">🌿 Low</option>
+          <option value="super_high" data-i18n="opt.super_high">💥 Super High</option>
+          <option value="high" data-i18n="opt.high">🔥 High</option>
+          <option value="medium" data-i18n="opt.medium">⚡ Medium</option>
+          <option value="low" data-i18n="opt.low">🌿 Low</option>
         </select>
         <select class="task-input" id="editStatus" style="width:130px">
-          <option value="pending">⏳ Pending</option>
-          <option value="ongoing">🔥 On Going</option>
-          <option value="done">✅ Selesai</option>
+          <option value="pending" data-i18n="opt.pending">⏳ Pending</option>
+          <option value="ongoing" data-i18n="opt.ongoing">🔥 On Going</option>
+          <option value="done" data-i18n="opt.done">✅ Selesai</option>
         </select>
       </div>
       <div class="input-row" style="margin-top:0.5rem;">
-        <select class="task-input" id="editRepeat" style="flex:1" title="Pengulangan tugas">
-          <option value="none">🔁 Tidak berulang</option>
-          <option value="daily">🔁 Harian</option>
-          <option value="weekly">🔁 Mingguan</option>
-          <option value="monthly">🔁 Bulanan</option>
+        <select class="task-input" id="editRepeat" style="flex:1" title="Pengulangan tugas" data-i18n-title="title.repeat">
+          <option value="none" data-i18n="repeat.none">🔁 Tidak berulang</option>
+          <option value="daily" data-i18n="repeat.daily">🔁 Harian</option>
+          <option value="weekly" data-i18n="repeat.weekly">🔁 Mingguan</option>
+          <option value="monthly" data-i18n="repeat.monthly">🔁 Bulanan</option>
         </select>
       </div>
       <div class="modal-actions">
-        <button class="btn-icon" id="editCancel" style="padding: 0.6rem 1.2rem;">Batal</button>
-        <button class="btn" id="editSave">Simpan</button>
+        <button class="btn-icon" id="editCancel" style="padding: 0.6rem 1.2rem;" data-i18n="btn.cancel">Batal</button>
+        <button class="btn" id="editSave" data-i18n="btn.save">Simpan</button>
       </div>
     </div>
   </div>
@@ -96,81 +96,81 @@
   <div class="modal-overlay" id="parsingEditorModal" role="dialog" aria-modal="true" aria-label="Pengaturan parsing kata">
     <div class="modal-content" style="max-width: 650px; max-height: 85vh; overflow-y: auto;">
       <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
-        <span>⚙️ Pengaturan Parsing Kata</span>
+        <span data-i18n="pe.title">⚙️ Pengaturan Parsing Kata</span>
         <button class="btn-icon" id="parsingEditorClose" style="font-size:1.2rem; padding:0.3rem 0.5rem;">✕</button>
       </div>
-      <p style="font-size:0.75rem; color:var(--text-dim); margin-bottom:0.8rem;">Edit kata kunci yang diparsing untuk prioritas, status, tanggal, waktu, dan kategori. Setiap baris: kata kunci (pisahkan dengan koma) → hasil.</p>
+      <p style="font-size:0.75rem; color:var(--text-dim); margin-bottom:0.8rem;" data-i18n="pe.desc">Edit kata kunci yang diparsing untuk prioritas, status, tanggal, waktu, dan kategori. Setiap baris: kata kunci (pisahkan dengan koma) → hasil.</p>
 
       <!-- Tabs -->
       <div class="pe-tabs">
-        <button class="pe-tab active" data-tab="priority">🎯 Prioritas</button>
-        <button class="pe-tab" data-tab="status">🏷️ Status</button>
-        <button class="pe-tab" data-tab="dates">📅 Tanggal</button>
-        <button class="pe-tab" data-tab="timeOfDay">⏰ Waktu</button>
-        <button class="pe-tab" data-tab="categories">📁 Kategori</button>
+        <button class="pe-tab active" data-tab="priority" data-i18n="pe.tab.priority">🎯 Prioritas</button>
+        <button class="pe-tab" data-tab="status" data-i18n="pe.tab.status">🏷️ Status</button>
+        <button class="pe-tab" data-tab="dates" data-i18n="pe.tab.dates">📅 Tanggal</button>
+        <button class="pe-tab" data-tab="timeOfDay" data-i18n="pe.tab.timeOfDay">⏰ Waktu</button>
+        <button class="pe-tab" data-tab="categories" data-i18n="pe.tab.categories">📁 Kategori</button>
       </div>
 
       <!-- Tab Content: Priority -->
       <div class="pe-panel active" id="pe-panel-priority">
         <div class="pe-table-header">
-          <span style="flex:1;">Kata Kunci (pisah koma)</span>
-          <span style="width:120px;">Prioritas</span>
+          <span style="flex:1;" data-i18n="pe.col.keywords">Kata Kunci (pisah koma)</span>
+          <span style="width:120px;" data-i18n="pe.col.priority">Prioritas</span>
           <span style="width:50px;"></span>
         </div>
         <div class="pe-table-body" id="pe-body-priority"></div>
-        <button class="pe-add-btn" data-type="priority">+ Tambah</button>
+        <button class="pe-add-btn" data-type="priority" data-i18n="pe.add">+ Tambah</button>
       </div>
 
       <!-- Tab Content: Status -->
       <div class="pe-panel" id="pe-panel-status">
         <div class="pe-table-header">
-          <span style="flex:1;">Kata Kunci (pisah koma)</span>
-          <span style="width:120px;">Status</span>
+          <span style="flex:1;" data-i18n="pe.col.keywords">Kata Kunci (pisah koma)</span>
+          <span style="width:120px;" data-i18n="pe.col.status">Status</span>
           <span style="width:50px;"></span>
         </div>
         <div class="pe-table-body" id="pe-body-status"></div>
-        <button class="pe-add-btn" data-type="status">+ Tambah</button>
+        <button class="pe-add-btn" data-type="status" data-i18n="pe.add">+ Tambah</button>
       </div>
 
       <!-- Tab Content: Dates -->
       <div class="pe-panel" id="pe-panel-dates">
         <div class="pe-table-header">
-          <span style="flex:1;">Kata Kunci (pisah koma)</span>
-          <span style="width:100px;">+Hari</span>
+          <span style="flex:1;" data-i18n="pe.col.keywords">Kata Kunci (pisah koma)</span>
+          <span style="width:100px;" data-i18n="pe.col.days">+Hari</span>
           <span style="width:50px;"></span>
         </div>
         <div class="pe-table-body" id="pe-body-dates"></div>
-        <button class="pe-add-btn" data-type="dates">+ Tambah</button>
+        <button class="pe-add-btn" data-type="dates" data-i18n="pe.add">+ Tambah</button>
       </div>
 
       <!-- Tab Content: Time of Day -->
       <div class="pe-panel" id="pe-panel-timeOfDay">
         <div class="pe-table-header">
-          <span style="flex:1;">Kata Kunci (pisah koma)</span>
-          <span style="width:100px;">Jam</span>
+          <span style="flex:1;" data-i18n="pe.col.keywords">Kata Kunci (pisah koma)</span>
+          <span style="width:100px;" data-i18n="pe.col.hour">Jam</span>
           <span style="width:50px;"></span>
         </div>
         <div class="pe-table-body" id="pe-body-timeOfDay"></div>
-        <button class="pe-add-btn" data-type="timeOfDay">+ Tambah</button>
+        <button class="pe-add-btn" data-type="timeOfDay" data-i18n="pe.add">+ Tambah</button>
       </div>
 
       <!-- Tab Content: Categories -->
       <div class="pe-panel" id="pe-panel-categories">
-        <p style="font-size:0.72rem; color:var(--text-dim); margin:0 0 0.6rem;">Kata kunci (opsional) untuk auto-parsing kategori dari nama tugas. Kosongkan kata kunci jika hanya ingin menambah pilihan kategori tanpa deteksi otomatis.</p>
+        <p style="font-size:0.72rem; color:var(--text-dim); margin:0 0 0.6rem;" data-i18n="pe.cat.desc">Kata kunci (opsional) untuk auto-parsing kategori dari nama tugas. Kosongkan kata kunci jika hanya ingin menambah pilihan kategori tanpa deteksi otomatis.</p>
         <div class="pe-table-header">
-          <span style="flex:1;">Kata Kunci (pisah koma)</span>
-          <span style="width:140px;">Nama Kategori</span>
+          <span style="flex:1;" data-i18n="pe.col.keywords">Kata Kunci (pisah koma)</span>
+          <span style="width:140px;" data-i18n="pe.col.catName">Nama Kategori</span>
           <span style="width:50px;"></span>
         </div>
         <div class="pe-table-body" id="pe-body-categories"></div>
-        <button class="pe-add-btn" data-type="categories">+ Tambah</button>
+        <button class="pe-add-btn" data-type="categories" data-i18n="pe.add">+ Tambah</button>
       </div>
 
       <div class="modal-actions" style="margin-top:1rem; justify-content:space-between;">
-        <button class="btn-icon" id="parsingResetDefault" title="Reset ke Default" style="color:var(--neon-coral); border-color:rgba(255,77,109,0.3);">🔄 Reset Default</button>
+        <button class="btn-icon" id="parsingResetDefault" title="Reset ke Default" data-i18n-title="title.pe.reset" data-i18n="pe.reset" style="color:var(--neon-coral); border-color:rgba(255,77,109,0.3);">🔄 Reset Default</button>
         <div style="display:flex; gap:0.5rem;">
-          <button class="btn-icon" id="parsingCancel">Batal</button>
-          <button class="btn" id="parsingSave">Simpan</button>
+          <button class="btn-icon" id="parsingCancel" data-i18n="btn.cancel">Batal</button>
+          <button class="btn" id="parsingSave" data-i18n="btn.save">Simpan</button>
         </div>
       </div>
     </div>
@@ -186,44 +186,44 @@
 <!-- WEEKLY INSIGHT: grafik 7 hari + heatmap jam produktif -->
       <div class="glass weekly-insight open" id="weeklyInsight">
         <button class="wi-header" id="wiToggle">
-          <span>📈 Weekly Insight</span><span class="wi-caret">▾</span>
+          <span data-i18n="wi.title">📈 Weekly Insight</span><span class="wi-caret">▾</span>
         </button>
         <div class="wi-body" id="wiBody">
           <div class="wi-stats" id="wiStats"></div>
           <div class="wi-chart" id="wiChart"></div>
-          <div class="wi-legend"><span class="wi-lg wi-lg-done"></span>Selesai <span class="wi-lg wi-lg-pending"></span>Tertunda</div>
-          <div class="wi-heat-label">⏰ Jam produktif (30 hari terakhir)</div>
+          <div class="wi-legend"><span class="wi-lg wi-lg-done"></span><span data-i18n="wi.legend.done">Selesai</span> <span class="wi-lg wi-lg-pending"></span><span data-i18n="wi.legend.pending">Tertunda</span></div>
+          <div class="wi-heat-label" data-i18n="wi.heatLabel">⏰ Jam produktif (30 hari terakhir)</div>
           <div class="wi-heatmap" id="wiHeatmap"></div>
         </div>
       </div>
 
       <div class="bento">
         <div class="bento-card bento-progress">
-          <div class="bento-title">Progress Hari Ini</div>
+          <div class="bento-title" data-i18n="bento.progressToday">Progress Hari Ini</div>
           <div class="bento-value" id="bentoProgress">0%</div>
         </div>
         <div class="bento-card bento-progress">
-          <div class="bento-title">Progress Semua</div>
+          <div class="bento-title" data-i18n="bento.progressAll">Progress Semua</div>
           <div class="bento-value" id="bentoProgressAll">0%</div>
         </div>
         <div class="bento-card">
-          <div class="bento-title">Total</div>
+          <div class="bento-title" data-i18n="bento.total">Total</div>
           <div class="bento-value" id="bentoTotal">0</div>
         </div>
         <div class="bento-card">
-          <div class="bento-title">Selesai</div>
+          <div class="bento-title" data-i18n="bento.done">Selesai</div>
           <div class="bento-value" id="bentoDone" style="color:var(--neon-green)">0</div>
         </div>
         <div class="bento-card">
-          <div class="bento-title">Pending</div>
+          <div class="bento-title" data-i18n="bento.pending">Pending</div>
           <div class="bento-value" id="bentoPending" style="color:var(--neon-yellow)">0</div>
         </div>
         <div class="bento-card bento-high">
-          <div class="bento-title">🔥 High+</div>
+          <div class="bento-title" data-i18n="bento.high">🔥 High+</div>
           <div class="bento-value" id="bentoHigh">0</div>
         </div>
         <div class="bento-card">
-          <div class="bento-title">Streak 🔥</div>
+          <div class="bento-title" data-i18n="bento.streak">Streak 🔥</div>
           <div class="bento-value" style="display:flex; align-items:center; gap:0.4rem;">
             <span id="streakCount">1</span>
             <span class="streak-fire" id="streakFire">🔥</span>
@@ -247,17 +247,17 @@
           </div>
           <!-- Command bar: satu input besar, detail menyusul bertahap -->
           <div class="command-bar-row">
-            <input type="text" class="task-input command-bar" id="taskInput" placeholder="Tulis tugas… (cth: Beli susu besok jam 8 high)" autocomplete="off" list="taskSuggestions">
+            <input type="text" class="task-input command-bar" id="taskInput" placeholder="Tulis tugas… (cth: Beli susu besok jam 8 high)" data-i18n-ph="ph.taskInput" autocomplete="off" list="taskSuggestions">
             <datalist id="taskSuggestions"></datalist>
-            <button class="detail-toggle" id="detailToggle" title="Detail: deskripsi, kategori, subtask, tanggal, pengulangan">⚙️</button>
-            <button class="btn" id="addBtn">Tambah</button>
+            <button class="detail-toggle" id="detailToggle" title="Detail: deskripsi, kategori, subtask, tanggal, pengulangan" data-i18n-title="title.detailToggle">⚙️</button>
+            <button class="btn" id="addBtn" data-i18n="btn.add">Tambah</button>
           </div>
           <!-- Chip hasil smart parser — klik untuk koreksi sebelum simpan -->
           <div class="parse-chips" id="parseChips"></div>
 
           <div class="form-details" id="formDetails">
-            <input type="text" class="task-input" id="descInput" placeholder="Deskripsi (opsional)">
-            <input type="text" class="task-input" id="categoryInput" placeholder="📁 Kategori (cth: Kerja, Meeting, Personal, Admin)" list="categorySuggestions" autocomplete="off">
+            <input type="text" class="task-input" id="descInput" placeholder="Deskripsi (opsional)" data-i18n-ph="ph.descInput">
+            <input type="text" class="task-input" id="categoryInput" placeholder="📁 Kategori (cth: Kerja, Meeting, Personal, Admin)" data-i18n-ph="ph.categoryInput" list="categorySuggestions" autocomplete="off">
             <datalist id="categorySuggestions">
               <option value="Kerja"></option><option value="Meeting"></option>
               <option value="Laporan"></option><option value="Personal"></option>
@@ -268,7 +268,7 @@
 
             <!-- Subtask Input -->
             <div class="subtask-input-wrap">
-              <input type="text" class="task-input" id="subtaskInput" placeholder="➕ Subtask (tekan Enter untuk tambah, bisa banyak)">
+              <input type="text" class="task-input" id="subtaskInput" placeholder="➕ Subtask (tekan Enter untuk tambah, bisa banyak)" data-i18n-ph="ph.subtaskInput">
             </div>
             <div class="subtask-chips" id="subtaskChips"></div>
 
@@ -277,7 +277,7 @@
 
               <!-- Custom Priority Select -->
               <div class="custom-select" id="priorityCustomSelect">
-                <div class="select-trigger" id="priorityTrigger" role="combobox" tabindex="0" aria-expanded="false" aria-controls="priorityOptions" aria-label="Prioritas tugas">
+                <div class="select-trigger" id="priorityTrigger" role="combobox" tabindex="0" aria-expanded="false" aria-controls="priorityOptions" aria-label="Prioritas tugas" data-i18n-aria="aria.priority">
                   <span class="select-icon" id="priorityTriggerIcon">⚡</span>
                   <span class="select-text" id="priorityTriggerText">Medium</span>
                   <span class="select-arrow">▼</span>
@@ -290,17 +290,17 @@
                 </div>
               </div>
 
-              <select class="task-input" id="repeatSelect" title="Pengulangan tugas" style="width:120px;">
-                <option value="none">🔁 Tidak</option>
-                <option value="daily">🔁 Harian</option>
-                <option value="weekly">🔁 Mingguan</option>
-                <option value="monthly">🔁 Bulanan</option>
+              <select class="task-input" id="repeatSelect" title="Pengulangan tugas" data-i18n-title="title.repeat" style="width:120px;">
+                <option value="none" data-i18n="repeat.none.short">🔁 Tidak</option>
+                <option value="daily" data-i18n="repeat.daily">🔁 Harian</option>
+                <option value="weekly" data-i18n="repeat.weekly">🔁 Mingguan</option>
+                <option value="monthly" data-i18n="repeat.monthly">🔁 Bulanan</option>
               </select>
 
-              <button class="cloud-mini-btn" id="cloudMiniSync" title="Sinkronisasi Cloud">☁️ Sync</button>
+              <button class="cloud-mini-btn" id="cloudMiniSync" title="Sinkronisasi Cloud" data-i18n-title="title.cloudSync" data-i18n="cloud.sync">☁️ Sync</button>
             </div>
             <div class="quick-templates" id="quickTemplates"></div>
-            <div style="font-size:0.7rem; color:var(--text-dim); margin-top:0.3rem; line-height:1.5;">
+            <div style="font-size:0.7rem; color:var(--text-dim); margin-top:0.3rem; line-height:1.5;" data-i18n-html="hint.format">
             💡 <strong>Format:</strong> <code style="background:rgba(176,38,255,0.15); padding:1px 6px; border-radius:4px; color:var(--neon-purple);">Tugas | tanggal | status | waktu | prioritas</code><br>
             <span style="margin-left:1.2rem;">📅 <em>hari ini, besok, lusa, 2 hari lagi, seminggu, sebulan, 2 bulan…</em> | 🏷️ <em>DNE, OGG, PND</em> | 🕐 <em>jam 19, 19.00, 12am, 12pm</em> | ⚡ <em>high, med, low, superh</em></span><br>
             <span style="margin-left:1.2rem;">📝 Contoh: <code style="background:rgba(255,255,255,0.05); padding:1px 5px; border-radius:3px;">Beli susu | besok | OGG | jam 8 | high</code> atau cukup: <code style="background:rgba(255,255,255,0.05); padding:1px 5px; border-radius:3px;">Beli susu</code> (default hari ini)</span>
@@ -312,7 +312,7 @@
       <!-- TODAY FOCUS: 3 tugas terpenting + timeline jam hari ini -->
       <div class="glass today-focus" id="todayFocus">
         <div class="tf-header">
-          <div class="tf-title">🎯 Today Focus</div>
+          <div class="tf-title" data-i18n="tf.title">🎯 Today Focus</div>
           <div class="tf-meta" id="tfMeta"></div>
         </div>
         <div class="tf-top3" id="tfTop3"></div>
@@ -326,7 +326,7 @@
             <div class="calendar-nav">
               <button class="cal-nav-btn" id="prevYear">«</button>
               <button class="cal-nav-btn" id="prevMonth">‹</button>
-              <button class="cal-nav-btn" id="backToToday" title="Hari Ini">📍</button>
+              <button class="cal-nav-btn" id="backToToday" title="Hari Ini" data-i18n-title="title.today">📍</button>
             </div>
             <div class="calendar-title" id="calendarTitle">Juni 2026</div>
             <div class="calendar-nav">
@@ -338,10 +338,10 @@
         </div>
         <div class="day-detail-panel" id="dayDetailPanel">
           <div class="day-detail-header">
-            <div class="day-detail-title" id="dayDetailTitle">📅 Pilih tanggal</div>
+            <div class="day-detail-title" id="dayDetailTitle" data-i18n="dayDetail.pick">📅 Pilih tanggal</div>
             <button class="day-detail-close" id="dayDetailClose">×</button>
           </div>
-          <div id="dayDetailContent"><div class="empty-state">✨ Tidak ada tugas di hari ini</div></div>
+          <div id="dayDetailContent"><div class="empty-state" data-i18n="empty.dayDetail">✨ Tidak ada tugas di hari ini</div></div>
         </div>
       </div>
     </div>
@@ -351,72 +351,72 @@
       <div class="glass" style="padding-bottom:0.8rem;">
         <div class="search-bar">
           <span class="search-icon">🔍</span>
-          <input type="text" class="search-input" id="searchInput" placeholder="Cari tugas lama...">
+          <input type="text" class="search-input" id="searchInput" placeholder="Cari tugas lama..." data-i18n-ph="ph.search">
         </div>
-        <button class="filter-sheet-btn" id="filterSheetBtn">⚙️ Filter &amp; Urutkan</button>
+        <button class="filter-sheet-btn" id="filterSheetBtn" data-i18n="filter.sheetBtn">⚙️ Filter &amp; Urutkan</button>
         <div class="filter-block" id="filterBlock">
-          <div class="filter-sheet-head"><span>⚙️ Filter &amp; Urutkan</span><button class="day-detail-close" id="filterSheetClose">×</button></div>
+          <div class="filter-sheet-head"><span data-i18n="filter.sheetBtn">⚙️ Filter &amp; Urutkan</span><button class="day-detail-close" id="filterSheetClose">×</button></div>
           <div class="filters" id="statusFilters">
-            <div class="filter-chip active" data-filter="all">Semua</div>
-            <div class="filter-chip" data-filter="pending">Pending</div>
-            <div class="filter-chip" data-filter="ongoing">On Going</div>
-            <div class="filter-chip" data-filter="done">Selesai</div>
+            <div class="filter-chip active" data-filter="all" data-i18n="filter.all">Semua</div>
+            <div class="filter-chip" data-filter="pending" data-i18n="filter.pending">Pending</div>
+            <div class="filter-chip" data-filter="ongoing" data-i18n="filter.ongoing">On Going</div>
+            <div class="filter-chip" data-filter="done" data-i18n="filter.done">Selesai</div>
           </div>
           <div class="filter-row">
-            <span style="font-size:0.72rem;color:var(--text-dim);">Prioritas:</span>
+            <span style="font-size:0.72rem;color:var(--text-dim);" data-i18n="filter.priorityLabel">Prioritas:</span>
             <select class="filter-select" id="priorityFilterSelect">
-              <option value="all">Semua</option>
-              <option value="super_high">💥 Super High</option>
-              <option value="high">🔥 High</option>
-              <option value="medium">⚡ Medium</option>
-              <option value="low">🌿 Low</option>
+              <option value="all" data-i18n="filter.all">Semua</option>
+              <option value="super_high" data-i18n="opt.super_high">💥 Super High</option>
+              <option value="high" data-i18n="opt.high">🔥 High</option>
+              <option value="medium" data-i18n="opt.medium">⚡ Medium</option>
+              <option value="low" data-i18n="opt.low">🌿 Low</option>
             </select>
           </div>
-          <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:0.25rem;">Urutkan (pilih satu atau lebih):</div>
+          <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:0.25rem;" data-i18n="filter.sortLabel">Urutkan (pilih satu atau lebih):</div>
           <div class="sort-controls" id="sortControls">
-            <div class="sort-chip" data-sort="date">📅 Tanggal</div>
-            <div class="sort-chip" data-sort="priority">🔥 Prioritas</div>
-            <div class="sort-chip" data-sort="status">✅ Status</div>
+            <div class="sort-chip" data-sort="date" data-i18n="sort.date">📅 Tanggal</div>
+            <div class="sort-chip" data-sort="priority" data-i18n="sort.priority">🔥 Prioritas</div>
+            <div class="sort-chip" data-sort="status" data-i18n="sort.status">✅ Status</div>
           </div>
         </div>
         <div class="data-actions" style="margin-bottom:0.4rem;">
-          <button class="data-action-btn" id="exportJsonBtn" title="Export JSON">📦 Export JSON</button>
-          <button class="data-action-btn" id="exportCsvBtn" title="Export CSV">📊 Export CSV</button>
-          <button class="data-action-btn" id="importJsonBtn" title="Import JSON / CSV">📥 Import</button>
+          <button class="data-action-btn" id="exportJsonBtn" title="Export JSON" data-i18n="data.exportJson">📦 Export JSON</button>
+          <button class="data-action-btn" id="exportCsvBtn" title="Export CSV" data-i18n="data.exportCsv">📊 Export CSV</button>
+          <button class="data-action-btn" id="importJsonBtn" title="Import JSON / CSV" data-i18n="data.import">📥 Import</button>
           <input type="file" id="importFileInput" accept=".json,.csv" style="display:none;">
-          <button class="data-action-btn" id="multiSelectBtn" title="Multi Select">☑️ Multi Select</button>
+          <button class="data-action-btn" id="multiSelectBtn" title="Multi Select" data-i18n="data.multiSelect">☑️ Multi Select</button>
         </div>
         <div class="batch-bar" id="batchBar">
           <span class="batch-bar-text" id="batchCount">0 tugas terpilih</span>
-          <button class="batch-btn batch-done" id="batchDone">✅ Selesaikan</button>
-          <button class="batch-btn batch-delete" id="batchDelete">🗑️ Hapus</button>
-          <button class="batch-btn" id="batchCancel">Batal</button>
+          <button class="batch-btn batch-done" id="batchDone" data-i18n="batch.done">✅ Selesaikan</button>
+          <button class="batch-btn batch-delete" id="batchDelete" data-i18n="batch.delete">🗑️ Hapus</button>
+          <button class="batch-btn" id="batchCancel" data-i18n="btn.cancel">Batal</button>
         </div>
         <div class="view-toggle-wrap">
-          <button class="view-toggle-btn active" id="listViewBtn" title="List View">📋 List</button>
-          <button class="view-toggle-btn" id="kanbanViewBtn" title="Kanban View">🎯 Kanban</button>
+          <button class="view-toggle-btn active" id="listViewBtn" title="List View" data-i18n="view.list">📋 List</button>
+          <button class="view-toggle-btn" id="kanbanViewBtn" title="Kanban View" data-i18n="view.kanban">🎯 Kanban</button>
         </div>
       </div>
-      <div class="glass task-list" id="taskList"><div class="empty-state">📭 Tidak ada tugas</div></div>
+      <div class="glass task-list" id="taskList"><div class="empty-state" data-i18n="empty.tasksIcon">📭 Tidak ada tugas</div></div>
       <!-- KANBAN BOARD -->
       <div class="glass kanban-board" id="kanbanBoard" style="padding:1rem;">
         <div class="kanban-column pending" data-status="pending">
           <div class="kanban-column-header">
-            <span class="kanban-column-title">⏳ Pending</span>
+            <span class="kanban-column-title" data-i18n="kanban.pending">⏳ Pending</span>
             <span class="kanban-column-count" id="kanbanPendingCount">0</span>
           </div>
           <div class="kanban-dropzone" id="kanbanPending"></div>
         </div>
         <div class="kanban-column ongoing" data-status="ongoing">
           <div class="kanban-column-header">
-            <span class="kanban-column-title">🔥 On Going</span>
+            <span class="kanban-column-title" data-i18n="kanban.ongoing">🔥 On Going</span>
             <span class="kanban-column-count" id="kanbanOngoingCount">0</span>
           </div>
           <div class="kanban-dropzone" id="kanbanOngoing"></div>
         </div>
         <div class="kanban-column done" data-status="done">
           <div class="kanban-column-header">
-            <span class="kanban-column-title">✅ Selesai</span>
+            <span class="kanban-column-title" data-i18n="kanban.done">✅ Selesai</span>
             <span class="kanban-column-count" id="kanbanDoneCount">0</span>
           </div>
           <div class="kanban-dropzone" id="kanbanDone"></div>
@@ -426,69 +426,73 @@
   </div>
 
   <!-- Settings Toggle -->
-  <button type="button" class="settings-toggle" id="settingsToggle" aria-label="Buka pengaturan">⚙️</button>
+  <button type="button" class="settings-toggle" id="settingsToggle" aria-label="Buka pengaturan" data-i18n-aria="aria.openSettings">⚙️</button>
   <div class="settings-panel" id="settingsPanel">
-    <div class="toggle-row"><span>🔊 Suara</span><div class="switch on" id="soundToggle" role="switch" tabindex="0" aria-checked="true" aria-label="Suara"></div></div>
-    <div class="toggle-row"><span>📳 Haptic</span><div class="switch on" id="hapticToggle" role="switch" tabindex="0" aria-checked="true" aria-label="Haptic"></div></div>
-    <div class="toggle-row"><span>🌀 Reduced Motion</span><div class="switch" id="reducedMotionToggle" role="switch" tabindex="0" aria-checked="false" aria-label="Reduced motion"></div></div>
-    <div class="toggle-row"><span>✨ Custom Cursor</span><div class="switch on" id="cursorToggle" role="switch" tabindex="0" aria-checked="true" aria-label="Custom cursor"></div></div>
-    <div class="toggle-row"><span>🔔 Reminder Notifikasi</span><div class="switch" id="reminderToggle" role="switch" tabindex="0" aria-checked="false" aria-label="Reminder notifikasi"></div></div>
+    <div class="toggle-row">
+      <span class="theme-indicator"><span>🌐</span><span id="langLabel">English</span></span>
+      <div class="switch" id="langToggle" role="switch" tabindex="0" aria-checked="false" aria-label="Language / Bahasa"></div>
+    </div>
+    <div class="toggle-row"><span data-i18n="set.sound">🔊 Suara</span><div class="switch on" id="soundToggle" role="switch" tabindex="0" aria-checked="true" aria-label="Sound"></div></div>
+    <div class="toggle-row"><span data-i18n="set.haptic">📳 Haptic</span><div class="switch on" id="hapticToggle" role="switch" tabindex="0" aria-checked="true" aria-label="Haptic"></div></div>
+    <div class="toggle-row"><span data-i18n="set.reducedMotion">🌀 Reduced Motion</span><div class="switch" id="reducedMotionToggle" role="switch" tabindex="0" aria-checked="false" aria-label="Reduced motion"></div></div>
+    <div class="toggle-row"><span data-i18n="set.customCursor">✨ Custom Cursor</span><div class="switch on" id="cursorToggle" role="switch" tabindex="0" aria-checked="true" aria-label="Custom cursor"></div></div>
+    <div class="toggle-row"><span data-i18n="set.reminder">🔔 Reminder Notifikasi</span><div class="switch" id="reminderToggle" role="switch" tabindex="0" aria-checked="false" aria-label="Reminder"></div></div>
     <div class="toggle-row">
       <span class="theme-indicator">
         <span class="theme-icon" id="themeIcon">🌙</span>
         <span id="themeLabel">Night Mode</span>
       </span>
-      <div class="switch" id="themeToggle" role="switch" tabindex="0" aria-checked="false" aria-label="Mode terang"></div>
+      <div class="switch" id="themeToggle" role="switch" tabindex="0" aria-checked="false" aria-label="Theme"></div>
     </div>
-    
+
     <div class="account-section">
-      <div class="account-section-title">☁️ Akun &amp; Sinkronisasi</div>
+      <div class="account-section-title" data-i18n="account.title">☁️ Akun &amp; Sinkronisasi</div>
       <div id="authForms">
         <input type="email" class="account-input" id="authEmail" placeholder="Email" autocomplete="email">
-        <input type="password" class="account-input" id="authPassword" placeholder="Password (min. 8 karakter)" autocomplete="current-password">
+        <input type="password" class="account-input" id="authPassword" placeholder="Password (min. 8 karakter)" data-i18n-ph="ph.password" autocomplete="current-password">
         <div class="input-row">
-          <button class="btn" id="loginBtn" style="flex:1; font-size:0.8rem; padding:0.6rem;">🔑 Masuk</button>
-          <button class="btn" id="registerBtn" style="flex:1; font-size:0.8rem; padding:0.6rem;">✨ Daftar</button>
+          <button class="btn" id="loginBtn" style="flex:1; font-size:0.8rem; padding:0.6rem;" data-i18n="account.login">🔑 Masuk</button>
+          <button class="btn" id="registerBtn" style="flex:1; font-size:0.8rem; padding:0.6rem;" data-i18n="account.register">✨ Daftar</button>
         </div>
-        <div class="privacy-note" style="margin-top:0.55rem;">Satu akun untuk sinkronisasi data antar perangkat.</div>
+        <div class="privacy-note" style="margin-top:0.55rem;" data-i18n="account.privacy">Satu akun untuk sinkronisasi data antar perangkat.</div>
       </div>
       <div id="accountInfo" style="display:none;">
-        <div class="account-email-row">Masuk sebagai <strong id="accountEmail"></strong></div>
+        <div class="account-email-row"><span data-i18n="account.loggedInAs">Masuk sebagai</span> <strong id="accountEmail"></strong></div>
         <div class="toggle-row" style="margin-bottom:0.5rem;">
-          <span style="font-size:0.8rem;">Auto Sync</span>
+          <span style="font-size:0.8rem;" data-i18n="account.autoSync">Auto Sync</span>
           <div class="switch" id="cloudAutoSync" role="switch" tabindex="0" aria-checked="false" aria-label="Auto Sync Cloud"></div>
         </div>
         <div class="input-row">
-          <button class="btn" id="syncToCloud" style="flex:1; font-size:0.8rem; padding:0.6rem;">☁️ Simpan ke Cloud</button>
-          <button class="btn-icon" id="loadFromCloud" style="padding:0.6rem;" title="Muat dari Cloud">📥</button>
+          <button class="btn" id="syncToCloud" style="flex:1; font-size:0.8rem; padding:0.6rem;" data-i18n="account.saveCloud">☁️ Simpan ke Cloud</button>
+          <button class="btn-icon" id="loadFromCloud" style="padding:0.6rem;" title="Muat dari Cloud" data-i18n-title="title.loadCloud">📥</button>
         </div>
-        <button class="btn" id="logoutBtn" style="width:100%; margin-top:0.5rem; font-size:0.8rem; padding:0.5rem; background:rgba(255,77,109,0.12); color:var(--neon-coral);">🚪 Keluar</button>
+        <button class="btn" id="logoutBtn" style="width:100%; margin-top:0.5rem; font-size:0.8rem; padding:0.5rem; background:rgba(255,77,109,0.12); color:var(--neon-coral);" data-i18n="account.logout">🚪 Keluar</button>
       </div>
       <div class="account-status" id="accountStatus"></div>
     </div>
 
     <div style="margin-top:0.8rem; padding-top:0.8rem; border-top:1px solid var(--border);">
-      <button class="btn" id="openParsingEditor" style="width:100%; font-size:0.8rem; padding:0.5rem; background:rgba(176,38,255,0.1); color:var(--neon-purple); border:1px solid rgba(176,38,255,0.3);">
+      <button class="btn" id="openParsingEditor" style="width:100%; font-size:0.8rem; padding:0.5rem; background:rgba(176,38,255,0.1); color:var(--neon-purple); border:1px solid rgba(176,38,255,0.3);" data-i18n="set.editParsing">
         ⚙️ Edit Kata Kunci Parsing
       </button>
     </div>
-    <div style="margin-top:0.8rem; font-size:0.75rem; color:var(--text-dim);">Data tersimpan di LocalStorage</div>
-    <button class="btn" style="width:100%; margin-top:0.5rem; background:rgba(79,172,254,0.12); color:var(--neon-blue);" id="restoreData">Pulihkan Snapshot Terakhir</button>
-    <button class="btn" style="width:100%; margin-top:0.5rem; background:rgba(255,77,109,0.2); color:var(--neon-coral);" id="clearData">Hapus Semua Data</button>
+    <div style="margin-top:0.8rem; font-size:0.75rem; color:var(--text-dim);" data-i18n="set.storageNote">Data tersimpan di LocalStorage</div>
+    <button class="btn" style="width:100%; margin-top:0.5rem; background:rgba(79,172,254,0.12); color:var(--neon-blue);" id="restoreData" data-i18n="set.restore">Pulihkan Snapshot Terakhir</button>
+    <button class="btn" style="width:100%; margin-top:0.5rem; background:rgba(255,77,109,0.2); color:var(--neon-coral);" id="clearData" data-i18n="set.clear">Hapus Semua Data</button>
   </div>
 
-  <script src="./app.js?v=20260718e"></script>
+  <script src="./app.js?v=20260719a"></script>
 
   <!-- Bottom Navigation (mobile) -->
   <div class="sheet-backdrop" id="sheetBackdrop"></div>
-  <nav class="bottom-nav" id="bottomNav" aria-label="Navigasi utama mobile">
-    <button class="bnav-item active" data-mview="today"><span>🎯</span>Hari Ini</button>
-    <button class="bnav-item" data-mview="calendar"><span>📅</span>Kalender</button>
-    <button class="bnav-item" data-mview="tasks"><span>📋</span>Tugas</button>
-    <button class="bnav-item" data-mview="focus"><span>⏱️</span>Fokus</button>
-    <button class="bnav-item" data-mview="menu"><span>☰</span>Menu</button>
+  <nav class="bottom-nav" id="bottomNav" aria-label="Navigasi utama mobile" data-i18n-aria="aria.bottomNav">
+    <button class="bnav-item active" data-mview="today"><span>🎯</span><span data-i18n="nav.today">Hari Ini</span></button>
+    <button class="bnav-item" data-mview="calendar"><span>📅</span><span data-i18n="nav.calendar">Kalender</span></button>
+    <button class="bnav-item" data-mview="tasks"><span>📋</span><span data-i18n="nav.tasks">Tugas</span></button>
+    <button class="bnav-item" data-mview="focus"><span>⏱️</span><span data-i18n="nav.focus">Fokus</span></button>
+    <button class="bnav-item" data-mview="menu"><span>☰</span><span data-i18n="nav.menu">Menu</span></button>
   </nav>
-  <button class="fab-add" id="fabAdd" title="Tambah tugas">+</button>
+  <button class="fab-add" id="fabAdd" title="Tambah tugas" data-i18n-title="title.addTask">+</button>
 
   <!-- Toast Container -->
   <div class="toast-container" id="toastContainer" role="status" aria-live="polite"></div>

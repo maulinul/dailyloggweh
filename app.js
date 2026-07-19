@@ -1,5 +1,593 @@
 // State & Config
-const APP_VERSION = '20260718e';
+const APP_VERSION = '20260719a';
+
+// ===== I18N: dukungan dwibahasa (Indonesia / English) =====
+// currentLang menentukan bahasa aktif. t(key, vars) mengambil teks dari kamus,
+// {placeholder} pada string diganti dengan nilai di vars.
+const I18N = {
+  id: {
+    // Focus mode
+    'focus.title': 'Fokus Mode',
+    'focus.pause': '⏸ Pause',
+    'focus.resume': '▶ Resume',
+    'focus.clear': '✕ Clear Focus',
+    'focus.deep': '🌌 Deep Focus',
+    'focus.calm': '🌿 Calm',
+    'focus.night': '🌙 Night',
+    // Edit modal
+    'edit.title': '✏️ Edit Tugas',
+    'ph.editTitle': 'Judul tugas',
+    'ph.editDesc': 'Deskripsi (opsional)',
+    'ph.editCategory': '📁 Kategori (cth: Kerja, Meeting, Personal)',
+    'opt.super_high': '💥 Super High',
+    'opt.high': '🔥 High',
+    'opt.medium': '⚡ Medium',
+    'opt.low': '🌿 Low',
+    'opt.pending': '⏳ Pending',
+    'opt.ongoing': '🔥 On Going',
+    'opt.done': '✅ Selesai',
+    'repeat.none': '🔁 Tidak berulang',
+    'repeat.none.short': '🔁 Tidak',
+    'repeat.daily': '🔁 Harian',
+    'repeat.weekly': '🔁 Mingguan',
+    'repeat.monthly': '🔁 Bulanan',
+    'repeat.tag.daily': 'Harian',
+    'repeat.tag.weekly': 'Mingguan',
+    'repeat.tag.monthly': 'Bulanan',
+    'btn.cancel': 'Batal',
+    'btn.save': 'Simpan',
+    'btn.add': 'Tambah',
+    'title.repeat': 'Pengulangan tugas',
+    // Parsing editor
+    'pe.title': '⚙️ Pengaturan Parsing Kata',
+    'pe.desc': 'Edit kata kunci yang diparsing untuk prioritas, status, tanggal, waktu, dan kategori. Setiap baris: kata kunci (pisahkan dengan koma) → hasil.',
+    'pe.tab.priority': '🎯 Prioritas',
+    'pe.tab.status': '🏷️ Status',
+    'pe.tab.dates': '📅 Tanggal',
+    'pe.tab.timeOfDay': '⏰ Waktu',
+    'pe.tab.categories': '📁 Kategori',
+    'pe.col.keywords': 'Kata Kunci (pisah koma)',
+    'pe.col.priority': 'Prioritas',
+    'pe.col.status': 'Status',
+    'pe.col.days': '+Hari',
+    'pe.col.hour': 'Jam',
+    'pe.col.catName': 'Nama Kategori',
+    'pe.add': '+ Tambah',
+    'pe.cat.desc': 'Kata kunci (opsional) untuk auto-parsing kategori dari nama tugas. Kosongkan kata kunci jika hanya ingin menambah pilihan kategori tanpa deteksi otomatis.',
+    'pe.reset': '🔄 Reset Default',
+    'title.pe.reset': 'Reset ke Default',
+    // Left column
+    'wi.title': '📈 Weekly Insight',
+    'wi.legend.done': 'Selesai',
+    'wi.legend.pending': 'Tertunda',
+    'wi.heatLabel': '⏰ Jam produktif (30 hari terakhir)',
+    'wi.stat.done7': 'Selesai 7 hari',
+    'wi.stat.pending': 'Tertunda',
+    'wi.stat.streak': 'Streak',
+    'wi.bar.done': '{n} selesai',
+    'wi.bar.pending': '{n} tertunda',
+    'wi.cell': '{h}:00 — {n} selesai',
+    'chip.status.done': '✅ Selesai',
+    'chip.status.ongoing': '🔥 On Going',
+    'chip.status.pending': '⏳ Pending',
+    'chip.titleHint': 'Judul setelah parsing',
+    'chip.dateHint': 'Klik untuk ubah manual, × untuk hapus',
+    'chip.errorHint': 'Perbaiki input sebelum menambahkan tugas',
+    'chip.categoryHint': 'Kategori terdeteksi otomatis dari nama tugas',
+    'chip.priorityHint': 'Klik untuk ganti prioritas',
+    'chip.statusHint': 'Klik untuk ganti status',
+    'bento.progressToday': 'Progress Hari Ini',
+    'bento.progressAll': 'Progress Semua',
+    'bento.total': 'Total',
+    'bento.done': 'Selesai',
+    'bento.pending': 'Pending',
+    'bento.high': '🔥 High+',
+    'bento.streak': 'Streak 🔥',
+    // Center column
+    'ph.taskInput': 'Tulis tugas… (cth: Beli susu besok jam 8 high)',
+    'title.detailToggle': 'Detail: deskripsi, kategori, subtask, tanggal, pengulangan',
+    'ph.descInput': 'Deskripsi (opsional)',
+    'ph.categoryInput': '📁 Kategori (cth: Kerja, Meeting, Personal, Admin)',
+    'ph.subtaskInput': '➕ Subtask (tekan Enter untuk tambah, bisa banyak)',
+    'aria.priority': 'Prioritas tugas',
+    'title.cloudSync': 'Sinkronisasi Cloud',
+    'cloud.sync': '☁️ Sync',
+    'hint.format': '💡 <strong>Format:</strong> <code style="background:rgba(176,38,255,0.15); padding:1px 6px; border-radius:4px; color:var(--neon-purple);">Tugas | tanggal | status | waktu | prioritas</code><br>\n            <span style="margin-left:1.2rem;">📅 <em>hari ini, besok, lusa, 2 hari lagi, seminggu, sebulan, 2 bulan…</em> | 🏷️ <em>DNE, OGG, PND</em> | 🕐 <em>jam 19, 19.00, 12am, 12pm</em> | ⚡ <em>high, med, low, superh</em></span><br>\n            <span style="margin-left:1.2rem;">📝 Contoh: <code style="background:rgba(255,255,255,0.05); padding:1px 5px; border-radius:3px;">Beli susu | besok | OGG | jam 8 | high</code> atau cukup: <code style="background:rgba(255,255,255,0.05); padding:1px 5px; border-radius:3px;">Beli susu</code> (default hari ini)</span>',
+    'tf.title': '🎯 Today Focus',
+    'title.today': 'Hari Ini',
+    'dayDetail.pick': '📅 Pilih tanggal',
+    'empty.dayDetail': '✨ Tidak ada tugas di hari ini',
+    // Right column
+    'ph.search': 'Cari tugas lama...',
+    'filter.sheetBtn': '⚙️ Filter & Urutkan',
+    'filter.all': 'Semua',
+    'filter.pending': 'Pending',
+    'filter.ongoing': 'On Going',
+    'filter.done': 'Selesai',
+    'filter.priorityLabel': 'Prioritas:',
+    'filter.sortLabel': 'Urutkan (pilih satu atau lebih):',
+    'sort.date': '📅 Tanggal',
+    'sort.priority': '🔥 Prioritas',
+    'sort.status': '✅ Status',
+    'data.exportJson': '📦 Export JSON',
+    'data.exportCsv': '📊 Export CSV',
+    'data.import': '📥 Import',
+    'data.multiSelect': '☑️ Multi Select',
+    'batch.done': '✅ Selesaikan',
+    'batch.delete': '🗑️ Hapus',
+    'view.list': '📋 List',
+    'view.kanban': '🎯 Kanban',
+    'empty.tasksIcon': '📭 Tidak ada tugas',
+    'empty.tasks': 'Tidak ada tugas',
+    'kanban.pending': '⏳ Pending',
+    'kanban.ongoing': '🔥 On Going',
+    'kanban.done': '✅ Selesai',
+    'kanban.empty': '📭 Kosong',
+    // Settings
+    'set.sound': '🔊 Suara',
+    'set.haptic': '📳 Haptic',
+    'set.reducedMotion': '🌀 Reduced Motion',
+    'set.customCursor': '✨ Custom Cursor',
+    'set.reminder': '🔔 Reminder Notifikasi',
+    'account.title': '☁️ Akun & Sinkronisasi',
+    'ph.password': 'Password (min. 8 karakter)',
+    'account.login': '🔑 Masuk',
+    'account.register': '✨ Daftar',
+    'account.privacy': 'Satu akun untuk sinkronisasi data antar perangkat.',
+    'account.loggedInAs': 'Masuk sebagai',
+    'account.autoSync': 'Auto Sync',
+    'account.saveCloud': '☁️ Simpan ke Cloud',
+    'title.loadCloud': 'Muat dari Cloud',
+    'account.logout': '🚪 Keluar',
+    'set.editParsing': '⚙️ Edit Kata Kunci Parsing',
+    'set.storageNote': 'Data tersimpan di LocalStorage',
+    'set.restore': 'Pulihkan Snapshot Terakhir',
+    'set.clear': 'Hapus Semua Data',
+    'aria.openSettings': 'Buka pengaturan',
+    // Bottom nav
+    'nav.today': 'Hari Ini',
+    'nav.calendar': 'Kalender',
+    'nav.tasks': 'Tugas',
+    'nav.focus': 'Fokus',
+    'nav.menu': 'Menu',
+    'title.addTask': 'Tambah tugas',
+    'aria.bottomNav': 'Navigasi utama mobile',
+    // Task card / actions
+    'title.focusTimer': 'Focus Timer',
+    'title.editTask': 'Edit Tugas',
+    'title.addSubtask': 'Add Subtask',
+    'title.postpone': 'Lanjut ke besok',
+    'title.delete': 'Hapus',
+    'title.drag': 'Drag to reorder',
+    'title.setPending': 'Klik untuk set Pending',
+    'title.setOngoing': 'Klik untuk set On Going',
+    'title.clearFocus': 'Clear Focus',
+    'task.ongoing': '🔥 On Going',
+    'task.pending': '⏳ Pending',
+    'tag.overdue': '⏰ Terlambat',
+    'tf.allDone': '🎉 Semua tugas penting hari ini beres!',
+    'tf.empty': '✨ Belum ada tugas untuk hari ini',
+    'tf.overdueBadge': '⏰ {n} terlambat',
+    'tf.markDone': 'Tandai selesai',
+    'tf.next': 'Tugas berikutnya',
+    'day.postpone': 'Lanjut ke besok',
+    // Smart date
+    'date.today': 'Hari ini, {t}',
+    'date.tomorrow': 'Besok, {t}',
+    'date.dayAfter': 'Lusa, {t}',
+    'date.yesterday': 'Kemarin, {t}',
+    'date.inDays': '{n} hari lagi, {t}',
+    // Dynamic toasts / dialogs
+    'toast.localReadError': 'Data lokal tidak dapat dibaca. Salinan mentah tetap dipertahankan.',
+    'toast.noTaskToFocus': 'Belum ada tugas untuk difokuskan.',
+    'toast.checkDateTime': 'Periksa tanggal atau waktu pada input.',
+    'parse.invalidTime': 'Waktu tidak valid',
+    'parse.invalidDate': 'Tanggal tidak valid',
+    'toast.postponed': '⏩ "{title}" dilanjut ke {when}',
+    'toast.taskDeleted': 'Tugas dihapus',
+    'undo.label': '↩️ Undo',
+    'undo.plain': 'Undo',
+    'prompt.subtaskTitle': '📋 Subtask Baru',
+    'prompt.subtaskPh': 'Tulis subtask…',
+    'toast.focusDone': '⏰ Fokus selesai!',
+    'toast.noFocusTarget': 'Tidak ada tugas untuk difokuskan',
+    'toast.focusDoneFor': '⏰ Fokus selesai untuk: {title}',
+    'progress.label': '{pct}% Selesai Hari Ini',
+    'toast.exportedJson': '{n} tugas diekspor ke JSON',
+    'toast.exportedCsv': '{n} tugas diekspor ke CSV',
+    'toast.restoreSnapFail': 'Restore dibatalkan karena snapshot lokal tidak dapat dibuat.',
+    'toast.noSnapshot': 'Belum ada snapshot pemulihan.',
+    'toast.snapshotRestored': 'Snapshot berhasil dipulihkan.',
+    'toast.snapshotRestoreFail': 'Snapshot tidak dapat dipulihkan: {msg}',
+    'confirm.replaceTitle': 'Ganti Data Tugas?',
+    'confirm.replaceMsg': '{source} berisi {n} tugas. Data lokal saat ini ({cur} tugas) akan diganti. Snapshot pemulihan dan Undo akan dibuat terlebih dahulu.',
+    'confirm.replaceOk': 'Ganti Data',
+    'source.snapshot': 'Snapshot {label}',
+    'source.import': 'Import {name}',
+    'source.cloud': 'Cloud',
+    'toast.importOk': 'Import berhasil: {n} tugas',
+    'toast.importErr': 'Error import: {msg}',
+    'toast.multiSelectOn': 'Mode Multi-Select aktif. Klik task untuk memilih.',
+    'batch.selected': '{n} tugas terpilih',
+    'toast.markedDone': 'Tugas ditandai selesai',
+    'toast.nothingUndo': 'Tidak ada yang bisa di-undo',
+    'toast.undoRestore': 'Undo: Task dikembalikan',
+    'toast.undoBatchRestore': 'Undo: {n} task dikembalikan',
+    'toast.undoStatus': 'Undo: Status dikembalikan',
+    'toast.undoData': 'Undo: Data dikembalikan',
+    'confirm.resetTitle': '🔄 Reset Default',
+    'confirm.resetMsg': 'Reset semua kata kunci ke default? Perubahan yang belum disimpan akan hilang.',
+    'confirm.resetOk': 'Reset',
+    'toast.resetDone': 'Kata kunci direset ke default',
+    'toast.keywordsSaved': 'Kata kunci & kategori tersimpan',
+    'toast.noNotifSupport': 'Browser ini tidak mendukung notifikasi',
+    'toast.notifDenied': 'Izin notifikasi ditolak oleh browser',
+    'toast.reminderOn': '🔔 Reminder aktif — notifikasi saat tugas jatuh tempo',
+    'confirm.clearTitle': '🗑️ Hapus Semua Data',
+    'confirm.clearMsg': 'Semua tugas akan dihapus. Kamu masih bisa membatalkannya lewat tombol Undo setelah ini.',
+    'confirm.clearOk': 'Hapus Semua',
+    'toast.allCleared': 'Semua data dihapus.',
+    'confirm.clearFocusTitle': '✕ Clear Focus',
+    'confirm.clearFocusMsg': 'Yakin ingin menghentikan focus mode?',
+    'confirm.clearFocusOk': 'Hentikan',
+    'toast.allDoneCelebrate': '🎉 Semua tugas hari ini selesai! Kerja bagus!',
+    'toast.recurringCreated': '🔁 Tugas berulang dibuat: {when}',
+    'notif.dueTitle': '⏰ TaskFlow: {title}',
+    'notif.dueBody': 'Jatuh tempo sekarang',
+    'acc.invalidEmail': '❌ Email tidak valid',
+    'acc.pwMin': '❌ Password minimal 8 karakter',
+    'acc.registering': '✨ Mendaftarkan akun...',
+    'acc.loggingIn': '🔑 Masuk...',
+    'acc.loginOk': '✅ Berhasil masuk',
+    'toast.accountCreated': 'Akun dibuat. Data lokal tersimpan ke cloud.',
+    'dialog.cloudFoundTitle': '☁️ Data Cloud Ditemukan',
+    'dialog.cloudFoundMsg': 'Terakhir disimpan: {when}.\nMuat data cloud (menggantikan data lokal), atau simpan data lokal ke cloud?',
+    'dialog.later': 'Nanti',
+    'dialog.pushLocal': '☁️ Simpan Lokal ke Cloud',
+    'dialog.pullCloud': '📥 Muat dari Cloud',
+    'toast.localSavedCloud': 'Data lokal tersimpan ke cloud.',
+    'toast.loggedOut': 'Kamu sudah keluar. Data lokal tetap tersimpan di perangkat ini.',
+    'acc.loginFirstSync': '❌ Masuk dulu untuk sinkronisasi',
+    'acc.syncing': '☁️ Menyinkronkan...',
+    'acc.savedCloud': '✅ Tersimpan ke cloud',
+    'toast.savedCloud': 'Data tersimpan ke cloud',
+    'acc.sessionExpired': '❌ Sesi berakhir. Silakan masuk lagi.',
+    'acc.error': '❌ Error: {msg}',
+    'acc.loadCancelled': 'Load dibatalkan',
+    'acc.dataLoaded': '✅ Data dimuat ({n} tugas)',
+    'toast.tasksLoadedCloud': '{n} tugas dimuat dari cloud',
+    'acc.loginFirstLoad': '❌ Masuk dulu untuk memuat data',
+    'acc.loading': '📥 Memuat...',
+    'acc.noCloudData': 'Belum ada data di cloud',
+    'toast.storageFull': 'Penyimpanan lokal penuh atau tidak tersedia. Perubahan belum aman.',
+    'toast.settingsSaveFail': 'Pengaturan tidak dapat disimpan.',
+    'toast.loginPrompt': '⚠️ Masuk dengan akunmu di Settings (⚙️) terlebih dulu.',
+    'dialog.cloudSyncTitle': '☁️ Sinkronisasi Cloud',
+    'dialog.cloudSyncMsg': 'Pilih arah sinkronisasi:',
+    'dialog.download': '📥 Download (Load)',
+    'dialog.upload': '☁️ Upload (Save)',
+    'err.backendOff': 'Backend akun belum aktif di hosting ini. Deploy lewat Cloudflare Worker, bukan static hosting/GitHub Pages.',
+    'err.http': 'HTTP {status}',
+    'toast.langChanged': '🌐 Bahasa diubah ke Indonesia'
+  },
+  en: {
+    'focus.title': 'Focus Mode',
+    'focus.pause': '⏸ Pause',
+    'focus.resume': '▶ Resume',
+    'focus.clear': '✕ Clear Focus',
+    'focus.deep': '🌌 Deep Focus',
+    'focus.calm': '🌿 Calm',
+    'focus.night': '🌙 Night',
+    'edit.title': '✏️ Edit Task',
+    'ph.editTitle': 'Task title',
+    'ph.editDesc': 'Description (optional)',
+    'ph.editCategory': '📁 Category (e.g. Work, Meeting, Personal)',
+    'opt.super_high': '💥 Super High',
+    'opt.high': '🔥 High',
+    'opt.medium': '⚡ Medium',
+    'opt.low': '🌿 Low',
+    'opt.pending': '⏳ Pending',
+    'opt.ongoing': '🔥 On Going',
+    'opt.done': '✅ Done',
+    'repeat.none': '🔁 No repeat',
+    'repeat.none.short': '🔁 None',
+    'repeat.daily': '🔁 Daily',
+    'repeat.weekly': '🔁 Weekly',
+    'repeat.monthly': '🔁 Monthly',
+    'repeat.tag.daily': 'Daily',
+    'repeat.tag.weekly': 'Weekly',
+    'repeat.tag.monthly': 'Monthly',
+    'btn.cancel': 'Cancel',
+    'btn.save': 'Save',
+    'btn.add': 'Add',
+    'title.repeat': 'Task repeat',
+    'pe.title': '⚙️ Word Parsing Settings',
+    'pe.desc': 'Edit the keywords parsed for priority, status, date, time, and category. Each row: keywords (comma separated) → result.',
+    'pe.tab.priority': '🎯 Priority',
+    'pe.tab.status': '🏷️ Status',
+    'pe.tab.dates': '📅 Dates',
+    'pe.tab.timeOfDay': '⏰ Time',
+    'pe.tab.categories': '📁 Categories',
+    'pe.col.keywords': 'Keywords (comma separated)',
+    'pe.col.priority': 'Priority',
+    'pe.col.status': 'Status',
+    'pe.col.days': '+Days',
+    'pe.col.hour': 'Hour',
+    'pe.col.catName': 'Category Name',
+    'pe.add': '+ Add',
+    'pe.cat.desc': 'Optional keywords to auto-detect a category from the task name. Leave keywords empty if you only want to add a category option without automatic detection.',
+    'pe.reset': '🔄 Reset Default',
+    'title.pe.reset': 'Reset to Default',
+    'wi.title': '📈 Weekly Insight',
+    'wi.legend.done': 'Done',
+    'wi.legend.pending': 'Pending',
+    'wi.heatLabel': '⏰ Productive hours (last 30 days)',
+    'wi.stat.done7': 'Done in 7 days',
+    'wi.stat.pending': 'Pending',
+    'wi.stat.streak': 'Streak',
+    'wi.bar.done': '{n} done',
+    'wi.bar.pending': '{n} pending',
+    'wi.cell': '{h}:00 — {n} done',
+    'chip.status.done': '✅ Done',
+    'chip.status.ongoing': '🔥 On Going',
+    'chip.status.pending': '⏳ Pending',
+    'chip.titleHint': 'Title after parsing',
+    'chip.dateHint': 'Click to edit manually, × to remove',
+    'chip.errorHint': 'Fix the input before adding the task',
+    'chip.categoryHint': 'Category auto-detected from the task name',
+    'chip.priorityHint': 'Click to change priority',
+    'chip.statusHint': 'Click to change status',
+    'bento.progressToday': "Today's Progress",
+    'bento.progressAll': 'Overall Progress',
+    'bento.total': 'Total',
+    'bento.done': 'Done',
+    'bento.pending': 'Pending',
+    'bento.high': '🔥 High+',
+    'bento.streak': 'Streak 🔥',
+    'ph.taskInput': 'Write a task… (e.g. Buy milk tomorrow 8am high)',
+    'title.detailToggle': 'Details: description, category, subtask, date, repeat',
+    'ph.descInput': 'Description (optional)',
+    'ph.categoryInput': '📁 Category (e.g. Work, Meeting, Personal, Admin)',
+    'ph.subtaskInput': '➕ Subtask (press Enter to add, multiple allowed)',
+    'aria.priority': 'Task priority',
+    'title.cloudSync': 'Cloud Sync',
+    'cloud.sync': '☁️ Sync',
+    'hint.format': '💡 <strong>Format:</strong> <code style="background:rgba(176,38,255,0.15); padding:1px 6px; border-radius:4px; color:var(--neon-purple);">Task | date | status | time | priority</code><br>\n            <span style="margin-left:1.2rem;">📅 <em>today, tomorrow, in 2 days, a week, a month, 2 months…</em> | 🏷️ <em>DNE, OGG, PND</em> | 🕐 <em>jam 19, 19.00, 12am, 12pm</em> | ⚡ <em>high, med, low, superh</em></span><br>\n            <span style="margin-left:1.2rem;">📝 Example: <code style="background:rgba(255,255,255,0.05); padding:1px 5px; border-radius:3px;">Buy milk | besok | OGG | jam 8 | high</code> or just: <code style="background:rgba(255,255,255,0.05); padding:1px 5px; border-radius:3px;">Buy milk</code> (defaults to today)</span>',
+    'tf.title': '🎯 Today Focus',
+    'title.today': 'Today',
+    'dayDetail.pick': '📅 Pick a date',
+    'empty.dayDetail': '✨ No tasks on this day',
+    'ph.search': 'Search old tasks...',
+    'filter.sheetBtn': '⚙️ Filter & Sort',
+    'filter.all': 'All',
+    'filter.pending': 'Pending',
+    'filter.ongoing': 'On Going',
+    'filter.done': 'Done',
+    'filter.priorityLabel': 'Priority:',
+    'filter.sortLabel': 'Sort (pick one or more):',
+    'sort.date': '📅 Date',
+    'sort.priority': '🔥 Priority',
+    'sort.status': '✅ Status',
+    'data.exportJson': '📦 Export JSON',
+    'data.exportCsv': '📊 Export CSV',
+    'data.import': '📥 Import',
+    'data.multiSelect': '☑️ Multi Select',
+    'batch.done': '✅ Complete',
+    'batch.delete': '🗑️ Delete',
+    'view.list': '📋 List',
+    'view.kanban': '🎯 Kanban',
+    'empty.tasksIcon': '📭 No tasks',
+    'empty.tasks': 'No tasks',
+    'kanban.pending': '⏳ Pending',
+    'kanban.ongoing': '🔥 On Going',
+    'kanban.done': '✅ Done',
+    'kanban.empty': '📭 Empty',
+    'set.sound': '🔊 Sound',
+    'set.haptic': '📳 Haptic',
+    'set.reducedMotion': '🌀 Reduced Motion',
+    'set.customCursor': '✨ Custom Cursor',
+    'set.reminder': '🔔 Reminder Notifications',
+    'account.title': '☁️ Account & Sync',
+    'ph.password': 'Password (min. 8 characters)',
+    'account.login': '🔑 Log In',
+    'account.register': '✨ Sign Up',
+    'account.privacy': 'One account to sync your data across devices.',
+    'account.loggedInAs': 'Logged in as',
+    'account.autoSync': 'Auto Sync',
+    'account.saveCloud': '☁️ Save to Cloud',
+    'title.loadCloud': 'Load from Cloud',
+    'account.logout': '🚪 Log Out',
+    'set.editParsing': '⚙️ Edit Parsing Keywords',
+    'set.storageNote': 'Data stored in LocalStorage',
+    'set.restore': 'Restore Last Snapshot',
+    'set.clear': 'Clear All Data',
+    'aria.openSettings': 'Open settings',
+    'nav.today': 'Today',
+    'nav.calendar': 'Calendar',
+    'nav.tasks': 'Tasks',
+    'nav.focus': 'Focus',
+    'nav.menu': 'Menu',
+    'title.addTask': 'Add task',
+    'aria.bottomNav': 'Main mobile navigation',
+    'title.focusTimer': 'Focus Timer',
+    'title.editTask': 'Edit Task',
+    'title.addSubtask': 'Add Subtask',
+    'title.postpone': 'Move to tomorrow',
+    'title.delete': 'Delete',
+    'title.drag': 'Drag to reorder',
+    'title.setPending': 'Click to set Pending',
+    'title.setOngoing': 'Click to set On Going',
+    'title.clearFocus': 'Clear Focus',
+    'task.ongoing': '🔥 On Going',
+    'task.pending': '⏳ Pending',
+    'tag.overdue': '⏰ Overdue',
+    'tf.allDone': '🎉 All important tasks for today are done!',
+    'tf.empty': '✨ No tasks for today yet',
+    'tf.overdueBadge': '⏰ {n} overdue',
+    'tf.markDone': 'Mark as done',
+    'tf.next': 'Next task',
+    'day.postpone': 'Move to tomorrow',
+    'date.today': 'Today, {t}',
+    'date.tomorrow': 'Tomorrow, {t}',
+    'date.dayAfter': 'In 2 days, {t}',
+    'date.yesterday': 'Yesterday, {t}',
+    'date.inDays': 'In {n} days, {t}',
+    'toast.localReadError': 'Local data could not be read. A raw copy is still kept.',
+    'toast.noTaskToFocus': 'No task to focus on yet.',
+    'toast.checkDateTime': 'Check the date or time in the input.',
+    'parse.invalidTime': 'Invalid time',
+    'parse.invalidDate': 'Invalid date',
+    'toast.postponed': '⏩ "{title}" moved to {when}',
+    'toast.taskDeleted': 'Task deleted',
+    'undo.label': '↩️ Undo',
+    'undo.plain': 'Undo',
+    'prompt.subtaskTitle': '📋 New Subtask',
+    'prompt.subtaskPh': 'Write a subtask…',
+    'toast.focusDone': '⏰ Focus complete!',
+    'toast.noFocusTarget': 'No task to focus on',
+    'toast.focusDoneFor': '⏰ Focus complete for: {title}',
+    'progress.label': '{pct}% Done Today',
+    'toast.exportedJson': '{n} tasks exported to JSON',
+    'toast.exportedCsv': '{n} tasks exported to CSV',
+    'toast.restoreSnapFail': 'Restore cancelled because a local snapshot could not be created.',
+    'toast.noSnapshot': 'No recovery snapshot yet.',
+    'toast.snapshotRestored': 'Snapshot restored successfully.',
+    'toast.snapshotRestoreFail': 'Snapshot could not be restored: {msg}',
+    'confirm.replaceTitle': 'Replace Task Data?',
+    'confirm.replaceMsg': '{source} contains {n} tasks. Your current local data ({cur} tasks) will be replaced. A recovery snapshot and Undo will be created first.',
+    'confirm.replaceOk': 'Replace Data',
+    'source.snapshot': 'Snapshot {label}',
+    'source.import': 'Import {name}',
+    'source.cloud': 'Cloud',
+    'toast.importOk': 'Import successful: {n} tasks',
+    'toast.importErr': 'Import error: {msg}',
+    'toast.multiSelectOn': 'Multi-Select mode on. Click a task to select it.',
+    'batch.selected': '{n} tasks selected',
+    'toast.markedDone': 'Tasks marked done',
+    'toast.nothingUndo': 'Nothing to undo',
+    'toast.undoRestore': 'Undo: Task restored',
+    'toast.undoBatchRestore': 'Undo: {n} tasks restored',
+    'toast.undoStatus': 'Undo: Status restored',
+    'toast.undoData': 'Undo: Data restored',
+    'confirm.resetTitle': '🔄 Reset Default',
+    'confirm.resetMsg': 'Reset all keywords to default? Unsaved changes will be lost.',
+    'confirm.resetOk': 'Reset',
+    'toast.resetDone': 'Keywords reset to default',
+    'toast.keywordsSaved': 'Keywords & categories saved',
+    'toast.noNotifSupport': 'This browser does not support notifications',
+    'toast.notifDenied': 'Notification permission denied by the browser',
+    'toast.reminderOn': '🔔 Reminders on — notification when a task is due',
+    'confirm.clearTitle': '🗑️ Clear All Data',
+    'confirm.clearMsg': 'All tasks will be deleted. You can still undo this with the Undo button afterwards.',
+    'confirm.clearOk': 'Clear All',
+    'toast.allCleared': 'All data cleared.',
+    'confirm.clearFocusTitle': '✕ Clear Focus',
+    'confirm.clearFocusMsg': 'Are you sure you want to stop focus mode?',
+    'confirm.clearFocusOk': 'Stop',
+    'toast.allDoneCelebrate': '🎉 All of today\'s tasks are done! Great work!',
+    'toast.recurringCreated': '🔁 Recurring task created: {when}',
+    'notif.dueTitle': '⏰ TaskFlow: {title}',
+    'notif.dueBody': 'Due now',
+    'acc.invalidEmail': '❌ Invalid email',
+    'acc.pwMin': '❌ Password must be at least 8 characters',
+    'acc.registering': '✨ Creating account...',
+    'acc.loggingIn': '🔑 Logging in...',
+    'acc.loginOk': '✅ Logged in',
+    'toast.accountCreated': 'Account created. Local data saved to the cloud.',
+    'dialog.cloudFoundTitle': '☁️ Cloud Data Found',
+    'dialog.cloudFoundMsg': 'Last saved: {when}.\nLoad the cloud data (replacing local data), or save local data to the cloud?',
+    'dialog.later': 'Later',
+    'dialog.pushLocal': '☁️ Save Local to Cloud',
+    'dialog.pullCloud': '📥 Load from Cloud',
+    'toast.localSavedCloud': 'Local data saved to the cloud.',
+    'toast.loggedOut': 'You have logged out. Your local data stays on this device.',
+    'acc.loginFirstSync': '❌ Log in first to sync',
+    'acc.syncing': '☁️ Syncing...',
+    'acc.savedCloud': '✅ Saved to cloud',
+    'toast.savedCloud': 'Data saved to the cloud',
+    'acc.sessionExpired': '❌ Session expired. Please log in again.',
+    'acc.error': '❌ Error: {msg}',
+    'acc.loadCancelled': 'Load cancelled',
+    'acc.dataLoaded': '✅ Data loaded ({n} tasks)',
+    'toast.tasksLoadedCloud': '{n} tasks loaded from the cloud',
+    'acc.loginFirstLoad': '❌ Log in first to load data',
+    'acc.loading': '📥 Loading...',
+    'acc.noCloudData': 'No data in the cloud yet',
+    'toast.storageFull': 'Local storage is full or unavailable. Changes are not safe yet.',
+    'toast.settingsSaveFail': 'Settings could not be saved.',
+    'toast.loginPrompt': '⚠️ Log in with your account in Settings (⚙️) first.',
+    'dialog.cloudSyncTitle': '☁️ Cloud Sync',
+    'dialog.cloudSyncMsg': 'Choose sync direction:',
+    'dialog.download': '📥 Download (Load)',
+    'dialog.upload': '☁️ Upload (Save)',
+    'err.backendOff': 'The account backend is not active on this host. Deploy via a Cloudflare Worker, not static hosting/GitHub Pages.',
+    'err.http': 'HTTP {status}',
+    'toast.langChanged': '🌐 Language changed to English'
+  }
+};
+
+let currentLang = 'id';
+// tr(key, vars) = penerjemah. Sengaja dinamai 'tr' (bukan 't') karena di banyak
+// bagian kode variabel 't' sudah dipakai untuk objek task.
+function tr(key, vars) {
+  const dict = I18N[currentLang] || I18N.id;
+  let s = (dict && dict[key] != null) ? dict[key] : (I18N.id[key] != null ? I18N.id[key] : key);
+  if (vars) {
+    for (const k in vars) s = s.split('{' + k + '}').join(vars[k]);
+  }
+  return s;
+}
+// Locale untuk format tanggal/jam bawaan browser
+function dateLocale() { return currentLang === 'en' ? 'en-US' : 'id-ID'; }
+function repeatLabel(r) { return tr('repeat.tag.' + r) || r; }
+
+// Terjemahkan semua teks statis di HTML sesuai currentLang
+function applyStaticTranslations() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const v = tr(el.getAttribute('data-i18n'));
+    if (v != null) el.textContent = v;
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const v = tr(el.getAttribute('data-i18n-html'));
+    if (v != null) el.innerHTML = v;
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const v = tr(el.getAttribute('data-i18n-ph'));
+    if (v != null) el.setAttribute('placeholder', v);
+  });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    const v = tr(el.getAttribute('data-i18n-title'));
+    if (v != null) el.setAttribute('title', v);
+  });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+    const v = tr(el.getAttribute('data-i18n-aria'));
+    if (v != null) el.setAttribute('aria-label', v);
+  });
+}
+
+// Ganti bahasa aktif lalu segarkan seluruh tampilan
+function applyLang(lang, { rerender = true } = {}) {
+  currentLang = (lang === 'en') ? 'en' : 'id';
+  settings.lang = currentLang;
+  document.documentElement.lang = currentLang;
+  applyStaticTranslations();
+  if (els.langLabel) els.langLabel.textContent = currentLang === 'en' ? 'English' : 'Bahasa Indonesia';
+  if (els.langToggle) {
+    els.langToggle.classList.toggle('on', currentLang === 'en');
+    els.langToggle.setAttribute('aria-checked', currentLang === 'en' ? 'true' : 'false');
+  }
+  if (!rerender || !isInitialized) return;
+  updatePrioritySelectUI(currentPriority);
+  renderQuickTemplates();
+  renderParseChips();
+  renderCurrentView();
+  updateStats();
+  renderCalendar();
+  updateSuggestions();
+  loadSettings();
+  refreshAccountUI();
+}
+
 let tasks = [];
 const STORAGE_SCHEMA_VERSION = 3;
 const RESTORE_POINT_KEY = 'tf_restore_point';
@@ -9,7 +597,9 @@ let settings = {
   sound: true, haptic: true, dayMode: false, reminders: false,
   // reducedMotion null = ikuti preferensi sistem (prefers-reduced-motion)
   reducedMotion: null, customCursor: true, focusMood: 'deep',
-  cloudAutoSync: false
+  cloudAutoSync: false,
+  // lang: 'id' (default) atau 'en'
+  lang: 'id'
 };
 
 const systemReducedMotion = () =>
@@ -144,7 +734,8 @@ function cacheElements() {
     'todayFocus','tfMeta','tfTop3','tfTimeline',
     'focusSubtasks','focusMoods',
     'weeklyInsight','wiToggle','wiBody','wiStats','wiChart','wiHeatmap',
-    'appDialog','appDialogTitle','appDialogMessage','appDialogInput','appDialogActions'
+    'appDialog','appDialogTitle','appDialogMessage','appDialogInput','appDialogActions',
+    'langToggle','langLabel'
   ];
   ids.forEach(id => els[id] = getEl(id));
 }
@@ -155,6 +746,8 @@ function safeInit() {
   try {
     cacheElements();
     loadData();
+    // Terapkan bahasa tersimpan ke teks statis sebelum render pertama
+    applyLang(settings.lang, { rerender: false });
     initClock();
     initInputClock();
     initCursor();
@@ -221,7 +814,7 @@ function loadData() {
     saveSettings();
   } catch (e) {
     console.error('Load data error:', e);
-    showToast('Data lokal tidak dapat dibaca. Salinan mentah tetap dipertahankan.', 'error');
+    showToast(tr('toast.localReadError'), 'error');
   }
 }
 
@@ -237,7 +830,7 @@ function handleLaunchShortcut() {
     } else if (shortcut === '#focus') {
       const nextTask = tasks.find(t => !t.done);
       if (nextTask) enterFocusMode(nextTask.id);
-      else showToast('Belum ada tugas untuk difokuskan.', 'info');
+      else showToast(tr('toast.noTaskToFocus'), 'info');
     }
     history.replaceState(null, '', window.location.pathname + window.location.search);
   }, 0);
@@ -356,7 +949,7 @@ function initInputClock() {
     const m = String(now.getMinutes()).padStart(2,'0');
     const s = String(now.getSeconds()).padStart(2,'0');
     clockEl.textContent = `${h}:${m}:${s}`;
-    dateEl.textContent = now.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+    dateEl.textContent = now.toLocaleDateString(dateLocale(), { weekday:'long', day:'numeric', month:'long', year:'numeric' });
   };
   update();
   setInterval(update, 1000);
@@ -372,7 +965,7 @@ function initClock() {
     const s = String(now.getSeconds()).padStart(2,'0');
     els.clock.innerHTML = `${h}:${m}<span class="seconds">:${s}</span>`;
     if (els.dateDisplay) {
-      els.dateDisplay.textContent = now.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'short', year:'numeric' });
+      els.dateDisplay.textContent = now.toLocaleDateString(dateLocale(), { weekday:'long', day:'numeric', month:'short', year:'numeric' });
     }
     const weight = 400 + (now.getSeconds() % 60) * 3;
     els.clock.style.fontVariationSettings = `'wght' ${weight}`;
@@ -508,22 +1101,22 @@ function renderParseChips() {
   const p = effectiveParse(raw);
   const labels = { super_high: 'Super High', high: 'High', medium: 'Medium', low: 'Low' };
   const statusKey = p.statusDone ? 'done' : p.statusOngoing ? 'ongoing' : 'pending';
-  const statusLabel = { done: '✅ Selesai', ongoing: '🔥 On Going', pending: '⏳ Pending' }[statusKey];
+  const statusLabel = tr('chip.status.' + statusKey);
   let html = '';
   if (p.title && p.title !== raw) {
-    html += `<span class="parse-chip chip-title" title="Judul setelah parsing">✏️ ${escapeHtml(p.title)}</span>`;
+    html += `<span class="parse-chip chip-title" title="${escapeHtml(tr('chip.titleHint'))}">✏️ ${escapeHtml(p.title)}</span>`;
   }
   if (p.dateTime) {
-    html += `<span class="parse-chip chip-date" data-chip="date" title="Klik untuk ubah manual, × untuk hapus">📅 ${escapeHtml(smartDateDisplay(p.dateTime, p.timeHint))}<span class="chip-x" data-x="date">×</span></span>`;
+    html += `<span class="parse-chip chip-date" data-chip="date" title="${escapeHtml(tr('chip.dateHint'))}">📅 ${escapeHtml(smartDateDisplay(p.dateTime, p.timeHint))}<span class="chip-x" data-x="date">×</span></span>`;
   }
   if (p.parseError) {
-    html += `<span class="parse-chip chip-error" title="Perbaiki input sebelum menambahkan tugas">⚠️ ${escapeHtml(p.parseError)}</span>`;
+    html += `<span class="parse-chip chip-error" title="${escapeHtml(tr('chip.errorHint'))}">⚠️ ${escapeHtml(p.parseError)}</span>`;
   }
   if (p.category) {
-    html += `<span class="parse-chip chip-category" title="Kategori terdeteksi otomatis dari nama tugas">📁 ${escapeHtml(p.category)}</span>`;
+    html += `<span class="parse-chip chip-category" title="${escapeHtml(tr('chip.categoryHint'))}">📁 ${escapeHtml(p.category)}</span>`;
   }
-  html += `<span class="parse-chip chip-priority" data-chip="priority" title="Klik untuk ganti prioritas">${getPriorityIcon(p.priority)} ${labels[p.priority] || p.priority}</span>`;
-  html += `<span class="parse-chip chip-status chip-status-${statusKey}" data-chip="status" title="Klik untuk ganti status">${statusLabel}</span>`;
+  html += `<span class="parse-chip chip-priority" data-chip="priority" title="${escapeHtml(tr('chip.priorityHint'))}">${getPriorityIcon(p.priority)} ${labels[p.priority] || p.priority}</span>`;
+  html += `<span class="parse-chip chip-status chip-status-${statusKey}" data-chip="status" title="${escapeHtml(tr('chip.statusHint'))}">${escapeHtml(statusLabel)}</span>`;
   els.parseChips.innerHTML = html;
 }
 
@@ -652,13 +1245,15 @@ function renderCalendar(direction) {
   if (!els.calendarGrid || !els.calendarTitle) return;
   const year = currentCalendarDate.getFullYear();
   const month = currentCalendarDate.getMonth();
-  els.calendarTitle.textContent = new Date(year, month).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+  els.calendarTitle.textContent = new Date(year, month).toLocaleDateString(dateLocale(), { month: 'long', year: 'numeric' });
 
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const daysInPrevMonth = new Date(year, month, 0).getDate();
 
-  const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+  const dayNames = currentLang === 'en'
+    ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    : ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
   let html = '';
 
   dayNames.forEach(d => html += `<div class="cal-day-header">${d}</div>`);
@@ -733,7 +1328,7 @@ function refreshDayDetail() {
 function showDayDetail(dateStr, dayNum) {
   if (!els.dayDetailPanel || !els.dayDetailTitle || !els.dayDetailContent) return;
   const date = new Date(dateStr);
-  const formatted = date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const formatted = date.toLocaleDateString(dateLocale(), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   els.dayDetailTitle.textContent = `📅 ${formatted}`;
 
   const dayTasks = tasks.filter(t => {
@@ -745,7 +1340,7 @@ function showDayDetail(dateStr, dayNum) {
   });
 
   if (dayTasks.length === 0) {
-    els.dayDetailContent.innerHTML = '<div class="empty-state">✨ Tidak ada tugas di hari ini</div>';
+    els.dayDetailContent.innerHTML = '<div class="empty-state">' + escapeHtml(tr('empty.dayDetail')) + '</div>';
   } else {
     els.dayDetailContent.innerHTML = dayTasks.map((t, i) => `
       <div class="day-task-item ${t.priority} ${t.done ? 'done' : ''}" style="animation-delay:${i * 0.1}s">
@@ -758,7 +1353,7 @@ function showDayDetail(dateStr, dayNum) {
             ${t.category ? `<span class="category-tag" style="margin-left:3px;">📁 ${escapeHtml(t.category)}</span>` : ''}
           </div>
         </div>
-        ${!t.done ? `<button class="action-btn postpone-btn" data-task-id="${escapeHtml(t.id)}" title="Lanjut ke besok">⏩</button>` : ''}
+        ${!t.done ? `<button class="action-btn postpone-btn" data-task-id="${escapeHtml(t.id)}" title="${escapeHtml(tr('title.postpone'))}">⏩</button>` : ''}
       </div>
     `).join('');
     els.dayDetailContent.querySelectorAll('.task-check[data-task-id]').forEach(checkbox => {
@@ -845,7 +1440,7 @@ function smartParse(text) {
       timeHint = `${String(h).padStart(2,'0')}:${String(minute).padStart(2,'0')}`;
       cleanedText = cleanedText.replace(timeMatch[0], '').trim();
     } else {
-      parseError = 'Waktu tidak valid';
+      parseError = tr('parse.invalidTime');
     }
   }
   const standaloneTime = cleanedText.match(/\b(\d{1,2})[.:](\d{2})\b/);
@@ -856,7 +1451,7 @@ function smartParse(text) {
       timeHint = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
       cleanedText = cleanedText.replace(standaloneTime[0], '').trim();
     } else {
-      parseError = 'Waktu tidak valid';
+      parseError = tr('parse.invalidTime');
     }
   }
 
@@ -896,7 +1491,7 @@ function smartParse(text) {
         cleanedText = cleanedText.replace(absDateMatch[0], '').trim();
         hasDateKeyword = true;
       } else {
-        parseError = 'Tanggal tidak valid';
+        parseError = tr('parse.invalidDate');
       }
     }
   }
@@ -1066,7 +1661,7 @@ function addTask() {
 
   const parsed = effectiveParse(raw);
   if (parsed.parseError) {
-    showToast(parsed.parseError + '. Periksa tanggal atau waktu pada input.', 'error');
+    showToast(parsed.parseError + '. ' + tr('toast.checkDateTime'), 'error');
     els.taskInput.focus();
     return;
   }
@@ -1162,14 +1757,14 @@ function renderTasks() {
     el.style.animationDelay = (index * 0.05) + 's';
 
     const created = new Date(t.createdAt);
-    const timeStr = created.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
-    const dateStr = created.toLocaleDateString('id-ID', { day:'numeric', month:'short' });
+    const timeStr = created.toLocaleTimeString(dateLocale(), { hour:'2-digit', minute:'2-digit' });
+    const dateStr = created.toLocaleDateString(dateLocale(), { day:'numeric', month:'short' });
     const taskDateTime = t.dateTime ? new Date(t.dateTime) : null;
     const scheduledStr = taskDateTime ? smartDateDisplay(t.dateTime) : '';
 
     el.innerHTML = `
       ${multiSelectMode ? `<input type="checkbox" class="task-select" ${selectedTaskIds.includes(t.id) ? 'checked' : ''}>` : ''}
-      <div class="grip" title="Drag to reorder">⋮⋮</div>
+      <div class="grip" title="${escapeHtml(tr('title.drag'))}">⋮⋮</div>
       <input type="checkbox" class="task-check" ${t.done ? 'checked' : ''}>
       <div class="task-content">
         <div class="task-header">
@@ -1179,8 +1774,8 @@ function renderTasks() {
           <span class="task-time">🕒 ${scheduledStr || dateStr + ' ' + timeStr}${t.timeHint ? ' → ' + escapeHtml(t.timeHint) : ''}</span>
           <span class="priority-tag p-${t.priority}">${getPriorityIcon(t.priority)} ${t.priority === 'super_high' ? 'Super High' : t.priority}</span>
           ${t.category ? `<span class="category-tag">📁 ${escapeHtml(t.category)}</span>` : ''}
-          ${t.repeat && t.repeat !== 'none' ? `<span class="repeat-tag">🔁 ${REPEAT_LABELS[t.repeat] || t.repeat}</span>` : ''}
-          ${isOverdue(t) ? `<span class="overdue-tag">⏰ Terlambat</span>` : ''}
+          ${t.repeat && t.repeat !== 'none' ? `<span class="repeat-tag">🔁 ${escapeHtml(repeatLabel(t.repeat))}</span>` : ''}
+          ${isOverdue(t) ? `<span class="overdue-tag">${escapeHtml(tr('tag.overdue'))}</span>` : ''}
           ${t.desc ? `<span style="font-size:0.72rem; color:var(--text-dim)">📝 ${escapeHtml(t.desc.length > 40 ? t.desc.slice(0,40)+'…' : t.desc)}</span>` : ''}
         </div>
         ${t.subtasks.length ? `<ul class="subtasks">${t.subtasks.map((s,i)=>`<li class="subtask ${s.done ? 'done' : ''}"><input type="checkbox" class="subtask-check" ${s.done?'checked':''} data-idx="${i}"><span>${escapeHtml(s.text)}</span></li>`).join('')}</ul>` : ''}
@@ -1189,15 +1784,15 @@ function renderTasks() {
             <svg class="pomo-circle" viewBox="0 0 36 36"><path class="pomo-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/><path class="pomo-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="100" stroke-dashoffset="${100 - (t.pomodoro.timeLeft/1500)*100}"/></svg>
             <span class="pomo-time">${formatTime(t.pomodoro.timeLeft)}</span>
             <button class="pomo-btn">${t.pomodoro.active ? '⏸' : '▶'}</button>
-            ${t.pomodoro.active || t.pomodoro.timeLeft < 1500 ? '<button class="pomo-clear-btn" title="Clear Focus">✕</button>' : ''}
+            ${t.pomodoro.active || t.pomodoro.timeLeft < 1500 ? `<button class="pomo-clear-btn" title="${escapeHtml(tr('title.clearFocus'))}">✕</button>` : ''}
           </div>
-          ${!t.done ? `<button class="status-toggle-btn ${t.ongoing ? 's-ongoing' : 's-pending'}" data-id="${t.id}" title="${t.ongoing ? 'Klik untuk set Pending' : 'Klik untuk set On Going'}">${t.ongoing ? '🔥 On Going' : '⏳ Pending'}</button>` : ''}
+          ${!t.done ? `<button class="status-toggle-btn ${t.ongoing ? 's-ongoing' : 's-pending'}" data-id="${t.id}" title="${escapeHtml(t.ongoing ? tr('title.setPending') : tr('title.setOngoing'))}">${escapeHtml(t.ongoing ? tr('task.ongoing') : tr('task.pending'))}</button>` : ''}
           <div class="task-actions">
-            <button class="action-btn focus-btn" title="Focus Timer">🎯</button>
-            <button class="action-btn edit-btn" title="Edit Tugas">✏️</button>
-            <button class="action-btn subtask-btn" title="Add Subtask">📋</button>
-            ${!t.done ? '<button class="action-btn postpone-btn" title="Lanjut ke besok">⏩</button>' : ''}
-            <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+            <button class="action-btn focus-btn" title="${escapeHtml(tr('title.focusTimer'))}">🎯</button>
+            <button class="action-btn edit-btn" title="${escapeHtml(tr('title.editTask'))}">✏️</button>
+            <button class="action-btn subtask-btn" title="${escapeHtml(tr('title.addSubtask'))}">📋</button>
+            ${!t.done ? `<button class="action-btn postpone-btn" title="${escapeHtml(tr('title.postpone'))}">⏩</button>` : ''}
+            <button class="action-btn delete-btn" title="${escapeHtml(tr('title.delete'))}">🗑️</button>
           </div>
         </div>
       </div>
@@ -1264,7 +1859,7 @@ function renderTasks() {
   els.taskList.appendChild(frag);
 
   if (filtered.length === 0) {
-    els.taskList.innerHTML = '<div class="empty-state"><div class="empty-illustration"><svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="40" stroke="rgba(176,38,255,0.3)" stroke-width="2" stroke-dasharray="6 4"/><circle cx="60" cy="60" r="28" fill="rgba(176,38,255,0.08)" stroke="rgba(176,38,255,0.4)" stroke-width="1.5"/><path d="M48 58L56 66L72 50" stroke="#00f5a0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/><circle cx="60" cy="60" r="4" fill="#b026ff" opacity="0.6"/><circle cx="35" cy="35" r="3" fill="#ff4d6d" opacity="0.5"><animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/></circle><circle cx="85" cy="30" r="2" fill="#ffd166" opacity="0.5"><animate attributeName="opacity" values="0.5;1;0.5" dur="2.5s" repeatCount="indefinite"/></circle><circle cx="90" cy="80" r="2.5" fill="#4facfe" opacity="0.5"><animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/></circle></svg></div>Tidak ada tugas</div>';
+    els.taskList.innerHTML = '<div class="empty-state"><div class="empty-illustration"><svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="40" stroke="rgba(176,38,255,0.3)" stroke-width="2" stroke-dasharray="6 4"/><circle cx="60" cy="60" r="28" fill="rgba(176,38,255,0.08)" stroke="rgba(176,38,255,0.4)" stroke-width="1.5"/><path d="M48 58L56 66L72 50" stroke="#00f5a0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/><circle cx="60" cy="60" r="4" fill="#b026ff" opacity="0.6"/><circle cx="35" cy="35" r="3" fill="#ff4d6d" opacity="0.5"><animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/></circle><circle cx="85" cy="30" r="2" fill="#ffd166" opacity="0.5"><animate attributeName="opacity" values="0.5;1;0.5" dur="2.5s" repeatCount="indefinite"/></circle><circle cx="90" cy="80" r="2.5" fill="#4facfe" opacity="0.5"><animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/></circle></svg></div>' + escapeHtml(tr('empty.tasks')) + '</div>';
   }
 }
 
@@ -1346,8 +1941,8 @@ function renderKanban() {
     card.style.animationDelay = (index * 0.03) + 's';
 
     const taskDateTime = t.dateTime ? new Date(t.dateTime) : null;
-    const scheduledStr = taskDateTime ? taskDateTime.toLocaleDateString('id-ID',{day:'numeric', month:'short'}) : '';
-    const timeStr = taskDateTime ? taskDateTime.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}) : '';
+    const scheduledStr = taskDateTime ? taskDateTime.toLocaleDateString(dateLocale(),{day:'numeric', month:'short'}) : '';
+    const timeStr = taskDateTime ? taskDateTime.toLocaleTimeString(dateLocale(),{hour:'2-digit',minute:'2-digit'}) : '';
 
     card.innerHTML = `
       <div class="kanban-card-title">${escapeHtml(t.title)}</div>
@@ -1355,13 +1950,13 @@ function renderKanban() {
         ${t.timeHint || timeStr ? `<span class="kanban-card-time">🕒 ${escapeHtml(t.timeHint || timeStr)}</span>` : ''}
         <span class="kanban-card-tag" style="background:${getPriorityBg(t.priority)};color:${getPriorityColor(t.priority)};">${getPriorityIcon(t.priority)} ${t.priority === 'super_high' ? 'S-High' : t.priority}</span>
         ${t.category ? `<span class="kanban-card-tag" style="background:rgba(79,172,254,0.15);color:var(--neon-blue);">📁 ${escapeHtml(t.category)}</span>` : ''}
-        ${t.repeat && t.repeat !== 'none' ? `<span class="kanban-card-tag" style="background:rgba(199,210,254,0.12);color:var(--neon-silver);">🔁 ${REPEAT_LABELS[t.repeat] || t.repeat}</span>` : ''}
-        ${isOverdue(t) ? `<span class="kanban-card-tag" style="background:rgba(255,77,109,0.2);color:var(--neon-coral);">⏰ Terlambat</span>` : ''}
+        ${t.repeat && t.repeat !== 'none' ? `<span class="kanban-card-tag" style="background:rgba(199,210,254,0.12);color:var(--neon-silver);">🔁 ${escapeHtml(repeatLabel(t.repeat))}</span>` : ''}
+        ${isOverdue(t) ? `<span class="kanban-card-tag" style="background:rgba(255,77,109,0.2);color:var(--neon-coral);">${escapeHtml(tr('tag.overdue'))}</span>` : ''}
       </div>
       <div class="kanban-card-actions">
-        <button class="action-btn edit-btn" title="Edit">✏️</button>
-        ${!t.done ? '<button class="action-btn postpone-btn" title="Lanjut ke besok">⏩</button>' : ''}
-        <button class="action-btn delete-btn" title="Hapus">🗑️</button>
+        <button class="action-btn edit-btn" title="${escapeHtml(tr('title.editTask'))}">✏️</button>
+        ${!t.done ? `<button class="action-btn postpone-btn" title="${escapeHtml(tr('title.postpone'))}">⏩</button>` : ''}
+        <button class="action-btn delete-btn" title="${escapeHtml(tr('title.delete'))}">🗑️</button>
       </div>
     `;
 
@@ -1419,9 +2014,10 @@ function renderKanban() {
   if (els.kanbanDoneCount) els.kanbanDoneCount.textContent = doneCount;
 
   // Empty states
-  if (pendingCount === 0) els.kanbanPending.innerHTML = '<div class="empty-state" style="padding:1rem;font-size:0.75rem;">📭 Kosong</div>';
-  if (ongoingCount === 0) els.kanbanOngoing.innerHTML = '<div class="empty-state" style="padding:1rem;font-size:0.75rem;">📭 Kosong</div>';
-  if (doneCount === 0) els.kanbanDone.innerHTML = '<div class="empty-state" style="padding:1rem;font-size:0.75rem;">📭 Kosong</div>';
+  const kanbanEmpty = '<div class="empty-state" style="padding:1rem;font-size:0.75rem;">' + escapeHtml(tr('kanban.empty')) + '</div>';
+  if (pendingCount === 0) els.kanbanPending.innerHTML = kanbanEmpty;
+  if (ongoingCount === 0) els.kanbanOngoing.innerHTML = kanbanEmpty;
+  if (doneCount === 0) els.kanbanDone.innerHTML = kanbanEmpty;
 }
 
 function getPriorityBg(p) {
@@ -1512,7 +2108,7 @@ function postponeTask(id) {
   checkStreak(); // sisa tugas hari ini bisa jadi sudah beres semua
   playSound('add');
   vibrate();
-  showToast(`⏩ "${t.title}" dilanjut ke ${smartDateDisplay(t.dateTime)}`, 'info');
+  showToast(tr('toast.postponed', { title: t.title, when: smartDateDisplay(t.dateTime) }), 'info');
 }
 
 function toggleStatus(id) {
@@ -1552,11 +2148,11 @@ function deleteTask(id) {
   withViewTransition(() => { renderCurrentView(); updateStats(); renderCalendar(); });
   updateSuggestions();
   playSound('delete'); vibrate();
-  showToast('Tugas dihapus', 'info', { label: '↩️ Undo', onClick: undo });
+  showToast(tr('toast.taskDeleted'), 'info', { label: tr('undo.label'), onClick: undo });
 }
 
 async function addSubtask(id) {
-  const text = await showPrompt('📋 Subtask Baru', 'Tulis subtask…');
+  const text = await showPrompt(tr('prompt.subtaskTitle'), tr('prompt.subtaskPh'));
   if (!text) return;
   const t = tasks.find(x => x.id === id);
   if (t) {
@@ -1659,7 +2255,7 @@ function startFocusTimer() {
   if (focusInterval) clearInterval(focusInterval);
   if (focusTimeLeft <= 0) focusTimeLeft = 1500;
   focusEndsAt = Date.now() + focusTimeLeft * 1000;
-  if (els.focusPause) els.focusPause.textContent = '⏸ Pause';
+  if (els.focusPause) els.focusPause.textContent = tr('focus.pause');
   const activeTask = tasks.find(x => x.id === focusTaskId);
   if (activeTask) {
     activeTask.pomodoro.active = true;
@@ -1680,7 +2276,7 @@ function startFocusTimer() {
         save();
       }
       playSound('complete');
-      showToast('⏰ Fokus selesai!', 'success');
+      showToast(tr('toast.focusDone'), 'success');
       exitFocusMode();
     }
   };
@@ -1738,7 +2334,7 @@ function initMobileNav() {
       const { top3 } = todayFocusData();
       const target = top3[0] || tasks.find(t => !t.done);
       if (target) enterFocusMode(target.id);
-      else showToast('Tidak ada tugas untuk difokuskan', 'info');
+      else showToast(tr('toast.noFocusTarget'), 'info');
       return;
     }
     setMobileView(v);
@@ -1820,7 +2416,7 @@ function togglePomodoro(id) {
         save();
         renderCurrentView();
         playSound('complete');
-        showToast(`⏰ Fokus selesai untuk: ${task.title}`, 'success');
+        showToast(tr('toast.focusDoneFor', { title: task.title }), 'success');
       }
     }, 1000);
   } else if (!t.pomodoro.active) {
@@ -1858,7 +2454,7 @@ function updateStats() {
   const todayPct = todayTotal ? Math.round((todayDone/todayTotal)*100) : 0;
 
   if (els.progressFill) els.progressFill.style.width = `${todayPct}%`;
-  if (els.progressLabel) els.progressLabel.textContent = `${todayPct}% Selesai Hari Ini`;
+  if (els.progressLabel) els.progressLabel.textContent = tr('progress.label', { pct: todayPct });
   if (els.progressRatio) els.progressRatio.textContent = `${todayDone}/${todayTotal}`;
   setStatNumber(els.bentoProgress, todayPct, '%');
   setStatNumber(els.bentoProgressAll, pctAll, '%');
@@ -1888,7 +2484,7 @@ function weeklyInsightData() {
     const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
     const key = d.toDateString();
     days.push({
-      label: d.toLocaleDateString('id-ID', { weekday: 'short' }),
+      label: d.toLocaleDateString(dateLocale(), { weekday: 'short' }),
       doneCount: tasks.filter(t => t.completedAt && new Date(t.completedAt).toDateString() === key).length,
       pendingCount: tasks.filter(t => !t.done && t.dateTime && new Date(t.dateTime).toDateString() === key).length,
       isToday: i === 0
@@ -1911,22 +2507,22 @@ function renderWeeklyInsight() {
   const pendingTotal = days.reduce((s, d) => s + d.pendingCount, 0);
   const streak = parseInt(localStorage.getItem('tf_streak') || '0', 10);
   els.wiStats.innerHTML = `
-    <div class="wi-stat"><span class="wi-num" style="color:var(--status-done)">${doneTotal}</span>Selesai 7 hari</div>
-    <div class="wi-stat"><span class="wi-num" style="color:var(--status-pending)">${pendingTotal}</span>Tertunda</div>
-    <div class="wi-stat"><span class="wi-num">${streak}🔥</span>Streak</div>`;
+    <div class="wi-stat"><span class="wi-num" style="color:var(--status-done)">${doneTotal}</span>${escapeHtml(tr('wi.stat.done7'))}</div>
+    <div class="wi-stat"><span class="wi-num" style="color:var(--status-pending)">${pendingTotal}</span>${escapeHtml(tr('wi.stat.pending'))}</div>
+    <div class="wi-stat"><span class="wi-num">${streak}🔥</span>${escapeHtml(tr('wi.stat.streak'))}</div>`;
   const max = Math.max(1, ...days.map(d => Math.max(d.doneCount, d.pendingCount)));
   els.wiChart.innerHTML = days.map(d => `
     <div class="wi-day ${d.isToday ? 'today' : ''}">
       <div class="wi-bars">
-        <div class="wi-bar wi-done" style="height:${Math.round((d.doneCount / max) * 100)}%" title="${d.doneCount} selesai"></div>
-        <div class="wi-bar wi-pending" style="height:${Math.round((d.pendingCount / max) * 100)}%" title="${d.pendingCount} tertunda"></div>
+        <div class="wi-bar wi-done" style="height:${Math.round((d.doneCount / max) * 100)}%" title="${escapeHtml(tr('wi.bar.done', { n: d.doneCount }))}"></div>
+        <div class="wi-bar wi-pending" style="height:${Math.round((d.pendingCount / max) * 100)}%" title="${escapeHtml(tr('wi.bar.pending', { n: d.pendingCount }))}"></div>
       </div>
       <span class="wi-day-label">${d.label}</span>
     </div>`).join('');
   const hmax = Math.max(1, ...hours);
   els.wiHeatmap.innerHTML = hours.map((c, h) => {
     const alpha = c === 0 ? 0.06 : 0.15 + 0.85 * (c / hmax);
-    return `<div class="wi-cell" title="${String(h).padStart(2, '0')}:00 — ${c} selesai" style="background:rgba(0,245,160,${alpha.toFixed(2)})"></div>`;
+    return `<div class="wi-cell" title="${escapeHtml(tr('wi.cell', { h: String(h).padStart(2, '0'), n: c }))}" style="background:rgba(0,245,160,${alpha.toFixed(2)})"></div>`;
   }).join('');
 }
 
@@ -1984,18 +2580,18 @@ function renderTodayFocus() {
 
   let meta = '';
   if (next) {
-    const jam = new Date(next.dateTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-    meta += `<span class="tf-badge tf-next-badge" title="Tugas berikutnya">⏭ ${escapeHtml(next.title)} · ${jam}</span>`;
+    const jam = new Date(next.dateTime).toLocaleTimeString(dateLocale(), { hour: '2-digit', minute: '2-digit' });
+    meta += `<span class="tf-badge tf-next-badge" title="${escapeHtml(tr('tf.next'))}">⏭ ${escapeHtml(next.title)} · ${jam}</span>`;
   }
-  if (overdueCount) meta += `<span class="tf-badge tf-overdue-badge">⏰ ${overdueCount} terlambat</span>`;
+  if (overdueCount) meta += `<span class="tf-badge tf-overdue-badge">${escapeHtml(tr('tf.overdueBadge', { n: overdueCount }))}</span>`;
   els.tfMeta.innerHTML = meta;
 
   if (!top3.length) {
-    els.tfTop3.innerHTML = `<div class="tf-empty">${todays.length ? '🎉 Semua tugas penting hari ini beres!' : '✨ Belum ada tugas untuk hari ini'}</div>`;
+    els.tfTop3.innerHTML = `<div class="tf-empty">${escapeHtml(todays.length ? tr('tf.allDone') : tr('tf.empty'))}</div>`;
   } else {
     els.tfTop3.innerHTML = top3.map((t, i) => {
       const overdue = isOverdue(t);
-      const jam = t.dateTime ? new Date(t.dateTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '';
+      const jam = t.dateTime ? new Date(t.dateTime).toLocaleTimeString(dateLocale(), { hour: '2-digit', minute: '2-digit' }) : '';
       return `
       <div class="tf-task ${overdue ? 'tf-overdue' : ''}" data-id="${t.id}">
         <span class="tf-rank">${i + 1}</span>
@@ -2004,10 +2600,10 @@ function renderTodayFocus() {
           <div class="tf-task-meta">
             ${jam ? `<span>🕒 ${jam}</span>` : ''}
             <span style="color:${getPriorityColor(t.priority)}">${getPriorityIcon(t.priority)} ${t.priority === 'super_high' ? 'S-High' : t.priority}</span>
-            ${overdue ? '<span class="tf-late">⏰ Terlambat</span>' : ''}
+            ${overdue ? `<span class="tf-late">${escapeHtml(tr('tag.overdue'))}</span>` : ''}
           </div>
         </div>
-        <input type="checkbox" class="task-check tf-check" title="Tandai selesai">
+        <input type="checkbox" class="task-check tf-check" title="${escapeHtml(tr('tf.markDone'))}">
       </div>`;
     }).join('');
   }
@@ -2115,7 +2711,7 @@ function exportToJson() {
   a.download = 'taskflow-backup-' + new Date().toISOString().slice(0,10) + '.json';
   a.click();
   URL.revokeObjectURL(url);
-  showToast(tasks.length + ' tugas diekspor ke JSON', 'success');
+  showToast(tr('toast.exportedJson', { n: tasks.length }), 'success');
 }
 function exportToCsv() {
   const headers = ['ID','Title','Description','Category','Priority','Status','DateTime','CreatedAt','Subtasks'];
@@ -2139,7 +2735,7 @@ function exportToCsv() {
   a.download = 'taskflow-export-' + new Date().toISOString().slice(0,10) + '.csv';
   a.click();
   URL.revokeObjectURL(url);
-  showToast(tasks.length + ' tugas diekspor ke CSV', 'success');
+  showToast(tr('toast.exportedCsv', { n: tasks.length }), 'success');
 }
 
 function createTaskId() {
@@ -2166,7 +2762,7 @@ function createRestorePoint(source) {
     return true;
   } catch (error) {
     console.error('Restore point error:', error);
-    showToast('Restore dibatalkan karena snapshot lokal tidak dapat dibuat.', 'error');
+    showToast(tr('toast.restoreSnapFail'), 'error');
     return false;
   }
 }
@@ -2175,21 +2771,21 @@ async function restoreLastSnapshot() {
   try {
     const raw = localStorage.getItem(RESTORE_POINT_KEY);
     if (!raw) {
-      showToast('Belum ada snapshot pemulihan.', 'info');
+      showToast(tr('toast.noSnapshot'), 'info');
       return;
     }
     const snapshot = JSON.parse(raw);
     if (!Array.isArray(snapshot.tasks)) throw new Error('Snapshot tidak valid');
     const label = snapshot.createdAt
-      ? new Date(snapshot.createdAt).toLocaleString('id-ID')
-      : 'snapshot terakhir';
-    const replaced = await replaceTasksSafely(snapshot.tasks, `Snapshot ${label}`);
+      ? new Date(snapshot.createdAt).toLocaleString(dateLocale())
+      : (currentLang === 'en' ? 'last snapshot' : 'snapshot terakhir');
+    const replaced = await replaceTasksSafely(snapshot.tasks, tr('source.snapshot', { label }));
     if (!replaced) return;
     applyImportedSettings(snapshot.settings);
     if (snapshot.parsingConfig) saveParsingConfig(snapshot.parsingConfig);
-    showToast('Snapshot berhasil dipulihkan.', 'success', { label: 'Undo', onClick: undo });
+    showToast(tr('toast.snapshotRestored'), 'success', { label: tr('undo.plain'), onClick: undo });
   } catch (error) {
-    showToast('Snapshot tidak dapat dipulihkan: ' + error.message, 'error');
+    showToast(tr('toast.snapshotRestoreFail', { msg: error.message }), 'error');
   }
 }
 
@@ -2205,18 +2801,21 @@ function applyImportedSettings(importedSettings) {
     settings.reducedMotion = importedSettings.reducedMotion;
   }
   if (['deep', 'calm', 'night'].includes(importedSettings.focusMood)) settings.focusMood = importedSettings.focusMood;
+  const langChanged = (importedSettings.lang === 'id' || importedSettings.lang === 'en') && importedSettings.lang !== currentLang;
+  if (importedSettings.lang === 'id' || importedSettings.lang === 'en') settings.lang = importedSettings.lang;
   saveSettings();
   loadSettings();
   applyMotionSettings();
+  if (langChanged) applyLang(settings.lang);
 }
 
 async function replaceTasksSafely(imported, source, syncAfterReplace = true) {
   if (!Array.isArray(imported)) throw new Error('Daftar tugas tidak valid');
   const normalized = imported.map(normalizeTask).filter(t => t.title);
   const confirmed = await showConfirm(
-    'Ganti Data Tugas?',
-    `${source} berisi ${normalized.length} tugas. Data lokal saat ini (${tasks.length} tugas) akan diganti. Snapshot pemulihan dan Undo akan dibuat terlebih dahulu.`,
-    'Ganti Data'
+    tr('confirm.replaceTitle'),
+    tr('confirm.replaceMsg', { source, n: normalized.length, cur: tasks.length }),
+    tr('confirm.replaceOk')
   );
   if (!confirmed) return false;
   if (tasks.length && !createRestorePoint(source)) return false;
@@ -2345,7 +2944,7 @@ function importFile(file) {
         if (!importedData.tasks || !Array.isArray(importedData.tasks)) throw new Error('Format JSON tidak valid');
         imported = importedData.tasks;
       }
-      const replaced = await replaceTasksSafely(imported, `Import ${file.name}`);
+      const replaced = await replaceTasksSafely(imported, tr('source.import', { name: file.name }));
       if (!replaced) return;
       if (importedData) {
         applyImportedSettings(importedData.settings);
@@ -2356,9 +2955,9 @@ function importFile(file) {
           if (importedData.streak.lastComplete) localStorage.setItem('tf_lastComplete', importedData.streak.lastComplete);
         }
       }
-      showToast('Import berhasil: ' + tasks.length + ' tugas', 'success', { label: 'Undo', onClick: undo });
+      showToast(tr('toast.importOk', { n: tasks.length }), 'success', { label: tr('undo.plain'), onClick: undo });
     } catch (err) {
-      showToast('Error import: ' + err.message, 'error');
+      showToast(tr('toast.importErr', { msg: err.message }), 'error');
     }
   };
   reader.readAsText(file);
@@ -2374,7 +2973,7 @@ function toggleMultiSelectMode() {
   selectedTaskIds = [];
   if (els.batchBar) els.batchBar.classList.toggle('active', multiSelectMode);
   if (multiSelectMode) {
-    showToast('Mode Multi-Select aktif. Klik task untuk memilih.', 'info');
+    showToast(tr('toast.multiSelectOn'), 'info');
   }
   renderCurrentView();
 }
@@ -2390,7 +2989,7 @@ function toggleTaskSelection(id) {
   renderCurrentView();
 }
 function updateBatchBar() {
-  if (els.batchCount) els.batchCount.textContent = selectedTaskIds.length + ' tugas terpilih';
+  if (els.batchCount) els.batchCount.textContent = tr('batch.selected', { n: selectedTaskIds.length });
 }
 function batchMarkDone() {
   if (selectedTaskIds.length === 0) return;
@@ -2410,7 +3009,7 @@ function batchMarkDone() {
   updateStats(); renderCalendar();
   playSound('complete');
   checkStreak();
-  showToast('Tugas ditandai selesai', 'success');
+  showToast(tr('toast.markedDone'), 'success');
   setTimeout(checkAllDoneCelebration, 300);
 }
 function batchDelete() {
@@ -2425,7 +3024,7 @@ function batchDelete() {
   renderCurrentView();
   updateStats(); updateSuggestions(); renderCalendar();
   playSound('delete');
-  showToast('Tugas dihapus', 'info', { label: '↩️ Undo', onClick: undo });
+  showToast(tr('toast.taskDeleted'), 'info', { label: tr('undo.label'), onClick: undo });
 }
 function exitMultiSelect() {
   multiSelectMode = false;
@@ -2440,24 +3039,24 @@ function pushUndo(action) {
   if (undoStack.length > MAX_UNDO) undoStack.shift();
 }
 function undo() {
-  if (undoStack.length === 0) { showToast('Tidak ada yang bisa di-undo', 'warn'); return; }
+  if (undoStack.length === 0) { showToast(tr('toast.nothingUndo'), 'warn'); return; }
   const action = undoStack.pop();
   if (action.type === 'delete' && action.task) {
     const idx = Math.min(action.index ?? tasks.length, tasks.length);
     tasks.splice(idx, 0, action.task);
-    showToast('Undo: Task dikembalikan', 'success');
+    showToast(tr('toast.undoRestore'), 'success');
   } else if (action.type === 'batch-delete' && action.tasks) {
     tasks = tasks.concat(action.tasks);
-    showToast('Undo: ' + action.tasks.length + ' task dikembalikan', 'success');
+    showToast(tr('toast.undoBatchRestore', { n: action.tasks.length }), 'success');
   } else if (action.type === 'batch-update' && action.ids && action.oldStates) {
     action.ids.forEach((id, i) => {
       const t = tasks.find(x => x.id === id);
       if (t && action.oldStates[i]) { t.done = action.oldStates[i].done; t.ongoing = action.oldStates[i].ongoing; t.completedAt = action.oldStates[i].completedAt || null; }
     });
-    showToast('Undo: Status dikembalikan', 'success');
+    showToast(tr('toast.undoStatus'), 'success');
   } else if (action.type === 'clear') {
     tasks = action.tasks ? JSON.parse(JSON.stringify(action.tasks)) : [];
-    showToast('Undo: Data dikembalikan', 'success');
+    showToast(tr('toast.undoData'), 'success');
   }
   save();
   renderCurrentView();
@@ -2489,11 +3088,11 @@ function initParsingEditor() {
   // Reset
   const resetBtn = document.getElementById('parsingResetDefault');
   if (resetBtn) resetBtn.addEventListener('click', async () => {
-    if (await showConfirm('🔄 Reset Default',
-      'Reset semua kata kunci ke default? Perubahan yang belum disimpan akan hilang.', 'Reset')) {
+    if (await showConfirm(tr('confirm.resetTitle'),
+      tr('confirm.resetMsg'), tr('confirm.resetOk'))) {
       peTempConfig = JSON.parse(JSON.stringify(DEFAULT_PARSING_CONFIG));
       renderParsingEditorTable(peCurrentTab);
-      showToast('Kata kunci direset ke default', 'info');
+      showToast(tr('toast.resetDone'), 'info');
     }
   });
 
@@ -2640,7 +3239,7 @@ function saveParsingEditor() {
   saveParsingConfig(peTempConfig);
   refreshCategoryDatalists();
   closeParsingEditor();
-  showToast('Kata kunci & kategori tersimpan', 'success');
+  showToast(tr('toast.keywordsSaved'), 'success');
 }
 
 function initButtonListeners() {
@@ -2726,20 +3325,27 @@ function initButtonListeners() {
     applyMotionSettings();
   });
 
+  if (els.langToggle) els.langToggle.addEventListener('click', () => {
+    const nextLang = currentLang === 'en' ? 'id' : 'en';
+    applyLang(nextLang);
+    saveSettings();
+    showToast(tr('toast.langChanged'), 'success');
+  });
+
   if (els.reminderToggle) els.reminderToggle.addEventListener('click', async () => {
     if (!settings.reminders) {
       if (!('Notification' in window)) {
-        showToast('Browser ini tidak mendukung notifikasi', 'error');
+        showToast(tr('toast.noNotifSupport'), 'error');
         return;
       }
       let perm = Notification.permission;
       if (perm === 'default') perm = await Notification.requestPermission();
       if (perm !== 'granted') {
-        showToast('Izin notifikasi ditolak oleh browser', 'error');
+        showToast(tr('toast.notifDenied'), 'error');
         return;
       }
       settings.reminders = true;
-      showToast('🔔 Reminder aktif — notifikasi saat tugas jatuh tempo', 'success');
+      showToast(tr('toast.reminderOn'), 'success');
       checkReminders();
     } else {
       settings.reminders = false;
@@ -2781,15 +3387,15 @@ function initButtonListeners() {
   if (els.restoreData) els.restoreData.addEventListener('click', restoreLastSnapshot);
 
   if (els.clearData) els.clearData.addEventListener('click', async () => {
-    const ok = await showConfirm('🗑️ Hapus Semua Data',
-      'Semua tugas akan dihapus. Kamu masih bisa membatalkannya lewat tombol Undo setelah ini.',
-      'Hapus Semua');
+    const ok = await showConfirm(tr('confirm.clearTitle'),
+      tr('confirm.clearMsg'),
+      tr('confirm.clearOk'));
     if (!ok) return;
     pushUndo({ type: 'clear', tasks: JSON.parse(JSON.stringify(tasks)) });
     stopAllPomodoros();
     tasks = []; save(); renderCurrentView(); updateStats(); renderCalendar();
     localStorage.removeItem('tf_streak'); localStorage.removeItem('tf_lastComplete');
-    showToast('Semua data dihapus.', 'info', { label: '↩️ Undo', onClick: undo });
+    showToast(tr('toast.allCleared'), 'info', { label: tr('undo.label'), onClick: undo });
   });
 
   // Cloud sync buttons
@@ -2814,14 +3420,14 @@ function initButtonListeners() {
         t.pomodoro.timeLeft = focusTimeLeft;
         save();
       }
-      els.focusPause.textContent = '▶ Resume';
+      els.focusPause.textContent = tr('focus.resume');
     } else {
       startFocusTimer();
     }
   });
 
   if (els.focusClear) els.focusClear.addEventListener('click', async () => {
-    if (await showConfirm('✕ Clear Focus', 'Yakin ingin menghentikan focus mode?', 'Hentikan')) {
+    if (await showConfirm(tr('confirm.clearFocusTitle'), tr('confirm.clearFocusMsg'), tr('confirm.clearFocusOk'))) {
       exitFocusMode(true);
     }
   });
@@ -2976,7 +3582,7 @@ function checkAllDoneCelebration() {
   });
   if (todayTasks.length > 0 && todayTasks.every(t => t.done)) {
     launchConfetti();
-    showToast('🎉 Semua tugas hari ini selesai! Kerja bagus!', 'success');
+    showToast(tr('toast.allDoneCelebrate'), 'success');
   }
 }
 
@@ -2990,13 +3596,13 @@ function smartDateDisplay(dateStr, timeStr) {
   const target = new Date(d.getFullYear(), d.getMonth(), d.getDate());
   const diffMs = target - today;
   const diffDays = Math.round(diffMs / 86400000);
-  const timePart = timeStr || d.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
-  if (diffDays === 0) return `Hari ini, ${timePart}`;
-  if (diffDays === 1) return `Besok, ${timePart}`;
-  if (diffDays === 2) return `Lusa, ${timePart}`;
-  if (diffDays === -1) return `Kemarin, ${timePart}`;
-  if (diffDays > 2 && diffDays <= 6) return `${diffDays} hari lagi, ${timePart}`;
-  return d.toLocaleDateString('id-ID', { day:'numeric', month:'short' }) + (timePart ? `, ${timePart}` : '');
+  const timePart = timeStr || d.toLocaleTimeString(dateLocale(), { hour:'2-digit', minute:'2-digit' });
+  if (diffDays === 0) return tr('date.today', { t: timePart });
+  if (diffDays === 1) return tr('date.tomorrow', { t: timePart });
+  if (diffDays === 2) return tr('date.dayAfter', { t: timePart });
+  if (diffDays === -1) return tr('date.yesterday', { t: timePart });
+  if (diffDays > 2 && diffDays <= 6) return tr('date.inDays', { n: diffDays, t: timePart });
+  return d.toLocaleDateString(dateLocale(), { day:'numeric', month:'short' }) + (timePart ? `, ${timePart}` : '');
 }
 
 // ===== PRIORITY GLOW =====
@@ -3014,7 +3620,6 @@ function isOverdue(t) {
 }
 
 // ===== RECURRING TASKS =====
-const REPEAT_LABELS = { daily: 'Harian', weekly: 'Mingguan', monthly: 'Bulanan' };
 function spawnRecurring(t) {
   if (!t.repeat || t.repeat === 'none') return;
   const base = t.dateTime ? new Date(t.dateTime) : new Date();
@@ -3037,7 +3642,7 @@ function spawnRecurring(t) {
     subtasks: (t.subtasks || []).map(s => ({ text: s.text, done: false })),
     pomodoro: { active: false, timeLeft: 1500 }
   }));
-  showToast(`🔁 Tugas berulang dibuat: ${smartDateDisplay(nextIso)}`, 'info');
+  showToast(tr('toast.recurringCreated', { when: smartDateDisplay(nextIso) }), 'info');
 }
 
 // ===== REMINDER NOTIFIKASI =====
@@ -3052,8 +3657,8 @@ function checkReminders() {
     // notifikasi saat jatuh tempo; task yang sudah lama lewat tidak di-spam
     if (due <= now && now - due < 10 * 60 * 1000) {
       try {
-        new Notification('⏰ TaskFlow: ' + t.title, {
-          body: (t.desc ? t.desc + ' · ' : '') + 'Jatuh tempo sekarang',
+        new Notification(tr('notif.dueTitle', { title: t.title }), {
+          body: (t.desc ? t.desc + ' · ' : '') + tr('notif.dueBody'),
           tag: 'tf-' + t.id
         });
       } catch (e) { console.warn('Notification error:', e); }
@@ -3134,15 +3739,15 @@ function showDialog({ title, message = '', input = false, placeholder = '', butt
     if (input) setTimeout(() => els.appDialogInput.focus(), 60);
   });
 }
-function showConfirm(title, message, okLabel = 'OK', cancelLabel = 'Batal') {
+function showConfirm(title, message, okLabel, cancelLabel) {
   return showDialog({ title, message, buttons: [
-    { label: cancelLabel, value: false },
-    { label: okLabel, value: true, primary: true }
+    { label: cancelLabel || tr('btn.cancel'), value: false },
+    { label: okLabel || 'OK', value: true, primary: true }
   ]});
 }
 function showPrompt(title, placeholder) {
   return showDialog({ title, input: true, placeholder, buttons: [
-    { label: 'Batal', value: null },
+    { label: tr('btn.cancel'), value: null },
     { label: 'OK', value: true, primary: true }
   ]});
 }
@@ -3169,9 +3774,9 @@ async function api(path, options = {}) {
 
 function getApiErrorMessage(status, path) {
   if (status === 404 || status === 405) {
-    return 'Backend akun belum aktif di hosting ini. Deploy lewat Cloudflare Worker, bukan static hosting/GitHub Pages.';
+    return tr('err.backendOff');
   }
-  return 'HTTP ' + status;
+  return tr('err.http', { status });
 }
 
 function showAccountStatus(msg, type) {
@@ -3209,41 +3814,41 @@ async function initAuth() {
 async function doAuth(mode) {
   const email = els.authEmail ? els.authEmail.value.trim() : '';
   const password = els.authPassword ? els.authPassword.value : '';
-  if (!email || !email.includes('@')) { showAccountStatus('❌ Email tidak valid', 'error'); return; }
-  if (password.length < 8) { showAccountStatus('❌ Password minimal 8 karakter', 'error'); return; }
+  if (!email || !email.includes('@')) { showAccountStatus(tr('acc.invalidEmail'), 'error'); return; }
+  if (password.length < 8) { showAccountStatus(tr('acc.pwMin'), 'error'); return; }
 
-  showAccountStatus(mode === 'register' ? '✨ Mendaftarkan akun...' : '🔑 Masuk...', 'info');
+  showAccountStatus(mode === 'register' ? tr('acc.registering') : tr('acc.loggingIn'), 'info');
   try {
     const info = await api(mode, { method: 'POST', body: JSON.stringify({ email, password }) });
     currentUser = { email: info.email };
     if (els.authPassword) els.authPassword.value = '';
     refreshAccountUI();
-    showAccountStatus('✅ Berhasil masuk', 'success');
+    showAccountStatus(tr('acc.loginOk'), 'success');
 
     if (mode === 'register') {
       // Akun baru: langsung amankan data lokal ke cloud
       if (tasks.length) await syncToCloud({ automatic: true });
-      showToast('Akun dibuat. Data lokal tersimpan ke cloud.', 'success');
+      showToast(tr('toast.accountCreated'), 'success');
       return;
     }
     // Login: tawarkan muat data cloud bila ada
     const remote = await api('data');
     if (remote && remote.data) {
-      const when = remote.updatedAt ? new Date(remote.updatedAt).toLocaleString('id-ID') : '';
+      const when = remote.updatedAt ? new Date(remote.updatedAt).toLocaleString(dateLocale()) : '';
       const choice = await showDialog({
-        title: '☁️ Data Cloud Ditemukan',
-        message: `Terakhir disimpan: ${when}.\nMuat data cloud (menggantikan data lokal), atau simpan data lokal ke cloud?`,
+        title: tr('dialog.cloudFoundTitle'),
+        message: tr('dialog.cloudFoundMsg', { when }),
         buttons: [
-          { label: 'Nanti', value: null },
-          { label: '☁️ Simpan Lokal ke Cloud', value: 'push' },
-          { label: '📥 Muat dari Cloud', value: 'pull', primary: true }
+          { label: tr('dialog.later'), value: null },
+          { label: tr('dialog.pushLocal'), value: 'push' },
+          { label: tr('dialog.pullCloud'), value: 'pull', primary: true }
         ]
       });
       if (choice === 'pull') await applyCloudData(remote);
       else if (choice === 'push') await syncToCloud();
     } else if (tasks.length) {
       await syncToCloud({ automatic: true });
-      showToast('Data lokal tersimpan ke cloud.', 'success');
+      showToast(tr('toast.localSavedCloud'), 'success');
     }
   } catch (err) {
     showAccountStatus('❌ ' + err.message, 'error');
@@ -3254,7 +3859,7 @@ async function doLogout() {
   try { await api('logout', { method: 'POST' }); } catch (_) {}
   currentUser = null;
   refreshAccountUI();
-  showToast('Kamu sudah keluar. Data lokal tetap tersimpan di perangkat ini.', 'info');
+  showToast(tr('toast.loggedOut'), 'info');
 }
 
 function scheduleCloudSync() {
@@ -3271,14 +3876,14 @@ function scheduleCloudSync() {
 }
 
 async function syncToCloud({ automatic = false } = {}) {
-  if (!currentUser) { showAccountStatus('❌ Masuk dulu untuk sinkronisasi', 'error'); return; }
+  if (!currentUser) { showAccountStatus(tr('acc.loginFirstSync'), 'error'); return; }
   if (cloudSyncInFlight) {
     cloudSyncQueued = true;
     return;
   }
   cloudSyncInFlight = true;
 
-  if (!automatic) showAccountStatus('☁️ Menyinkronkan...', 'info');
+  if (!automatic) showAccountStatus(tr('acc.syncing'), 'info');
   try {
     const data = {
       schemaVersion: STORAGE_SCHEMA_VERSION,
@@ -3292,16 +3897,16 @@ async function syncToCloud({ automatic = false } = {}) {
       lastSync: new Date().toISOString()
     };
     await api('data', { method: 'PUT', body: JSON.stringify({ data }) });
-    showAccountStatus('✅ Tersimpan ke cloud', 'success');
-    if (!automatic) showToast('Data tersimpan ke cloud', 'success');
+    showAccountStatus(tr('acc.savedCloud'), 'success');
+    if (!automatic) showToast(tr('toast.savedCloud'), 'success');
   } catch (err) {
     if (err.status === 401) {
       currentUser = null;
       refreshAccountUI();
-      showAccountStatus('❌ Sesi berakhir. Silakan masuk lagi.', 'error');
+      showAccountStatus(tr('acc.sessionExpired'), 'error');
     } else {
-      showAccountStatus('❌ Error: ' + err.message, 'error');
-      if (!automatic) showToast('Error: ' + err.message, 'error');
+      showAccountStatus(tr('acc.error', { msg: err.message }), 'error');
+      if (!automatic) showToast(tr('acc.error', { msg: err.message }), 'error');
     }
   } finally {
     cloudSyncInFlight = false;
@@ -3315,9 +3920,9 @@ async function syncToCloud({ automatic = false } = {}) {
 async function applyCloudData(remote) {
   const data = remote.data;
   if (!data || !Array.isArray(data.tasks)) throw new Error('Format data cloud tidak valid');
-  const replaced = await replaceTasksSafely(data.tasks, 'Cloud', false);
+  const replaced = await replaceTasksSafely(data.tasks, tr('source.cloud'), false);
   if (!replaced) {
-    showAccountStatus('Load dibatalkan', 'info');
+    showAccountStatus(tr('acc.loadCancelled'), 'info');
     return;
   }
   applyImportedSettings(data.settings);
@@ -3328,17 +3933,17 @@ async function applyCloudData(remote) {
     if (data.streak.lastComplete) localStorage.setItem('tf_lastComplete', data.streak.lastComplete);
   }
   checkStreak();
-  showAccountStatus(`✅ Data dimuat (${tasks.length} tugas)`, 'success');
-  showToast(`${tasks.length} tugas dimuat dari cloud`, 'success', { label: 'Undo', onClick: undo });
+  showAccountStatus(tr('acc.dataLoaded', { n: tasks.length }), 'success');
+  showToast(tr('toast.tasksLoadedCloud', { n: tasks.length }), 'success', { label: tr('undo.plain'), onClick: undo });
 }
 
 async function loadFromCloud() {
-  if (!currentUser) { showAccountStatus('❌ Masuk dulu untuk memuat data', 'error'); return; }
-  showAccountStatus('📥 Memuat...', 'info');
+  if (!currentUser) { showAccountStatus(tr('acc.loginFirstLoad'), 'error'); return; }
+  showAccountStatus(tr('acc.loading'), 'info');
   try {
     const remote = await api('data');
     if (!remote || !remote.data) {
-      showAccountStatus('Belum ada data di cloud', 'info');
+      showAccountStatus(tr('acc.noCloudData'), 'info');
       return;
     }
     await applyCloudData(remote);
@@ -3346,10 +3951,10 @@ async function loadFromCloud() {
     if (err.status === 401) {
       currentUser = null;
       refreshAccountUI();
-      showAccountStatus('❌ Sesi berakhir. Silakan masuk lagi.', 'error');
+      showAccountStatus(tr('acc.sessionExpired'), 'error');
     } else {
-      showAccountStatus('❌ Error: ' + err.message, 'error');
-      showToast('Error: ' + err.message, 'error');
+      showAccountStatus(tr('acc.error', { msg: err.message }), 'error');
+      showToast(tr('acc.error', { msg: err.message }), 'error');
     }
   }
 }
@@ -3369,6 +3974,8 @@ function loadSettings() {
     els.reminderToggle.classList.toggle('on', settings.reminders);
   }
   if (els.cloudAutoSync) els.cloudAutoSync.classList.toggle('on', !!settings.cloudAutoSync);
+  if (els.langToggle) els.langToggle.classList.toggle('on', currentLang === 'en');
+  if (els.langLabel) els.langLabel.textContent = currentLang === 'en' ? 'English' : 'Bahasa Indonesia';
 
   document.body.classList.toggle('day-mode', !!settings.dayMode);
   if (els.themeIcon) els.themeIcon.textContent = settings.dayMode ? '☀️' : '🌙';
@@ -3384,7 +3991,7 @@ function save({ sync = true } = {}) {
     return true;
   } catch(e) {
     console.error('Save error:', e);
-    showToast('Penyimpanan lokal penuh atau tidak tersedia. Perubahan belum aman.', 'error');
+    showToast(tr('toast.storageFull'), 'error');
     return false;
   }
 }
@@ -3395,7 +4002,7 @@ function saveSettings() {
     return true;
   } catch(e) {
     console.error('Save settings error:', e);
-    showToast('Pengaturan tidak dapat disimpan.', 'error');
+    showToast(tr('toast.settingsSaveFail'), 'error');
     return false;
   }
 }
@@ -3430,17 +4037,17 @@ function initKeyboard() {
 
 async function cloudMiniHandler() {
   if (!currentUser) {
-    showToast('⚠️ Masuk dengan akunmu di Settings (⚙️) terlebih dulu.', 'warn');
+    showToast(tr('toast.loginPrompt'), 'warn');
     if (els.settingsPanel) els.settingsPanel.classList.add('show');
     return;
   }
   const choice = await showDialog({
-    title: '☁️ Sinkronisasi Cloud',
-    message: 'Pilih arah sinkronisasi:',
+    title: tr('dialog.cloudSyncTitle'),
+    message: tr('dialog.cloudSyncMsg'),
     buttons: [
-      { label: 'Batal', value: null },
-      { label: '📥 Download (Load)', value: 'load' },
-      { label: '☁️ Upload (Save)', value: 'save', primary: true }
+      { label: tr('btn.cancel'), value: null },
+      { label: tr('dialog.download'), value: 'load' },
+      { label: tr('dialog.upload'), value: 'save', primary: true }
     ]
   });
   if (choice === 'save') syncToCloud();
