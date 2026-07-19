@@ -1,5 +1,5 @@
 // State & Config
-const APP_VERSION = '20260719a';
+const APP_VERSION = '20260719b';
 
 // ===== I18N: dukungan dwibahasa (Indonesia / English) =====
 // currentLang menentukan bahasa aktif. t(key, vars) mengambil teks dari kamus,
@@ -268,7 +268,10 @@ const I18N = {
     'dialog.upload': '☁️ Upload (Save)',
     'err.backendOff': 'Backend akun belum aktif di hosting ini. Deploy lewat Cloudflare Worker, bukan static hosting/GitHub Pages.',
     'err.http': 'HTTP {status}',
-    'toast.langChanged': '🌐 Bahasa diubah ke Indonesia'
+    'toast.langChanged': '🌐 Bahasa diubah ke Indonesia',
+    'acc.cloudConflict': '⚠️ Data di cloud lebih baru dari perangkat ini',
+    'toast.cloudConflict': '⚠️ Auto-sync ditunda: data di cloud lebih baru (mungkin dari perangkat lain). Buka Settings → pilih 📥 Muat dari Cloud, atau ☁️ Simpan ke Cloud untuk menimpanya.',
+    'toast.syncDeferred': 'Auto-sync ditunda sampai kamu memilih Muat/Simpan di Settings.'
   },
   en: {
     'focus.title': 'Focus Mode',
@@ -522,7 +525,10 @@ const I18N = {
     'dialog.upload': '☁️ Upload (Save)',
     'err.backendOff': 'The account backend is not active on this host. Deploy via a Cloudflare Worker, not static hosting/GitHub Pages.',
     'err.http': 'HTTP {status}',
-    'toast.langChanged': '🌐 Language changed to English'
+    'toast.langChanged': '🌐 Language changed to English',
+    'acc.cloudConflict': '⚠️ Cloud data is newer than this device',
+    'toast.cloudConflict': '⚠️ Auto-sync paused: the cloud data is newer (possibly from another device). Open Settings → choose 📥 Load from Cloud, or ☁️ Save to Cloud to overwrite it.',
+    'toast.syncDeferred': 'Auto-sync is paused until you choose Load/Save in Settings.'
   }
 };
 
@@ -688,7 +694,23 @@ let isInitialized = false;
 let cloudSyncTimer = null;
 let cloudSyncInFlight = false;
 let cloudSyncQueued = false;
+// true = auto-sync ditunda (user pilih "Nanti" saat login, atau data cloud
+// terdeteksi lebih baru). Sinkronisasi manual dari Settings membatalkannya.
+let cloudSyncDeferred = false;
 let currentUser = null; // { email } saat login, null saat logout
+
+// Stempel waktu data cloud yang terakhir dilihat perangkat ini — dipakai
+// untuk mendeteksi bila perangkat lain menyimpan lebih dulu (anti-timpa).
+const CLOUD_STAMP_KEY = 'tf_cloudUpdatedAt';
+function getCloudStamp() {
+  try { return localStorage.getItem(CLOUD_STAMP_KEY); } catch (_) { return null; }
+}
+function setCloudStamp(value) {
+  try {
+    if (value) localStorage.setItem(CLOUD_STAMP_KEY, value);
+    else localStorage.removeItem(CLOUD_STAMP_KEY);
+  } catch (_) {}
+}
 
 // Close all popup elements to prevent stacking
 function closeAllPopups() {
@@ -1389,12 +1411,14 @@ function smartParse(text) {
   const config = loadParsingConfig();
 
   // ── Priority ──
+  // Catatan: smartParse harus bebas efek samping — ia dipanggil untuk preview
+  // chip di setiap ketikan. Mengubah select prioritas di sini membuat pilihan
+  // "nyangkut" walau kata kuncinya sudah dihapus dari input.
   for (const item of config.priority) {
     const regex = new RegExp('\\b(' + item.keywords.map(escapeRegex).join('|') + ')\\b', 'gi');
     if (regex.test(cleanedText)) {
       priority = item.val;
       cleanedText = cleanedText.replace(regex, '').trim();
-      updatePrioritySelect(item.val);
       break;
     }
   }
@@ -1443,6 +1467,9 @@ function smartParse(text) {
       parseError = tr('parse.invalidTime');
     }
   }
+  // Angka berformat 19.30 tanpa kata "jam/pukul" dianggap waktu HANYA bila
+  // nilainya masuk akal sebagai jam. Selain itu (mis. harga "25.99") biarkan
+  // apa adanya di judul — jangan dianggap error.
   const standaloneTime = cleanedText.match(/\b(\d{1,2})[.:](\d{2})\b/);
   if (standaloneTime && !timeHint) {
     const h = parseInt(standaloneTime[1]);
@@ -1450,8 +1477,6 @@ function smartParse(text) {
     if (h >= 0 && h <= 23 && m >= 0 && m <= 59) {
       timeHint = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
       cleanedText = cleanedText.replace(standaloneTime[0], '').trim();
-    } else {
-      parseError = tr('parse.invalidTime');
     }
   }
 
@@ -1477,11 +1502,12 @@ function smartParse(text) {
 
   // Absolute date: DD/MM or DD/MM/YYYY
   if (!parsedDateTime) {
-    const absDateMatch = cleanedText.match(/\b(\d{1,2})[\/.](\d{1,2})(?:[\/.](\d{4}))?\b/);
+    const absDateMatch = cleanedText.match(/\b(\d{1,2})([\/.])(\d{1,2})(?:[\/.](\d{4}))?\b/);
     if (absDateMatch) {
       const dd = parseInt(absDateMatch[1]);
-      const mm = parseInt(absDateMatch[2]) - 1;
-      const yyyy = absDateMatch[3] ? parseInt(absDateMatch[3]) : now.getFullYear();
+      const sep = absDateMatch[2];
+      const mm = parseInt(absDateMatch[3]) - 1;
+      const yyyy = absDateMatch[4] ? parseInt(absDateMatch[4]) : now.getFullYear();
       const d = new Date(yyyy, mm, dd,
                         timeHint ? parseInt(timeHint.split(':')[0]) : 8,
                         timeHint ? parseInt(timeHint.split(':')[1]) : 0, 0);
@@ -1490,7 +1516,9 @@ function smartParse(text) {
         parsedDateTime = d.toISOString();
         cleanedText = cleanedText.replace(absDateMatch[0], '').trim();
         hasDateKeyword = true;
-      } else {
+      } else if (sep === '/') {
+        // Format garis miring jelas dimaksudkan sebagai tanggal → beri tahu user.
+        // Format titik ambigu (bisa harga/angka biasa) → biarkan di judul.
         parseError = tr('parse.invalidDate');
       }
     }
@@ -1546,14 +1574,11 @@ function smartParse(text) {
   }
 
   // ── Final cleanup ──
-  cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
-  // Remove pipe-separated leftover keywords
-  cleanedText = cleanedText.replace(/\s*[|\/]\s*(super|superh|shigh|sh|sup|high|medium|low|done|selesai|ogg|pnd)\b/gi, '').trim();
-  cleanedText = cleanedText.replace(/\b(super|superh|shigh|sh|sup|high|medium|low|done|selesai|ogg|pnd)\b/gi, '').trim();
+  // Kata kunci sudah dihapus oleh masing-masing loop parsing di atas (sesuai
+  // config user). Di sini cukup rapikan pemisah "|" dan spasi sisa parsing —
+  // JANGAN menghapus daftar kata hardcoded, karena itu ikut memakan kata
+  // biasa dari judul (mis. "sup" pada "masak sup ayam", atau angka "25.99").
   cleanedText = cleanedText.replace(/^[|\s—-]+|[|\s—-]+$/g, '').trim();
-  cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
-  cleanedText = cleanedText.replace(/\b\d{1,2}\.\d{2}\b/g, '').trim();
-  cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
   cleanedText = cleanedText.replace(/\s*\|\s*/g, ' ').trim();
   cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
 
@@ -1572,7 +1597,9 @@ function escapeRegex(str) {
 // ===== PARSING CONFIG MANAGEMENT =====
 const DEFAULT_PARSING_CONFIG = {
   priority: [
-    { keywords: ['super','superh','shigh','sh','sup','super_high','super high'], val: 'super_high', label: '💥 Super High' },
+    // 'sup' sengaja tidak dipakai — itu kata umum ("sup ayam") dan membuat
+    // judul tugas terpotong + prioritas melonjak tanpa disadari.
+    { keywords: ['super','superh','shigh','sh','super_high','super high'], val: 'super_high', label: '💥 Super High' },
     { keywords: ['tinggi','high','penting','urgent'], val: 'high', label: '🔥 High' },
     { keywords: ['sedang','medium','biasa'], val: 'medium', label: '⚡ Medium' },
     { keywords: ['rendah','low','nanti'], val: 'low', label: '🌿 Low' }
@@ -3767,6 +3794,7 @@ async function api(path, options = {}) {
     const fallback = getApiErrorMessage(res.status, path);
     const err = new Error((payload && payload.error) || fallback);
     err.status = res.status;
+    err.payload = payload;
     throw err;
   }
   return payload;
@@ -3822,6 +3850,9 @@ async function doAuth(mode) {
     const info = await api(mode, { method: 'POST', body: JSON.stringify({ email, password }) });
     currentUser = { email: info.email };
     if (els.authPassword) els.authPassword.value = '';
+    // Mulai bersih: stempel milik sesi/akun sebelumnya tidak berlaku lagi.
+    setCloudStamp(null);
+    cloudSyncDeferred = false;
     refreshAccountUI();
     showAccountStatus(tr('acc.loginOk'), 'success');
 
@@ -3844,8 +3875,17 @@ async function doAuth(mode) {
           { label: tr('dialog.pullCloud'), value: 'pull', primary: true }
         ]
       });
-      if (choice === 'pull') await applyCloudData(remote);
-      else if (choice === 'push') await syncToCloud();
+      if (choice === 'pull') {
+        await applyCloudData(remote);
+      } else if (choice === 'push') {
+        await syncToCloud();
+      } else {
+        // "Nanti" = user belum memutuskan. Tanpa penundaan ini, auto-sync
+        // akan diam-diam menimpa data cloud yang lebih baru beberapa detik
+        // kemudian saat ada perubahan lokal.
+        cloudSyncDeferred = true;
+        if (settings.cloudAutoSync) showToast(tr('toast.syncDeferred'), 'info');
+      }
     } else if (tasks.length) {
       await syncToCloud({ automatic: true });
       showToast(tr('toast.localSavedCloud'), 'success');
@@ -3858,12 +3898,17 @@ async function doAuth(mode) {
 async function doLogout() {
   try { await api('logout', { method: 'POST' }); } catch (_) {}
   currentUser = null;
+  setCloudStamp(null);
+  cloudSyncDeferred = false;
   refreshAccountUI();
   showToast(tr('toast.loggedOut'), 'info');
 }
 
 function scheduleCloudSync() {
   if (!isInitialized || !settings.cloudAutoSync || !currentUser) return;
+  // Ditunda: user memilih "Nanti" saat login, atau cloud terdeteksi lebih baru.
+  // Jangan menimpa otomatis — tunggu keputusan Muat/Simpan dari user.
+  if (cloudSyncDeferred) return;
   clearTimeout(cloudSyncTimer);
   cloudSyncTimer = setTimeout(() => {
     cloudSyncTimer = null;
@@ -3882,6 +3927,8 @@ async function syncToCloud({ automatic = false } = {}) {
     return;
   }
   cloudSyncInFlight = true;
+  // Simpan manual = keputusan sadar user untuk menimpa → batalkan penundaan.
+  if (!automatic) cloudSyncDeferred = false;
 
   if (!automatic) showAccountStatus(tr('acc.syncing'), 'info');
   try {
@@ -3896,7 +3943,13 @@ async function syncToCloud({ automatic = false } = {}) {
       },
       lastSync: new Date().toISOString()
     };
-    await api('data', { method: 'PUT', body: JSON.stringify({ data }) });
+    const payload = { data };
+    // Auto-sync menyertakan stempel anti-timpa: server menolak (409) bila
+    // data cloud sudah berubah sejak terakhir dilihat perangkat ini.
+    // Simpan manual tidak menyertakannya = timpa dengan sengaja.
+    if (automatic) payload.ifUpdatedAt = getCloudStamp();
+    const res = await api('data', { method: 'PUT', body: JSON.stringify(payload) });
+    if (res && res.updatedAt) setCloudStamp(res.updatedAt);
     showAccountStatus(tr('acc.savedCloud'), 'success');
     if (!automatic) showToast(tr('toast.savedCloud'), 'success');
   } catch (err) {
@@ -3904,6 +3957,11 @@ async function syncToCloud({ automatic = false } = {}) {
       currentUser = null;
       refreshAccountUI();
       showAccountStatus(tr('acc.sessionExpired'), 'error');
+    } else if (err.status === 409) {
+      // Perangkat lain menyimpan lebih dulu — tunda auto-sync, minta user memilih.
+      cloudSyncDeferred = true;
+      showAccountStatus(tr('acc.cloudConflict'), 'error');
+      showToast(tr('toast.cloudConflict'), 'warn');
     } else {
       showAccountStatus(tr('acc.error', { msg: err.message }), 'error');
       if (!automatic) showToast(tr('acc.error', { msg: err.message }), 'error');
@@ -3925,6 +3983,10 @@ async function applyCloudData(remote) {
     showAccountStatus(tr('acc.loadCancelled'), 'info');
     return;
   }
+  // Data cloud sudah diterima perangkat ini → catat stempelnya dan
+  // aktifkan lagi auto-sync.
+  setCloudStamp(remote.updatedAt || null);
+  cloudSyncDeferred = false;
   applyImportedSettings(data.settings);
   if (data.parsingConfig) saveParsingConfig(data.parsingConfig);
   if (data.streak) {
