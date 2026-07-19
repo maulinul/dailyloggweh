@@ -129,6 +129,23 @@ async function putData(request, env) {
   if (!body || typeof body.data !== 'object' || body.data === null) {
     return json({ error: 'Field "data" (object) diperlukan' }, 400);
   }
+
+  // Proteksi multi-perangkat (opsional): klien bisa mengirim "ifUpdatedAt" =
+  // stempel waktu data cloud yang terakhir ia lihat. Kalau data di cloud
+  // sudah berubah sejak itu (perangkat lain menyimpan duluan), tolak dengan
+  // 409 supaya data yang lebih baru tidak tertimpa diam-diam. Klien lama
+  // yang tidak mengirim field ini tetap berjalan seperti biasa.
+  if ('ifUpdatedAt' in body) {
+    const row = await env.DB.prepare(
+      'SELECT updated_at FROM user_data WHERE user_id = ?1'
+    ).bind(session.userId).first();
+    const current = row ? row.updated_at : null;
+    const expected = body.ifUpdatedAt == null ? null : String(body.ifUpdatedAt);
+    if (current !== expected) {
+      return json({ error: 'Data di cloud lebih baru', conflict: true, updatedAt: current }, 409);
+    }
+  }
+
   const serialized = JSON.stringify(body.data);
   const updatedAt = new Date().toISOString();
   await env.DB.prepare(
