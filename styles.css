@@ -1897,15 +1897,24 @@ html.day-mode.theme-slate {
 .theme-picker-row { padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
 .theme-picker-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
 .theme-picker-label .theme-active-name { font-size: 0.72rem; color: var(--text-dim); }
-.theme-swatches { display: flex; gap: 0.45rem; flex-wrap: wrap; }
+.theme-swatches { display: flex; gap: 0.4rem; flex-wrap: wrap; }
 .theme-swatch {
-  width: 28px; height: 28px; border-radius: 50%;
-  border: 2px solid transparent; cursor: pointer; padding: 0;
-  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  /* appearance none: tanpa ini browser HP memaksakan bentuk tombol
+     bawaannya sendiri (kotak membulat) dan mengabaikan border-radius */
+  appearance: none; -webkit-appearance: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.18); cursor: pointer; padding: 0;
+  font-size: 15px; line-height: 1;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s, opacity 0.2s;
+  opacity: 0.8;
 }
-.theme-swatch:hover { transform: scale(1.15); }
+.day-mode .theme-swatch { border-color: rgba(0,0,0,0.15); }
+.theme-swatch:hover { transform: scale(1.12); opacity: 1; }
 .theme-swatch.active {
   border-color: var(--text);
-  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.35);
-  transform: scale(1.1);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.4);
+  transform: scale(1.08);
+  opacity: 1;
 }

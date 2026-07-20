@@ -1,5 +1,5 @@
 // State & Config
-const APP_VERSION = '20260720a';
+const APP_VERSION = '20260720b';
 
 // ===== I18N: dukungan dwibahasa (Indonesia / English) =====
 // currentLang menentukan bahasa aktif. t(key, vars) mengambil teks dari kamus,
