@@ -1,5 +1,5 @@
 // State & Config
-const APP_VERSION = '20260719c';
+const APP_VERSION = '20260720a';
 
 // ===== I18N: dukungan dwibahasa (Indonesia / English) =====
 // currentLang menentukan bahasa aktif. t(key, vars) mengambil teks dari kamus,
@@ -140,6 +140,7 @@ const I18N = {
     'title.loadCloud': 'Muat dari Cloud',
     'account.logout': '🚪 Keluar',
     'set.editParsing': '⚙️ Edit Kata Kunci Parsing',
+    'set.colorTheme': '🎨 Tema Warna',
     'set.storageNote': 'Data tersimpan di LocalStorage',
     'set.restore': 'Pulihkan Snapshot Terakhir',
     'set.clear': 'Hapus Semua Data',
@@ -401,6 +402,7 @@ const I18N = {
     'title.loadCloud': 'Load from Cloud',
     'account.logout': '🚪 Log Out',
     'set.editParsing': '⚙️ Edit Parsing Keywords',
+    'set.colorTheme': '🎨 Color Theme',
     'set.storageNote': 'Data stored in LocalStorage',
     'set.restore': 'Restore Last Snapshot',
     'set.clear': 'Clear All Data',
@@ -605,8 +607,44 @@ let settings = {
   reducedMotion: null, customCursor: true, focusMood: 'deep',
   cloudAutoSync: false,
   // lang: 'id' (default) atau 'en'
-  lang: 'id'
+  lang: 'id',
+  // theme: salah satu dari THEME_NAMES di bawah — 'galaxy' = tema asli
+  theme: 'galaxy'
 };
+
+// ===== TEMA WARNA =====
+// Nilai kelas CSS ada di styles.css (body.theme-*). 'galaxy' = tanpa kelas.
+const THEME_NAMES = {
+  galaxy: 'Neon Galaxy',
+  ocean: 'Deep Ocean',
+  ember: 'Sunset Ember',
+  sakura: 'Sakura Night',
+  matcha: 'Matcha Forest',
+  slate: 'Slate Minimal'
+};
+// Warna latar tiap tema untuk <meta name="theme-color"> (bilah atas HP/PWA)
+const THEME_META_COLORS = {
+  galaxy: '#0a0a12', ocean: '#051019', ember: '#160d08',
+  sakura: '#150a16', matcha: '#0a120c', slate: '#0d1117'
+};
+
+function applyColorTheme(theme) {
+  if (!THEME_NAMES[theme]) theme = 'galaxy';
+  settings.theme = theme;
+  // Kelas tema dipasang di <html>, BUKAN <body>: variabel turunan seperti
+  // --accent: var(--neon-purple) di-resolve di level :root (<html>), jadi
+  // override di body tidak akan sampai ke sana.
+  const rootEl = document.documentElement;
+  rootEl.classList.remove(...Object.keys(THEME_NAMES).map(t => 'theme-' + t));
+  if (theme !== 'galaxy') rootEl.classList.add('theme-' + theme);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', THEME_META_COLORS[theme]);
+  if (els.themeName) els.themeName.textContent = THEME_NAMES[theme];
+  if (els.themeSwatches) {
+    els.themeSwatches.querySelectorAll('.theme-swatch').forEach(btn =>
+      btn.classList.toggle('active', btn.dataset.ctheme === theme));
+  }
+}
 
 const systemReducedMotion = () =>
   window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -757,7 +795,7 @@ function cacheElements() {
     'focusSubtasks','focusMoods',
     'weeklyInsight','wiToggle','wiBody','wiStats','wiChart','wiHeatmap',
     'appDialog','appDialogTitle','appDialogMessage','appDialogInput','appDialogActions',
-    'langToggle','langLabel'
+    'langToggle','langLabel','themeSwatches','themeName'
   ];
   ids.forEach(id => els[id] = getEl(id));
 }
@@ -768,8 +806,9 @@ function safeInit() {
   try {
     cacheElements();
     loadData();
-    // Terapkan bahasa tersimpan ke teks statis sebelum render pertama
+    // Terapkan bahasa & tema tersimpan sebelum render pertama
     applyLang(settings.lang, { rerender: false });
+    applyColorTheme(settings.theme);
     initClock();
     initInputClock();
     initCursor();
@@ -2836,11 +2875,13 @@ function applyImportedSettings(importedSettings) {
     settings.reducedMotion = importedSettings.reducedMotion;
   }
   if (['deep', 'calm', 'night'].includes(importedSettings.focusMood)) settings.focusMood = importedSettings.focusMood;
+  if (THEME_NAMES[importedSettings.theme]) settings.theme = importedSettings.theme;
   const langChanged = (importedSettings.lang === 'id' || importedSettings.lang === 'en') && importedSettings.lang !== currentLang;
   if (importedSettings.lang === 'id' || importedSettings.lang === 'en') settings.lang = importedSettings.lang;
   saveSettings();
   loadSettings();
   applyMotionSettings();
+  applyColorTheme(settings.theme);
   if (langChanged) applyLang(settings.lang);
 }
 
@@ -3373,6 +3414,14 @@ function initButtonListeners() {
     showToast(tr('toast.langChanged'), 'success');
   });
 
+  if (els.themeSwatches) els.themeSwatches.addEventListener('click', (e) => {
+    const btn = e.target.closest('.theme-swatch');
+    if (!btn) return;
+    applyColorTheme(btn.dataset.ctheme);
+    saveSettings();
+    playSound('add');
+  });
+
   if (els.reminderToggle) els.reminderToggle.addEventListener('click', async () => {
     if (!settings.reminders) {
       if (!('Notification' in window)) {
@@ -3395,10 +3444,12 @@ function initButtonListeners() {
     saveSettings();
   });
 
-  if (els.themeToggle) els.themeToggle.addEventListener('click', () => { 
-    settings.dayMode = !settings.dayMode; 
+  if (els.themeToggle) els.themeToggle.addEventListener('click', () => {
+    settings.dayMode = !settings.dayMode;
     els.themeToggle.classList.toggle('on');
     document.body.classList.toggle('day-mode');
+    // sinkron ke <html> — variabel tema di-resolve di level :root
+    document.documentElement.classList.toggle('day-mode', settings.dayMode);
     if (els.themeIcon) els.themeIcon.classList.add('spin');
     setTimeout(() => { if(els.themeIcon) els.themeIcon.classList.remove('spin'); }, 500);
     if (settings.dayMode) {
@@ -4066,6 +4117,7 @@ function loadSettings() {
   if (els.langLabel) els.langLabel.textContent = currentLang === 'en' ? 'English' : 'Bahasa Indonesia';
 
   document.body.classList.toggle('day-mode', !!settings.dayMode);
+  document.documentElement.classList.toggle('day-mode', !!settings.dayMode);
   if (els.themeIcon) els.themeIcon.textContent = settings.dayMode ? '☀️' : '🌙';
   if (els.themeLabel) els.themeLabel.textContent = settings.dayMode ? 'Day Mode' : 'Night Mode';
   document.querySelectorAll('[role="switch"]').forEach(sw =>
