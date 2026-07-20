@@ -61,9 +61,20 @@ async function register(request, env) {
 
   const salt = randomHex(16);
   const hash = await hashPassword(password, salt);
-  const result = await env.DB.prepare(
-    'INSERT INTO users (email, password_hash, salt) VALUES (?1, ?2, ?3)'
-  ).bind(email, hash, salt).run();
+  let result;
+  try {
+    result = await env.DB.prepare(
+      'INSERT INTO users (email, password_hash, salt) VALUES (?1, ?2, ?3)'
+    ).bind(email, hash, salt).run();
+  } catch (err) {
+    // Dua pendaftaran email sama yang nyaris bersamaan: SELECT di atas lolos
+    // dua-duanya, tapi INSERT kedua ditolak constraint UNIQUE. Balas dengan
+    // pesan yang sama seperti email terdaftar, bukan error 500 generik.
+    if (String(err && err.message).includes('UNIQUE')) {
+      return json({ error: 'Email sudah terdaftar. Silakan masuk.' }, 409);
+    }
+    throw err;
+  }
 
   const userId = result.meta.last_row_id;
   return createSession(env, userId, email);
@@ -85,9 +96,11 @@ async function login(request, env) {
   const valid = user && timingSafeEqualHex(hash, user.password_hash);
   if (!valid) return json({ error: 'Email atau password salah' }, 401);
 
+  // Bersihkan SEMUA sesi kedaluwarsa (bukan hanya milik user ini) —
+  // kesempatan login siapa pun jadi momen bersih-bersih tabel sessions.
   await env.DB.prepare(
-    'DELETE FROM sessions WHERE user_id = ?1 AND expires_at < ?2'
-  ).bind(user.id, nowSeconds()).run();
+    'DELETE FROM sessions WHERE expires_at < ?1'
+  ).bind(nowSeconds()).run();
 
   return createSession(env, user.id, user.email);
 }
