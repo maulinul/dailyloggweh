@@ -1,12 +1,12 @@
 // TaskFlow Pro — Service Worker
 // App shell di-cache saat install; dokumen pakai network-first supaya update
 // cepat terlihat, aset lain cache-first dengan pengisian cache saat runtime.
-const CACHE = 'taskflow-v12';
+const CACHE = 'taskflow-v13';
 const APP_SHELL = [
   './',
   './index.html',
-  './styles.css?v=20260719b',
-  './app.js?v=20260719b',
+  './styles.css?v=20260719c',
+  './app.js?v=20260719c',
   './manifest.webmanifest',
   './icon.svg',
   './icon-192.png',
@@ -63,9 +63,11 @@ self.addEventListener('fetch', (e) => {
   }
 
   // Aset same-origin: network-first agar HTML, JS, dan CSS selalu satu versi.
+  // Fallback HANYA ke cache aset yang sama — jangan pernah mengirim
+  // index.html sebagai pengganti CSS/JS/gambar (membuat tampilan rusak).
   e.respondWith(
     fetchAndCache(e.request).catch(() =>
-      caches.match(e.request).then((cached) => cached || caches.match('./index.html'))
+      caches.match(e.request).then((cached) => cached || Response.error())
     )
   );
 });

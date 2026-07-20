@@ -1,5 +1,5 @@
 // State & Config
-const APP_VERSION = '20260719b';
+const APP_VERSION = '20260719c';
 
 // ===== I18N: dukungan dwibahasa (Indonesia / English) =====
 // currentLang menentukan bahasa aktif. t(key, vars) mengambil teks dari kamus,
@@ -92,7 +92,7 @@ const I18N = {
     'aria.priority': 'Prioritas tugas',
     'title.cloudSync': 'Sinkronisasi Cloud',
     'cloud.sync': '☁️ Sync',
-    'hint.format': '💡 <strong>Format:</strong> <code style="background:rgba(176,38,255,0.15); padding:1px 6px; border-radius:4px; color:var(--neon-purple);">Tugas | tanggal | status | waktu | prioritas</code><br>\n            <span style="margin-left:1.2rem;">📅 <em>hari ini, besok, lusa, 2 hari lagi, seminggu, sebulan, 2 bulan…</em> | 🏷️ <em>DNE, OGG, PND</em> | 🕐 <em>jam 19, 19.00, 12am, 12pm</em> | ⚡ <em>high, med, low, superh</em></span><br>\n            <span style="margin-left:1.2rem;">📝 Contoh: <code style="background:rgba(255,255,255,0.05); padding:1px 5px; border-radius:3px;">Beli susu | besok | OGG | jam 8 | high</code> atau cukup: <code style="background:rgba(255,255,255,0.05); padding:1px 5px; border-radius:3px;">Beli susu</code> (default hari ini)</span>',
+    'hint.format': '💡 <strong>Format:</strong> <code style="background:rgba(176,38,255,0.15); padding:1px 6px; border-radius:4px; color:var(--neon-purple);">Tugas | tanggal | status | waktu | prioritas</code><br>\n            <span style="margin-left:1.2rem;">📅 <em>hari ini, besok, lusa, 3 hari lagi, seminggu, sebulan, 2 bulan…</em> | 🏷️ <em>selesai/done, OGG, PND</em> | 🕐 <em>jam 19, 19.00, jam 8 pagi, jam 12 pm</em> | ⚡ <em>high, medium, low, superh</em></span><br>\n            <span style="margin-left:1.2rem;">📝 Contoh: <code style="background:rgba(255,255,255,0.05); padding:1px 5px; border-radius:3px;">Beli susu | besok | OGG | jam 8 | high</code> atau cukup: <code style="background:rgba(255,255,255,0.05); padding:1px 5px; border-radius:3px;">Beli susu</code> (default hari ini)</span>',
     'tf.title': '🎯 Today Focus',
     'title.today': 'Hari Ini',
     'dayDetail.pick': '📅 Pilih tanggal',
@@ -355,7 +355,7 @@ const I18N = {
     'aria.priority': 'Task priority',
     'title.cloudSync': 'Cloud Sync',
     'cloud.sync': '☁️ Sync',
-    'hint.format': '💡 <strong>Format:</strong> <code style="background:rgba(176,38,255,0.15); padding:1px 6px; border-radius:4px; color:var(--neon-purple);">Task | date | status | time | priority</code><br>\n            <span style="margin-left:1.2rem;">📅 <em>today, tomorrow, in 2 days, a week, a month, 2 months…</em> | 🏷️ <em>DNE, OGG, PND</em> | 🕐 <em>jam 19, 19.00, 12am, 12pm</em> | ⚡ <em>high, med, low, superh</em></span><br>\n            <span style="margin-left:1.2rem;">📝 Example: <code style="background:rgba(255,255,255,0.05); padding:1px 5px; border-radius:3px;">Buy milk | besok | OGG | jam 8 | high</code> or just: <code style="background:rgba(255,255,255,0.05); padding:1px 5px; border-radius:3px;">Buy milk</code> (defaults to today)</span>',
+    'hint.format': '💡 <strong>Format:</strong> <code style="background:rgba(176,38,255,0.15); padding:1px 6px; border-radius:4px; color:var(--neon-purple);">Task | date | status | time | priority</code><br>\n            <span style="margin-left:1.2rem;">📅 <em>hari ini, besok, lusa, seminggu, sebulan… (Indonesian keywords)</em> | 🏷️ <em>done/selesai, OGG, PND</em> | 🕐 <em>jam 19, 19.00, jam 8 pagi, jam 12 pm</em> | ⚡ <em>high, medium, low, superh</em></span><br>\n            <span style="margin-left:1.2rem;">📝 Example: <code style="background:rgba(255,255,255,0.05); padding:1px 5px; border-radius:3px;">Buy milk | besok | OGG | jam 8 | high</code> or just: <code style="background:rgba(255,255,255,0.05); padding:1px 5px; border-radius:3px;">Buy milk</code> (defaults to today)</span>',
     'tf.title': '🎯 Today Focus',
     'title.today': 'Today',
     'dayDetail.pick': '📅 Pick a date',
@@ -1968,7 +1968,6 @@ function renderKanban() {
     card.style.animationDelay = (index * 0.03) + 's';
 
     const taskDateTime = t.dateTime ? new Date(t.dateTime) : null;
-    const scheduledStr = taskDateTime ? taskDateTime.toLocaleDateString(dateLocale(),{day:'numeric', month:'short'}) : '';
     const timeStr = taskDateTime ? taskDateTime.toLocaleTimeString(dateLocale(),{hour:'2-digit',minute:'2-digit'}) : '';
 
     card.innerHTML = `
@@ -2670,7 +2669,8 @@ function initTodayFocus() {
     const dot = e.target.closest('.tf-dot');
     if (dot) openEditModal(dot.dataset.id);
   });
-  setInterval(renderTodayFocus, 60000); // garis "sekarang" bergeser tiap menit
+  // garis "sekarang" bergeser tiap menit — lewati saat tab tidak terlihat
+  setInterval(() => { if (!document.hidden) renderTodayFocus(); }, 60000);
 }
 
 // Streak Logic — streak dihitung dari tugas HARI INI saja,
@@ -2679,6 +2679,15 @@ function checkStreak() {
   const today = new Date().toDateString();
   const last = localStorage.getItem('tf_lastComplete');
   let streak = parseInt(localStorage.getItem('tf_streak') || '0');
+  const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toDateString();
+
+  // Streak putus kalau hari terakhir "beres semua" bukan hari ini/kemarin —
+  // tanpa reset ini angkanya terus menampilkan nilai lama (bohong).
+  if (streak > 0 && last !== today && last !== yesterdayStr) {
+    streak = 0;
+    localStorage.setItem('tf_streak', streak);
+  }
 
   const todayTasks = tasks.filter(t => {
     if (t.dateTime) return new Date(t.dateTime).toDateString() === today;
@@ -2686,8 +2695,7 @@ function checkStreak() {
   });
   const allDoneToday = todayTasks.length > 0 && todayTasks.every(t => t.done);
   if (allDoneToday && last !== today) {
-    const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
-    streak = (last === yesterday.toDateString()) ? streak + 1 : 1;
+    streak = (last === yesterdayStr) ? streak + 1 : 1;
     localStorage.setItem('tf_streak', streak);
     localStorage.setItem('tf_lastComplete', today);
   }
@@ -3083,11 +3091,17 @@ function undo() {
     showToast(tr('toast.undoStatus'), 'success');
   } else if (action.type === 'clear') {
     tasks = action.tasks ? JSON.parse(JSON.stringify(action.tasks)) : [];
+    // Kembalikan juga streak yang ikut terhapus saat "Hapus Semua Data"
+    if (action.streak) {
+      if (action.streak.count != null) localStorage.setItem('tf_streak', action.streak.count);
+      if (action.streak.lastComplete != null) localStorage.setItem('tf_lastComplete', action.streak.lastComplete);
+    }
     showToast(tr('toast.undoData'), 'success');
   }
   save();
   renderCurrentView();
   updateStats(); updateSuggestions(); renderCalendar();
+  checkStreak();
 }
 
 
@@ -3418,10 +3432,20 @@ function initButtonListeners() {
       tr('confirm.clearMsg'),
       tr('confirm.clearOk'));
     if (!ok) return;
-    pushUndo({ type: 'clear', tasks: JSON.parse(JSON.stringify(tasks)) });
+    pushUndo({
+      type: 'clear',
+      tasks: JSON.parse(JSON.stringify(tasks)),
+      // ikutkan streak agar Undo mengembalikannya juga
+      streak: {
+        count: localStorage.getItem('tf_streak'),
+        lastComplete: localStorage.getItem('tf_lastComplete')
+      }
+    });
     stopAllPomodoros();
     tasks = []; save(); renderCurrentView(); updateStats(); renderCalendar();
     localStorage.removeItem('tf_streak'); localStorage.removeItem('tf_lastComplete');
+    localStorage.removeItem('tf_celebrated');
+    checkStreak();
     showToast(tr('toast.allCleared'), 'info', { label: tr('undo.label'), onClick: undo });
   });
 
@@ -3509,9 +3533,6 @@ function initButtonListeners() {
 
   // Init kanban drag & drop
   initKanbanDragDrop();
-
-  // Quick templates
-  renderQuickTemplates();
 
   // Export / Import
   if (els.exportJsonBtn) els.exportJsonBtn.addEventListener('click', exportToJson);
@@ -3608,6 +3629,11 @@ function checkAllDoneCelebration() {
     return new Date(t.createdAt).toDateString() === todayStr;
   });
   if (todayTasks.length > 0 && todayTasks.every(t => t.done)) {
+    // Rayakan sekali per hari — centang-batal-centang tidak memicu ulang
+    let celebrated = null;
+    try { celebrated = localStorage.getItem('tf_celebrated'); } catch (_) {}
+    if (celebrated === todayStr) return;
+    try { localStorage.setItem('tf_celebrated', todayStr); } catch (_) {}
     launchConfetti();
     showToast(tr('toast.allDoneCelebrate'), 'success');
   }
@@ -4068,9 +4094,16 @@ function saveSettings() {
     return false;
   }
 }
+// Escape manual (bukan lewat div.innerHTML) supaya tanda kutip ikut di-escape —
+// hasil fungsi ini dipakai juga di dalam atribut HTML seperti title="..."
 function escapeHtml(str) {
   if (!str) return '';
-  const d=document.createElement('div'); d.textContent=str; return d.innerHTML;
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 function formatTime(s) { const m=Math.floor(s/60); const sec=s%60; return `${m}:${String(sec).padStart(2,'0')}`; }
 
