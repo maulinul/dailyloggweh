@@ -1,5 +1,5 @@
 // State & Config
-const APP_VERSION = '20260720b';
+const APP_VERSION = '20260721a';
 
 // ===== I18N: dukungan dwibahasa (Indonesia / English) =====
 // currentLang menentukan bahasa aktif. t(key, vars) mengambil teks dari kamus,
@@ -854,7 +854,7 @@ function loadData() {
     if (savedTasks) {
       const parsedTasks = JSON.parse(savedTasks);
       if (!Array.isArray(parsedTasks)) throw new Error('Format task lokal tidak valid');
-      tasks = parsedTasks.map(normalizeTask);
+      tasks = normalizeTaskList(parsedTasks);
     }
     const savedSettings = localStorage.getItem('tf_settings');
     if (savedSettings) {
@@ -2887,7 +2887,7 @@ function applyImportedSettings(importedSettings) {
 
 async function replaceTasksSafely(imported, source, syncAfterReplace = true) {
   if (!Array.isArray(imported)) throw new Error('Daftar tugas tidak valid');
-  const normalized = imported.map(normalizeTask).filter(t => t.title);
+  const normalized = normalizeTaskList(imported);
   const confirmed = await showConfirm(
     tr('confirm.replaceTitle'),
     tr('confirm.replaceMsg', { source, n: normalized.length, cur: tasks.length }),
@@ -2916,6 +2916,18 @@ async function replaceTasksSafely(imported, source, syncAfterReplace = true) {
   updateSuggestions();
   checkStreak();
   return true;
+}
+
+// Normalisasi sekaligus sebagai satu daftar agar ID yang kembar dari file
+// import, localStorage lama, atau cloud tidak membuat aksi mengenai task lain.
+function normalizeTaskList(items) {
+  const usedIds = new Set();
+  return items.map(item => {
+    const task = normalizeTask(item);
+    while (usedIds.has(task.id)) task.id = createTaskId();
+    usedIds.add(task.id);
+    return task;
+  }).filter(task => task.title);
 }
 
 // Pastikan task dari import/sync punya semua field yang dibutuhkan renderer
